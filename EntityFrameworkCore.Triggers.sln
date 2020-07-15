@@ -1,0 +1,52 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30223.230
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{EDFABD48-3C79-47AE-B84C-47CE2A52C20D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{0FAE4F6A-93BB-453C-8FB4-B24A9F30DA59}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CA7737C4-0D3C-4B81-B34C-B4812B54C018}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		Directory.Build.props = Directory.Build.props
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityFrameworkCore.Triggers.Abstractions", "src\EntityFrameworkCore.Triggers.Abstractions\EntityFrameworkCore.Triggers.Abstractions.csproj", "{B5FED1E6-A8E3-4E16-89CD-762610612C65}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityFrameworkCore.Triggers", "src\EntityFrameworkCore.Triggers\EntityFrameworkCore.Triggers.csproj", "{F6335ED1-A8EA-4889-9072-7DCBADCB075C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityFrameworkCore.Triggers.Tests", "test\EntityFrameworkCore.Triggers.Tests\EntityFrameworkCore.Triggers.Tests.csproj", "{14F262B2-0691-42B0-8C88-F7ECABF1884C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B5FED1E6-A8E3-4E16-89CD-762610612C65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5FED1E6-A8E3-4E16-89CD-762610612C65}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5FED1E6-A8E3-4E16-89CD-762610612C65}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5FED1E6-A8E3-4E16-89CD-762610612C65}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F6335ED1-A8EA-4889-9072-7DCBADCB075C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F6335ED1-A8EA-4889-9072-7DCBADCB075C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F6335ED1-A8EA-4889-9072-7DCBADCB075C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F6335ED1-A8EA-4889-9072-7DCBADCB075C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14F262B2-0691-42B0-8C88-F7ECABF1884C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14F262B2-0691-42B0-8C88-F7ECABF1884C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14F262B2-0691-42B0-8C88-F7ECABF1884C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14F262B2-0691-42B0-8C88-F7ECABF1884C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B5FED1E6-A8E3-4E16-89CD-762610612C65} = {EDFABD48-3C79-47AE-B84C-47CE2A52C20D}
+		{F6335ED1-A8EA-4889-9072-7DCBADCB075C} = {EDFABD48-3C79-47AE-B84C-47CE2A52C20D}
+		{14F262B2-0691-42B0-8C88-F7ECABF1884C} = {0FAE4F6A-93BB-453C-8FB4-B24A9F30DA59}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {847A0017-23D6-4513-B78E-CAADBD836A7D}
+	EndGlobalSection
+EndGlobal

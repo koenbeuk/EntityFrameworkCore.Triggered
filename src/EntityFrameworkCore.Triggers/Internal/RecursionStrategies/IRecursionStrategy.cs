@@ -9,6 +9,6 @@ namespace EntityFrameworkCore.Triggers.Internal.RecursionStrategy
 {
     public interface IRecursionStrategy
     {
-        bool CanRecurse(EntityEntry entry, ChangeType changeType, IChangeEventDescriptor previousChangeEventDescriptor);
+        bool CanRecurse(EntityEntry entry, ChangeType changeType, ITriggerContextDescriptor previousTriggerContextDescriptor);
     }
 }

@@ -11,14 +11,14 @@ namespace EntityFrameworkCore.Triggers.Tests.Internal
     public class TypeHelpersTests
     {
         [Theory]
-        [InlineData(typeof(ChangeEventHandler<>), typeof(IBeforeSaveChangeEventHandler<>), true)]
-        [InlineData(typeof(ChangeEventHandler<object>), typeof(IBeforeSaveChangeEventHandler<>), true)]
-        [InlineData(typeof(object), typeof(IBeforeSaveChangeEventHandler<>), false)]
+        [InlineData(typeof(Trigger<>), typeof(IBeforeSaveTrigger<>), true)]
+        [InlineData(typeof(Trigger<object>), typeof(IBeforeSaveTrigger<>), true)]
+        [InlineData(typeof(object), typeof(IBeforeSaveTrigger<>), false)]
         public void FindGenericInterface_DetectsImplementation(Type type, Type interfaceType, bool expectedResult)
         {
-            var result = TypeHelpers.FindGenericInterface(type, interfaceType);
+            var result = TypeHelpers.FindGenericInterfaces(type, interfaceType).Any();
 
-            Assert.Equal(expectedResult, result != null);
+            Assert.Equal(expectedResult, result);
         }
         
         [Fact]

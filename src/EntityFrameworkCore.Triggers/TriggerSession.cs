@@ -13,20 +13,22 @@ namespace EntityFrameworkCore.Triggers
 {
     public class TriggerSession : ITriggerSession
     {
+        readonly TriggerOptions _options;
         readonly ITriggerRegistryService _triggerRegistryService;
         readonly TriggerContextTracker _tracker;
         readonly ILogger<TriggerSession> _logger;
 
-        public TriggerSession(ITriggerRegistryService triggerRegistryService, TriggerContextTracker tracker, ILoggerFactory loggerFactory)
+        public TriggerSession(TriggerOptions options, ITriggerRegistryService triggerRegistryService, TriggerContextTracker tracker, ILoggerFactory loggerFactory)
         {
-            _triggerRegistryService = triggerRegistryService;
-            _tracker = tracker;
+            _options = options ?? throw new ArgumentNullException(nameof(options));
+            _triggerRegistryService = triggerRegistryService ?? throw new ArgumentNullException(nameof(TriggerRegistry));
+            _tracker = tracker ?? throw new ArgumentNullException(nameof(tracker));
             _logger = loggerFactory.CreateLogger<TriggerSession>();
         }
 
         public async Task RaiseBeforeSaveTriggers(CancellationToken cancellationToken)
         {
-            var maxRecursion = 100; // todo
+            var maxRecursion = _options.MaxRecursion;
 
             _logger.LogDebug("Starting BeforeSave triggers raising with a max recursion of {maxRecursion}", maxRecursion);
 

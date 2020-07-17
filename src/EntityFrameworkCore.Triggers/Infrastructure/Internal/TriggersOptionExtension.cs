@@ -106,6 +106,9 @@ namespace EntityFrameworkCore.Triggers.Infrastructure.Internal
             
             services.TryAddScoped<ITriggerService, TriggerService>();
             services.TryAddScoped<ITriggerRegistryService, TriggerRegistryService>();
+            services.Configure<TriggerOptions>(triggerServiceOptions => {
+                triggerServiceOptions.MaxRecursion = _maxRecursion;
+            });
 
             var recursionStrategyType = _recursionMode switch
             {

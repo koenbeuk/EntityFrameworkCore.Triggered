@@ -11,6 +11,7 @@ namespace EntityFrameworkCore.Triggers
     public class TriggerContext<TEntity> : ITriggerContext<TEntity> , ITriggerContextDescriptor
         where TEntity: class
     {
+        readonly ChangeType _type;
         readonly EntityEntry _entityEntry;
         readonly Lazy<TEntity?> _unmodifiedEntityLazy;
 
@@ -27,14 +28,14 @@ namespace EntityFrameworkCore.Triggers
         }
 
 
-        public TriggerContext(ChangeType changeType, EntityEntry entityEntry)
+        public TriggerContext(EntityEntry entityEntry, ChangeType changeType)
         {
-            Type = changeType;
+            _type = changeType;
             _entityEntry = entityEntry;
             _unmodifiedEntityLazy = new Lazy<TEntity?>(CreateUnmodified, false);
         }
 
-        public ChangeType Type { get; }
+        public ChangeType Type => _type;
         public TEntity Entity => (TEntity)_entityEntry.Entity;
         public TEntity? UnmodifiedEntity => _unmodifiedEntityLazy.Value;
 

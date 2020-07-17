@@ -52,7 +52,7 @@ namespace EntityFrameworkCore.Triggers.Internal
 
                     var entityType = entry.Entity.GetType();
                     var changeContextType = typeof(TriggerContext<>).MakeGenericType(entityType);
-                    var triggerContext = (ITriggerContextDescriptor)Activator.CreateInstance(changeContextType, new object[] { changeType.Value, entry });
+                    var triggerContext = (ITriggerContextDescriptor)Activator.CreateInstance(changeContextType, new object[] { entry, changeType.Value });
 
                     _discoveredChanges.Add(triggerContext);
 

@@ -17,9 +17,9 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
                 .AddScoped<IBeforeSaveTrigger<object>, TriggerStub<object>>()
                 .BuildServiceProvider();
 
-            var registry = new TriggerRegistry(typeof(IBeforeSaveTrigger<>), serviceProvider, x => new TriggerAdapterStub(x));
+            var registry = new TriggerRegistry(typeof(IBeforeSaveTrigger<>), serviceProvider, null, x => new TriggerAdapterStub(x));
 
-            var result = registry.DiscoverChangeHandlers(typeof(string));
+            var result = registry.DiscoverTriggers(typeof(string));
             Assert.Single(result);
         }
 
@@ -30,9 +30,9 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
                 .AddScoped<IBeforeSaveTrigger<object>, TriggerStub<object>>()
                 .BuildServiceProvider();
 
-            var registry = new TriggerRegistry(typeof(IBeforeSaveTrigger<>), serviceProvider, x => new TriggerAdapterStub(x));
+            var registry = new TriggerRegistry(typeof(IBeforeSaveTrigger<>), serviceProvider, null, x => new TriggerAdapterStub(x));
 
-            var result = registry.DiscoverChangeHandlers(typeof(string));
+            var result = registry.DiscoverTriggers(typeof(string));
             Assert.Single(result);
         }
 
@@ -43,9 +43,9 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
                 .AddScoped<IBeforeSaveTrigger<object>, TriggerStub<object>>()
                 .BuildServiceProvider();
 
-            var registry = new TriggerRegistry(typeof(IBeforeSaveTrigger<>), serviceProvider, x => new TriggerAdapterStub(x));
+            var registry = new TriggerRegistry(typeof(IBeforeSaveTrigger<>), serviceProvider, null, x => new TriggerAdapterStub(x));
 
-            var result = registry.DiscoverChangeHandlers(typeof(string));
+            var result = registry.DiscoverTriggers(typeof(string));
             Assert.Single(result);
         }
     }

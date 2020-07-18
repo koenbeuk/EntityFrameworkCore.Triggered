@@ -57,11 +57,6 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
                     hashCode ^= extension._maxRecursion.GetHashCode();
                     hashCode ^= extension._recursionMode.GetHashCode();
 
-                    if (extension._applicationServiceProvider != null)
-                    {
-                        hashCode ^= nameof(extension._applicationServiceProvider).GetHashCode();
-                    }
-
                     _serviceProviderHash = hashCode;
                 }
 
@@ -78,7 +73,6 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
                 debugInfo["Triggers:HandlersCount"] = (((TriggersOptionExtension)Extension)._triggers?.Count() ?? 0).ToString();
                 debugInfo["Triggers:MaxRecursion"] = ((TriggersOptionExtension)Extension)._maxRecursion.ToString();
                 debugInfo["Triggers:RecursionMode"] = ((TriggersOptionExtension)Extension)._recursionMode.ToString();
-                debugInfo["Triggers:UseApplicationServiceProvider"] = (((TriggersOptionExtension)Extension)._applicationServiceProvider != null).ToString();
             }
         }
 
@@ -86,7 +80,6 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
         private IEnumerable<(object typeOrInstance, ServiceLifetime lifetime)>? _triggers;
         private int _maxRecursion = 100;
         private RecursionMode _recursionMode = RecursionMode.EntityAndType;
-        private IServiceProvider? _applicationServiceProvider;
 
         public TriggersOptionExtension()
         {
@@ -102,7 +95,6 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
 
             _maxRecursion = copyFrom._maxRecursion;
             _recursionMode = copyFrom._recursionMode;
-            _applicationServiceProvider = copyFrom._applicationServiceProvider;
         }
 
         public DbContextOptionsExtensionInfo Info
@@ -222,12 +214,6 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
             
 
             return clone;
-        }
-
-        public TriggersOptionExtension WithApplicationServiceProvider(IServiceProvider serviceProvider)
-        {
-            _applicationServiceProvider = serviceProvider;
-            return this;
         }
 
         public TriggersOptionExtension WithAdditionalTrigger(object instance)

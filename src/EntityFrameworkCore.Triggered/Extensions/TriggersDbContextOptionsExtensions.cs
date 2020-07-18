@@ -30,15 +30,7 @@ namespace Microsoft.EntityFrameworkCore
             var extension = optionsBuilder.Options.FindExtension<TriggersOptionExtension>() ?? new TriggersOptionExtension();
             ((IDbContextOptionsBuilderInfrastructure)optionsBuilder).AddOrUpdateExtension(extension);
 
-            var coreOptionsExtension = optionsBuilder.Options.FindExtension<CoreOptionsExtension>();
-            if (coreOptionsExtension.ApplicationServiceProvider != null)
-            {
-                ((IDbContextOptionsBuilderInfrastructure)optionsBuilder).AddOrUpdateExtension(extension.WithApplicationServiceProvider(coreOptionsExtension.ApplicationServiceProvider));
-            }
-
             configure?.Invoke(new TriggersContextOptionsBuilder(optionsBuilder));
-
-            
 
             return optionsBuilder;
         }

@@ -10,28 +10,45 @@ namespace EntityFrameworkCore.Triggered
 {
     public abstract class TriggeredDbContext : DbContext
     {
+        protected TriggeredDbContext()
+            : this(new DbContextOptions<DbContext>())
+        {
+        }
+
+        public TriggeredDbContext(DbContextOptions options)
+            : base(options)
+        {
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseTriggers();
+
+            base.OnConfiguring(optionsBuilder);
+        }
+
         public override int SaveChanges(bool acceptAllChangesOnSuccess)
         {
-            var Triggerservice = this.GetService<ITriggerService>() ?? throw new InvalidOperationException("Triggers are not configured");
+            var triggerService = this.GetService<ITriggerService>() ?? throw new InvalidOperationException("Triggers are not configured");
 
-            var Triggersession = Triggerservice.CreateSession(this);
+            var triggerSession = triggerService.CreateSession(this);
 
-            Triggersession.RaiseBeforeSaveTriggers(default).GetAwaiter().GetResult();
+            triggerSession.RaiseBeforeSaveTriggers(default).GetAwaiter().GetResult();
             var result = base.SaveChanges(acceptAllChangesOnSuccess);
-            Triggersession.RaiseAfterSaveTriggers(default).GetAwaiter().GetResult();
+            triggerSession.RaiseAfterSaveTriggers(default).GetAwaiter().GetResult();
 
             return result;
         }
 
         public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
         {
-            var Triggerservice = this.GetService<ITriggerService>() ?? throw new InvalidOperationException("Triggers are not configured");
+            var triggerService = this.GetService<ITriggerService>() ?? throw new InvalidOperationException("Triggers are not configured");
 
-            var Triggersession = Triggerservice.CreateSession(this);
+            var triggerSession = triggerService.CreateSession(this);
 
-            await Triggersession.RaiseBeforeSaveTriggers(default).ConfigureAwait(false);
+            await triggerSession.RaiseBeforeSaveTriggers(default).ConfigureAwait(false);
             var result = base.SaveChanges(acceptAllChangesOnSuccess);
-            await Triggersession.RaiseAfterSaveTriggers(default).ConfigureAwait(false);
+            await triggerSession.RaiseAfterSaveTriggers(default).ConfigureAwait(false);
 
             return result;
         }

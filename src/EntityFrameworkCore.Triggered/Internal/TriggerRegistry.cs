@@ -17,9 +17,10 @@ namespace EntityFrameworkCore.Triggered.Internal
     {
         readonly Type _changeHandlerType;
         readonly IServiceProvider _serviceProvider;
+        readonly IServiceProvider? _applicationServiceProvider;
         readonly Func<object, TriggerAdapterBase> _executionStrategyFactory;
 
-        public TriggerRegistry(Type changeHandlerType, IServiceProvider serviceProvider, Func<object, TriggerAdapterBase> executionStrategyFactory)
+        public TriggerRegistry(Type changeHandlerType, IServiceProvider serviceProvider, IServiceProvider? applicationServiceProvider, Func<object, TriggerAdapterBase> executionStrategyFactory)
         {
             if (!changeHandlerType.IsGenericTypeDefinition || changeHandlerType.GenericTypeArguments.Length == 1)
             {
@@ -27,19 +28,34 @@ namespace EntityFrameworkCore.Triggered.Internal
                 throw new ArgumentException("A valid change handler type should accept 1 type argument and contain just 1 method", nameof(changeHandlerType));
             }
 
+            _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+            _applicationServiceProvider = applicationServiceProvider;
             _changeHandlerType = changeHandlerType;
-            _serviceProvider = serviceProvider;
             _executionStrategyFactory = executionStrategyFactory;
         }
 
-        public IEnumerable<TriggerAdapterBase> DiscoverChangeHandlers(Type entityType)
+        private IEnumerable<object> DiscoverTriggersFromServiceProvider(Type entityType, IServiceProvider? serviceProvider)
         {
-            return entityType
-                .GetInterfaces()
-                .Concat(TypeHelpers.EnumerateTypeHierarchy(entityType))
-                .Select(type => (_changeHandlerType).MakeGenericType(type))
-                .SelectMany(type => _serviceProvider.GetServices(type))
-                .Select(changeHandler => _executionStrategyFactory(changeHandler));
+            if (serviceProvider == null)
+            {
+                return Enumerable.Empty<TriggerAdapterBase>();
+            }
+            else
+            {
+                return entityType
+                    .GetInterfaces()
+                    .Concat(TypeHelpers.EnumerateTypeHierarchy(entityType))
+                    .Select(type => (_changeHandlerType).MakeGenericType(type))
+                    .SelectMany(type => serviceProvider.GetServices(type));                    
+            }
+        }
+
+        public IEnumerable<TriggerAdapterBase> DiscoverTriggers(Type entityType)
+        {
+            return DiscoverTriggersFromServiceProvider(entityType, _serviceProvider)
+                .Concat(DiscoverTriggersFromServiceProvider(entityType, _applicationServiceProvider))
+                .Distinct()
+                .Select(trigger => _executionStrategyFactory(trigger));
         }
     }
 }

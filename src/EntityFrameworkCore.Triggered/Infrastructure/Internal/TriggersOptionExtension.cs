@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using EntityFrameworkCore.Triggered.Internal;
 using EntityFrameworkCore.Triggered.Internal.RecursionStrategy;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
@@ -45,9 +46,9 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
 
                     var extension = (TriggersOptionExtension)Extension;
 
-                    if (extension.triggers != null)
+                    if (extension._triggers != null)
                     {
-                        foreach (var trigger in extension.triggers)
+                        foreach (var trigger in extension._triggers)
                         {
                             hashCode ^= trigger.GetHashCode();
                         }
@@ -55,6 +56,11 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
 
                     hashCode ^= extension._maxRecursion.GetHashCode();
                     hashCode ^= extension._recursionMode.GetHashCode();
+
+                    if (extension._applicationServiceProvider != null)
+                    {
+                        hashCode ^= nameof(extension._applicationServiceProvider).GetHashCode();
+                    }
 
                     _serviceProviderHash = hashCode;
                 }
@@ -69,16 +75,18 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
                     throw new ArgumentNullException(nameof(debugInfo));
                 }
 
-                debugInfo["Triggers:HandlersCount"] = ((TriggersOptionExtension)Extension).triggers.Count().ToString();
-                debugInfo["Triggers:RecursionMode"] = ((TriggersOptionExtension)Extension)._recursionMode.ToString();
+                debugInfo["Triggers:HandlersCount"] = (((TriggersOptionExtension)Extension)._triggers?.Count() ?? 0).ToString();
                 debugInfo["Triggers:MaxRecursion"] = ((TriggersOptionExtension)Extension)._maxRecursion.ToString();
+                debugInfo["Triggers:RecursionMode"] = ((TriggersOptionExtension)Extension)._recursionMode.ToString();
+                debugInfo["Triggers:UseApplicationServiceProvider"] = (((TriggersOptionExtension)Extension)._applicationServiceProvider != null).ToString();
             }
         }
 
         private ExtensionInfo? _info;
-        private IEnumerable<(object typeOrInstance, ServiceLifetime lifetime)>? triggers;
+        private IEnumerable<(object typeOrInstance, ServiceLifetime lifetime)>? _triggers;
         private int _maxRecursion = 100;
         private RecursionMode _recursionMode = RecursionMode.EntityAndType;
+        private IServiceProvider? _applicationServiceProvider;
 
         public TriggersOptionExtension()
         {
@@ -87,10 +95,14 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
 
         public TriggersOptionExtension(TriggersOptionExtension copyFrom)
         {
-            if (copyFrom.triggers != null)
+            if (copyFrom._triggers != null)
             {
-                triggers = copyFrom.triggers;
+                _triggers = copyFrom._triggers;
             }
+
+            _maxRecursion = copyFrom._maxRecursion;
+            _recursionMode = copyFrom._recursionMode;
+            _applicationServiceProvider = copyFrom._applicationServiceProvider;
         }
 
         public DbContextOptionsExtensionInfo Info
@@ -98,14 +110,19 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
 
         public int MaxRecursion => _maxRecursion;
         public RecursionMode RecursionMode => _recursionMode;
-        public IEnumerable<(object typeOrInstance, ServiceLifetime lifetime)> Triggers => triggers ?? Enumerable.Empty<(object typeOrInstance, ServiceLifetime lifetime)>();
+        public IEnumerable<(object typeOrInstance, ServiceLifetime lifetime)> Triggers => _triggers ?? Enumerable.Empty<(object typeOrInstance, ServiceLifetime lifetime)>();
 
         public void ApplyServices(IServiceCollection services)
         {
-            services.AddLogging();
-            
+            services.TryAddScoped<ITriggerRegistryService>(serviceProvider => {
+                // todo: Find a better way of getting our hands on the ApplicationServiceProvider
+                var dbContextOptions = serviceProvider.GetRequiredService<IDbContextOptions>();
+                var coreOptionsExtension = dbContextOptions.FindExtension<CoreOptionsExtension>();
+                
+                return new TriggerRegistryService(serviceProvider, coreOptionsExtension.ApplicationServiceProvider);
+            });
             services.TryAddScoped<ITriggerService, TriggerService>();
-            services.TryAddScoped<ITriggerRegistryService, TriggerRegistryService>();
+
             services.Configure<TriggerOptions>(triggerServiceOptions => {
                 triggerServiceOptions.MaxRecursion = _maxRecursion;
             });
@@ -117,11 +134,11 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
                 _ => throw new InvalidOperationException("Unsupported recursion mode")
             };
 
-            services.TryAddSingleton(typeof(IRecursionStrategy), recursionStrategyType);
+            services.TryAddTransient(typeof(IRecursionStrategy), recursionStrategyType);
 
-            if (triggers != null)
+            if (_triggers != null)
             {
-                foreach (var (typeOrInstance, lifetime) in triggers)
+                foreach (var (typeOrInstance, lifetime) in _triggers)
                 {
                     var (triggerType, triggerInstance) = typeOrInstance switch
                     {
@@ -194,17 +211,23 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
             var clone = Clone();
             var triggerEnumerable = Enumerable.Repeat(((object)triggerType, lifetime), 1);
 
-            if (clone.triggers == null)
+            if (clone._triggers == null)
             {
-                clone.triggers = triggerEnumerable;
+                clone._triggers = triggerEnumerable;
             }
             else
             {
-                clone.triggers = clone.triggers.Concat(triggerEnumerable);
+                clone._triggers = clone._triggers.Concat(triggerEnumerable);
             }
             
 
             return clone;
+        }
+
+        public TriggersOptionExtension WithApplicationServiceProvider(IServiceProvider serviceProvider)
+        {
+            _applicationServiceProvider = serviceProvider;
+            return this;
         }
 
         public TriggersOptionExtension WithAdditionalTrigger(object instance)
@@ -222,13 +245,13 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
             var clone = Clone();
             var triggersEnumerable = Enumerable.Repeat((instance, ServiceLifetime.Singleton), 1);
 
-            if (clone.triggers == null)
+            if (clone._triggers == null)
             {
-                clone.triggers = triggersEnumerable;
+                clone._triggers = triggersEnumerable;
             }
             else
             {
-                clone.triggers = clone.triggers.Concat(triggersEnumerable);
+                clone._triggers = clone._triggers.Concat(triggersEnumerable);
             }
 
 

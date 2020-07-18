@@ -5,21 +5,23 @@ using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace EntityFrameworkCore.Triggered.Internal
 {
     public sealed class TriggerRegistryService : ITriggerRegistryService
     {
-        readonly ConcurrentDictionary<Type, TriggerRegistry> _cachedRegistries = new ConcurrentDictionary<Type, TriggerRegistry>();
-
         readonly IServiceProvider _serviceProvider;
+        readonly IServiceProvider? _applicationServiceProvider;
 
-        public TriggerRegistryService(IServiceProvider serviceProvider)
+
+        public TriggerRegistryService(IServiceProvider serviceProvider, IServiceProvider? applicationServiceProvider)
         {
-            _serviceProvider = serviceProvider;
+            _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+            _applicationServiceProvider = applicationServiceProvider;
         }
 
         public TriggerRegistry GetRegistry(Type changeHandlerType, Func<object, TriggerAdapterBase> executionStrategyFactory) 
-            => _cachedRegistries.GetOrAdd(changeHandlerType, _ => new TriggerRegistry(changeHandlerType, _serviceProvider, executionStrategyFactory));
+            => new TriggerRegistry(changeHandlerType, _serviceProvider, _applicationServiceProvider, executionStrategyFactory);
     }
 }

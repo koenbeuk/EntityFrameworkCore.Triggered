@@ -31,7 +31,7 @@ namespace EntityFrameworkCore.Triggered
 
             var triggerContextTracker = new TriggerContextTracker(context.ChangeTracker, _recursionStrategy);
 
-            return new TriggerSession(_options, _triggerRegistryService, triggerContextTracker, _loggerFactory);
+            return new TriggerSession(_options, _triggerRegistryService, triggerContextTracker, _loggerFactory.CreateLogger<TriggerSession>());
         }
     }
 }

@@ -18,12 +18,12 @@ namespace EntityFrameworkCore.Triggered
         readonly TriggerContextTracker _tracker;
         readonly ILogger<TriggerSession> _logger;
 
-        public TriggerSession(TriggerOptions options, ITriggerRegistryService triggerRegistryService, TriggerContextTracker tracker, ILoggerFactory loggerFactory)
+        public TriggerSession(TriggerOptions options, ITriggerRegistryService triggerRegistryService, TriggerContextTracker tracker, ILogger<TriggerSession> logger)
         {
             _options = options ?? throw new ArgumentNullException(nameof(options));
             _triggerRegistryService = triggerRegistryService ?? throw new ArgumentNullException(nameof(TriggerRegistry));
             _tracker = tracker ?? throw new ArgumentNullException(nameof(tracker));
-            _logger = loggerFactory.CreateLogger<TriggerSession>();
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task RaiseBeforeSaveTriggers(CancellationToken cancellationToken)
@@ -50,7 +50,7 @@ namespace EntityFrameworkCore.Triggered
                     {
                         var triggers = _triggerRegistryService
                             .GetRegistry(typeof(IBeforeSaveTrigger<>), changeHandler => new BeforeSaveTriggerAdapter(changeHandler))
-                            .DiscoverChangeHandlers(triggerContextDescriptor.EntityType)
+                            .DiscoverTriggers(triggerContextDescriptor.EntityType)
                             .ToList();
 
                         _logger.LogDebug("Discovered {triggers} triggers for change of type {entityType}", triggers.Count(), triggerContextDescriptor.EntityType);
@@ -81,7 +81,7 @@ namespace EntityFrameworkCore.Triggered
             {
                 var triggers = _triggerRegistryService
                     .GetRegistry(typeof(IAfterSaveTrigger<>), changeHandler => new AfterSaveTriggerAdapter(changeHandler))
-                    .DiscoverChangeHandlers(change.EntityType)
+                    .DiscoverTriggers(change.EntityType)
                     .ToList();
 
                 _logger.LogDebug("Discovered {triggers} triggers for change of type {entityType}", triggers.Count(), change.EntityType);

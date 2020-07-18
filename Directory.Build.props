@@ -8,7 +8,7 @@
     <IncludeSymbols>true</IncludeSymbols>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <VersionPrefix>0.1.0</VersionPrefix>
-    <Description>Respond </Description>
+    <Description>Triggers for EF Core. Respond to changes in your ApplicationDbContext before and after they are committed to the database</Description>
   </PropertyGroup>
 
   <PropertyGroup>

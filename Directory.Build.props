@@ -1,6 +1,14 @@
 <Project>
   <PropertyGroup>
     <DefaultNetCoreTargetFramework>netcoreapp3.1</DefaultNetCoreTargetFramework>
+    <Authors>Koen Bekkenutte</Authors>
+    <PackageTags>EntityFramework;EFCore;Triggers;SQLServer;SqlLite;CosmosDb;.NET Core;aspnetcore</PackageTags>
+    <PackageProjectUrl>https://github.com/koenbeuk/EntityFrameworkCore.Triggered</PackageProjectUrl>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <VersionPrefix>0.1.0</VersionPrefix>
+    <Description>Respond </Description>
   </PropertyGroup>
 
   <PropertyGroup>

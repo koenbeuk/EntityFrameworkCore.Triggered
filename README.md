@@ -1,6 +1,8 @@
 # EntityFrameworkCore.Triggered
 Triggers for EF Core. Respond to changes in your ApplicationDbContext before and after they are committed to the database
 
+![.NET Core](https://github.com/koenbeuk/EntityFrameworkCore.Triggered/workflows/.NET%20Core/badge.svg)
+
 ## Getting started
 1. Install the package from [NuGet](https://www.nuget.org/packages/EntityFrameworkCore.Triggered)
 2. Make your DbContext extend from `TriggeredDbContext` (Or read on to learn alternative ways of getting started)

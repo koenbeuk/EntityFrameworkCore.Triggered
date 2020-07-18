@@ -13,8 +13,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Directory.Build.props = Directory.Build.props
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{D6FE7C32-76E9-4800-B870-DDF3CDC9E747}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityFrameworkCore.Triggered.Abstractions", "src\EntityFrameworkCore.Triggered.Abstractions\EntityFrameworkCore.Triggered.Abstractions.csproj", "{B338AEB6-4D18-4069-AE00-9A1E33C638F4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityFrameworkCore.Triggered", "src\EntityFrameworkCore.Triggered\EntityFrameworkCore.Triggered.csproj", "{F7EE1BD9-BFCB-46DB-BCF6-52661B6C346B}"

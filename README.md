@@ -3,7 +3,7 @@ Triggers for EF Core. Respond to changes in your ApplicationDbContext before and
 
 ## Getting started
 1. Install the package from [NuGet](https://www.nuget.org/packages/EntityFrameworkCore.Triggered)
-2. Make your DbContext extend from `TriggeredDbContex`t (Or read on to learn alternative ways of getting started)
+2. Make your DbContext extend from `TriggeredDbContext` (Or read on to learn alternative ways of getting started)
 3. Implement Triggers by implementing `IBeforeSaveTrigger<TEntity>` and `IAfterSaveTrigger<TEntity>`
 4. View our [samples]](https://github.com/koenbeuk/EntityFrameworkCore.Triggered/tree/master/samples)
 

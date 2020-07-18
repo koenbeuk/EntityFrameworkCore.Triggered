@@ -1,4 +1,4 @@
-# EntityFrameworkCore.Triggered
+# EntityFrameworkCore.Triggered 👿
 Triggers for EF Core. Respond to changes in your ApplicationDbContext before and after they are committed to the database
 
 ![.NET Core](https://github.com/koenbeuk/EntityFrameworkCore.Triggered/workflows/.NET%20Core/badge.svg)

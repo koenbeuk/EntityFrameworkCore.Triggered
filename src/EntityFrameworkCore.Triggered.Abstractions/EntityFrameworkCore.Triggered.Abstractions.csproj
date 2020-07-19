@@ -5,7 +5,4 @@
     <RootNamespace>EntityFrameworkCore.Triggered</RootNamespace>
   </PropertyGroup>
 
-  <ItemGroup>
-  </ItemGroup>
-
 </Project>

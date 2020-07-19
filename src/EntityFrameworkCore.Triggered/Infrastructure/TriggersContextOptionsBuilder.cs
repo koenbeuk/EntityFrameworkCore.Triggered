@@ -38,6 +38,9 @@ namespace EntityFrameworkCore.Triggered.Infrastructure
         public TriggersContextOptionsBuilder MaxRecusion(int maxRecursion = 100)
             => WithOption(e => e.WithMaxRecursion(maxRecursion));
 
+        public TriggersContextOptionsBuilder AddTriggerType(Type triggerType)
+            => WithOption(e => e.WithAdditionalTriggerType(triggerType));
+
         /// <summary>
         ///     Sets an option by cloning the extension used to store the settings. This ensures the builder
         ///     does not modify options that are already in use elsewhere.

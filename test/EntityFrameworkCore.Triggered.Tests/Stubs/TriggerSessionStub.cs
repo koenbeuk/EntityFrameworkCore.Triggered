@@ -9,11 +9,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EntityFrameworkCore.Triggered.Tests.Stubs
 {
-    [ExcludeFromCodeCoverage]
     public class TriggerSessionStub : ITriggerSession
     {
         public int RaiseAfterSaveTriggersCalls;
         public int RaiseBeforeSaveTriggersCalls;
+
+        public void DiscoverChanges()
+        {
+
+        }
 
         public Task RaiseAfterSaveTriggers(CancellationToken cancellationToken = default)
         {

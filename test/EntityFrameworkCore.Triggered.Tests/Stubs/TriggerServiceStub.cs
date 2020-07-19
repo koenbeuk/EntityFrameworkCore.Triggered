@@ -8,7 +8,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EntityFrameworkCore.Triggered.Tests.Stubs
 {
-    [ExcludeFromCodeCoverage]
     public class TriggerServiceStub : ITriggerService
     {
         public int CreateSessionCalls;

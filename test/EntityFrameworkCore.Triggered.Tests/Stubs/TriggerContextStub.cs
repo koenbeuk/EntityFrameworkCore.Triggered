@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace EntityFrameworkCore.Triggered.Tests.Stubs
 {
-    [ExcludeFromCodeCoverage]
     public class TriggerContextStub<TEntity> : ITriggerContext<TEntity>
         where TEntity : class
 

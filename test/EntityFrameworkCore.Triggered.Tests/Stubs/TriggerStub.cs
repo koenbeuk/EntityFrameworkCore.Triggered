@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 
 namespace EntityFrameworkCore.Triggered.Tests.Stubs
 {
-    [ExcludeFromCodeCoverage]
     public class TriggerStub<TEntity> : IBeforeSaveTrigger<TEntity>, IAfterSaveTrigger<TEntity>
         where TEntity: class
     {

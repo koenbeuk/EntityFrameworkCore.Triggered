@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using EntityFrameworkCore.Triggered.Internal;
@@ -54,6 +55,14 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
                         }
                     }
 
+                    if (extension._triggerTypes != null)
+                    {
+                        foreach (var triggerType in extension._triggerTypes)
+                        {
+                            hashCode ^= triggerType.GetHashCode();
+                        }
+                    }
+
                     hashCode ^= extension._maxRecursion.GetHashCode();
                     hashCode ^= extension._recursionMode.GetHashCode();
 
@@ -70,7 +79,8 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
                     throw new ArgumentNullException(nameof(debugInfo));
                 }
 
-                debugInfo["Triggers:HandlersCount"] = (((TriggersOptionExtension)Extension)._triggers?.Count() ?? 0).ToString();
+                debugInfo["Triggers:TriggersCount"] = (((TriggersOptionExtension)Extension)._triggers?.Count() ?? 0).ToString();
+                debugInfo["Triggers:AdditionalTriggerTypesCount"] = (((TriggersOptionExtension)Extension)._triggerTypes?.Count() ?? 0).ToString();
                 debugInfo["Triggers:MaxRecursion"] = ((TriggersOptionExtension)Extension)._maxRecursion.ToString();
                 debugInfo["Triggers:RecursionMode"] = ((TriggersOptionExtension)Extension)._recursionMode.ToString();
             }
@@ -78,6 +88,7 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
 
         private ExtensionInfo? _info;
         private IEnumerable<(object typeOrInstance, ServiceLifetime lifetime)>? _triggers;
+        private IEnumerable<Type>? _triggerTypes;
         private int _maxRecursion = 100;
         private RecursionMode _recursionMode = RecursionMode.EntityAndType;
 
@@ -91,6 +102,11 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
             if (copyFrom._triggers != null)
             {
                 _triggers = copyFrom._triggers;
+            }
+
+            if (copyFrom._triggerTypes != null)
+            {
+                _triggerTypes = copyFrom._triggerTypes;
             }
 
             _maxRecursion = copyFrom._maxRecursion;
@@ -165,6 +181,26 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
                             services.Add(new ServiceDescriptor(afterSaveChangeTrigger, triggerType, lifetime));
                         }
                     }
+
+                    if (_triggerTypes != null)
+                    {
+                        foreach (var customTriggerType in _triggerTypes.Distinct())
+                        {
+                            var customTriggers = TypeHelpers.FindGenericInterfaces(triggerType, customTriggerType);
+
+                            foreach (var customTrigger in customTriggers)
+                            {
+                                if (triggerInstance != null)
+                                {
+                                    services.Add(new ServiceDescriptor(customTrigger, triggerInstance));
+                                }
+                                else
+                                {
+                                    services.Add(new ServiceDescriptor(customTrigger, triggerType, lifetime));
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -173,8 +209,22 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
 
         protected TriggersOptionExtension Clone() => new TriggersOptionExtension(this);
 
-        private static bool TypeIsValidTrigger(Type type) 
-            => TypeHelpers.FindGenericInterfaces(type, typeof(IBeforeSaveTrigger<>)) != null || TypeHelpers.FindGenericInterfaces(type, typeof(IAfterSaveTrigger<>)) != null;
+        private bool TypeIsValidTrigger(Type type)
+        {
+            if (TypeHelpers.FindGenericInterfaces(type, typeof(IBeforeSaveTrigger<>)) != null || TypeHelpers.FindGenericInterfaces(type, typeof(IAfterSaveTrigger<>)) != null)
+            {
+                return true;
+            }
+            else if (_triggerTypes != null)
+            {
+                return _triggerTypes.Any(triggerType => TypeHelpers.FindGenericInterfaces(type, triggerType) != null);
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         public TriggersOptionExtension WithRecursionMode(RecursionMode recursionMode)
         {
             var clone = Clone();
@@ -238,6 +288,30 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
             else
             {
                 clone._triggers = clone._triggers.Concat(triggersEnumerable);
+            }
+
+
+            return clone;
+        }
+
+        public TriggersOptionExtension WithAdditionalTriggerType(Type triggerType)
+        {
+            if (triggerType == null)
+            {
+                throw new ArgumentNullException(nameof(triggerType));
+            }
+
+
+            var clone = Clone();
+            var triggerTypesEnumerable = Enumerable.Repeat(triggerType, 1);
+
+            if (clone._triggerTypes == null)
+            {
+                clone._triggerTypes = triggerTypesEnumerable;
+            }
+            else
+            {
+                clone._triggerTypes = clone._triggerTypes.Concat(triggerTypesEnumerable);
             }
 
 

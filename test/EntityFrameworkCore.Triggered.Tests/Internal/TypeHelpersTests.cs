@@ -11,8 +11,8 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
     public class TypeHelpersTests
     {
         [Theory]
-        [InlineData(typeof(Trigger<>), typeof(IBeforeSaveTrigger<>), true)]
-        [InlineData(typeof(Trigger<object>), typeof(IBeforeSaveTrigger<>), true)]
+        [InlineData(typeof(List<>), typeof(ICollection<>), true)]
+        [InlineData(typeof(List<object>), typeof(ICollection<>), true)]
         [InlineData(typeof(object), typeof(IBeforeSaveTrigger<>), false)]
         public void FindGenericInterface_DetectsImplementation(Type type, Type interfaceType, bool expectedResult)
         {

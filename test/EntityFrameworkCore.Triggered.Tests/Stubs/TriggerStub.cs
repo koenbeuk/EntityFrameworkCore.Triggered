@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace EntityFrameworkCore.Triggered.Tests.Stubs
 {
     [ExcludeFromCodeCoverage]
-    public class TriggerStub<TEntity> : Trigger<TEntity>
+    public class TriggerStub<TEntity> : IBeforeSaveTrigger<TEntity>, IAfterSaveTrigger<TEntity>
         where TEntity: class
     {
         public ICollection<ITriggerContext<TEntity>> BeforeSaveInvocations { get; } = new List<ITriggerContext<TEntity>>();
@@ -20,13 +20,13 @@ namespace EntityFrameworkCore.Triggered.Tests.Stubs
 
         }
 
-        public override Task BeforeSave(ITriggerContext<TEntity> context, CancellationToken cancellationToken)
+        public Task BeforeSave(ITriggerContext<TEntity> context, CancellationToken cancellationToken)
         {
             BeforeSaveInvocations.Add(context);
             return Task.CompletedTask;
         }
 
-        public override Task AfterSave(ITriggerContext<TEntity> context, CancellationToken cancellationToken)
+        public Task AfterSave(ITriggerContext<TEntity> context, CancellationToken cancellationToken)
         {
             AfterSaveInvocations.Add(context);
             return Task.CompletedTask;

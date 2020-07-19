@@ -12,7 +12,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Stubs
         where TEntity : class
 
     {
-        public ChangeType Type { get; set; }
+        public ChangeType ChangeType { get; set; }
         public TEntity Entity { get; set; }
         public TEntity UnmodifiedEntity { get; set; }
     }

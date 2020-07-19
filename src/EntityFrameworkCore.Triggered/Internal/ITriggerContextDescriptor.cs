@@ -6,7 +6,7 @@ namespace EntityFrameworkCore.Triggered.Internal
 {
     public interface ITriggerContextDescriptor
     {
-        ChangeType Type { get; }
+        ChangeType ChangeType { get; }
 
         object Entity { get; }
 

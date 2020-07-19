@@ -70,7 +70,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
             var sample1 = new TestModel();
             var subject = new TriggerContext<object>(dbContext.Entry(sample1), ChangeType.Modified);
 
-            Assert.Equal(ChangeType.Modified, subject.Type);
+            Assert.Equal(ChangeType.Modified, subject.ChangeType);
         }
     }
 }

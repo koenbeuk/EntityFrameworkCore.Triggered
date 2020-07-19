@@ -17,7 +17,7 @@ namespace EntityFrameworkCore.Triggered
 
         TEntity? CreateUnmodified()
         {
-            if (Type == ChangeType.Added)
+            if (ChangeType == ChangeType.Added)
             {
                 return null;
             }
@@ -35,7 +35,7 @@ namespace EntityFrameworkCore.Triggered
             _unmodifiedEntityLazy = new Lazy<TEntity?>(CreateUnmodified, false);
         }
 
-        public ChangeType Type => _type;
+        public ChangeType ChangeType => _type;
         public TEntity Entity => (TEntity)_entityEntry.Entity;
         public TEntity? UnmodifiedEntity => _unmodifiedEntityLazy.Value;
 

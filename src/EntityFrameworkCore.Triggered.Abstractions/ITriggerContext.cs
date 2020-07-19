@@ -9,7 +9,7 @@ namespace EntityFrameworkCore.Triggered
     public interface ITriggerContext<out TEntity>
         where TEntity: class
     {
-        ChangeType Type { get; }
+        ChangeType ChangeType { get; }
 
         TEntity Entity { get; }
 

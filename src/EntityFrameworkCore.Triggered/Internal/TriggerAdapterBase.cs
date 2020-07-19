@@ -11,23 +11,23 @@ namespace EntityFrameworkCore.Triggered.Internal
 {
     public abstract class TriggerAdapterBase
     {
-        public TriggerAdapterBase(object changeHandler)
+        public TriggerAdapterBase(object trigger)
         {
-            if (changeHandler == null)
+            if (trigger == null)
             {
-                throw new ArgumentNullException(nameof(changeHandler));
+                throw new ArgumentNullException(nameof(trigger));
             }
 
-            Debug.Assert(TypeHelpers.FindGenericInterfaces(changeHandler.GetType(), typeof(IBeforeSaveTrigger<>)) != null);
+            Debug.Assert(TypeHelpers.FindGenericInterfaces(trigger.GetType(), typeof(IBeforeSaveTrigger<>)) != null);
 
-            ChangeHandler = changeHandler;
+            Trigger = trigger;
         }
 
-        protected object ChangeHandler { get; }
+        protected object Trigger { get; }
 
-        protected Task Execute(string methodName, object trigger, CancellationToken cancellationToken)
+        protected Task Execute(string methodName, object triggerContext, CancellationToken cancellationToken)
         {
-            var methodInfo = ChangeHandler
+            var methodInfo = Trigger
                 .GetType()
                 .GetMethod(methodName);
 
@@ -36,7 +36,7 @@ namespace EntityFrameworkCore.Triggered.Internal
                 throw new InvalidOperationException("No such method found");
             }
 
-            var result = (Task)methodInfo.Invoke(ChangeHandler, new object[] { trigger, cancellationToken });
+            var result = (Task)methodInfo.Invoke(Trigger, new object[] { triggerContext, cancellationToken });
 
             return result;
         }

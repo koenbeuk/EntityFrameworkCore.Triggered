@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,9 @@ namespace EntityFrameworkCore.Triggered
 {
     public class TriggerSession : ITriggerSession
     {
+        static ITriggerContextDiscoveryStrategy? _beforeSaveTriggerContextDiscoveryStrategy;
+        static ITriggerContextDiscoveryStrategy? _afterSaveTriggerContextDiscoveryStrategy;
+
         readonly TriggerOptions _options;
         readonly ITriggerRegistryService _triggerRegistryService;
         readonly TriggerContextTracker _tracker;
@@ -26,72 +30,46 @@ namespace EntityFrameworkCore.Triggered
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task RaiseBeforeSaveTriggers(CancellationToken cancellationToken)
+        public void DiscoverChanges() 
+            => _tracker.DiscoverChanges().Count();
+
+        public async Task RaiseTriggers(ITriggerContextDiscoveryStrategy discoveryStrategy, CancellationToken cancellationToken)
         {
-            var maxRecursion = _options.MaxRecursion;
-
-            _logger.LogDebug("Starting BeforeSave triggers raising with a max recursion of {maxRecursion}", maxRecursion);
-
-            var iteration = 0;
-            while (true)
+            if (discoveryStrategy == null)
             {
-                if (iteration > maxRecursion)
-                {
-                    throw new InvalidOperationException("MaxRecursion was reached");
-                }
+                throw new ArgumentNullException(nameof(discoveryStrategy));
+            }
 
-                var changes = _tracker.DiscoverChanges().ToList();
+            cancellationToken.ThrowIfCancellationRequested();
 
-                if (changes.Any())
-                {
-                    _logger.LogInformation("BeforeSave: ({iteration}/{maxRecursion}): Detected {changes} changes", iteration, maxRecursion, changes.Count);
+            var discoveryResult = discoveryStrategy.Discover(_options, _triggerRegistryService, _tracker, _logger);
 
-                    foreach (var triggerContextDescriptor in changes)
-                    {
-                        var triggers = _triggerRegistryService
-                            .GetRegistry(typeof(IBeforeSaveTrigger<>), changeHandler => new BeforeSaveTriggerAdapter(changeHandler))
-                            .DiscoverTriggers(triggerContextDescriptor.EntityType)
-                            .ToList();
-
-                        _logger.LogDebug("Discovered {triggers} triggers for change of type {entityType}", triggers.Count(), triggerContextDescriptor.EntityType);
-
-                        foreach (var handler in triggers)
-                        {
-                            cancellationToken.ThrowIfCancellationRequested();
-                            await handler.Execute(triggerContextDescriptor.GetTriggerContext(), cancellationToken).ConfigureAwait(false);
-                        }
-                    }
-                }
-                else
-                {
-                    break;
-                }
-
-                iteration++;
+            foreach (var (triggerAdapter, triggerContextDescriptor) in discoveryResult)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                await triggerAdapter.Execute(triggerContextDescriptor.GetTriggerContext(), cancellationToken).ConfigureAwait(false);
             }
         }
 
-        public async Task RaiseAfterSaveTriggers(CancellationToken cancellationToken = default)
+
+        public Task RaiseBeforeSaveTriggers(CancellationToken cancellationToken)
         {
-            var changes = _tracker.DiscoveredChanges ?? throw new InvalidOperationException("RaisBeforeSaveTriggers requires to be called for RaiseAfterSaveTriggers to work properly");
-
-            _logger.LogInformation("AfterSave: Detected {changes} changes", changes.Count());
-
-            foreach (var change in changes)
+            if (_beforeSaveTriggerContextDiscoveryStrategy == null)
             {
-                var triggers = _triggerRegistryService
-                    .GetRegistry(typeof(IAfterSaveTrigger<>), changeHandler => new AfterSaveTriggerAdapter(changeHandler))
-                    .DiscoverTriggers(change.EntityType)
-                    .ToList();
-
-                _logger.LogDebug("Discovered {triggers} triggers for change of type {entityType}", triggers.Count(), change.EntityType);
-
-                foreach (var trigger in triggers)
-                {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    await trigger.Execute(change.GetTriggerContext(), cancellationToken).ConfigureAwait(false);
-                }
+                _beforeSaveTriggerContextDiscoveryStrategy = new RecursiveTriggerContextDiscoveryStrategy("BeforeSave", typeof(IBeforeSaveTrigger<>), trigger => new BeforeSaveTriggerAdapter(trigger));
             }
+
+            return RaiseTriggers(_beforeSaveTriggerContextDiscoveryStrategy, cancellationToken);  
+        }
+
+        public Task RaiseAfterSaveTriggers(CancellationToken cancellationToken = default)
+        {
+            if (_afterSaveTriggerContextDiscoveryStrategy == null)
+            {
+                _afterSaveTriggerContextDiscoveryStrategy = new NonRecursiveTriggerContextDiscoveryStrategy("AfterSave", typeof(IAfterSaveTrigger<>), trigger => new AfterSaveTriggerAdapter(trigger));
+            }
+
+            return RaiseTriggers(_afterSaveTriggerContextDiscoveryStrategy, cancellationToken);
         }
     }
 }

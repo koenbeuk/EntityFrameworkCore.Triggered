@@ -9,7 +9,6 @@ using EntityFrameworkCore.Triggered.Internal;
 
 namespace EntityFrameworkCore.Triggered.Tests.Stubs
 {
-    [ExcludeFromCodeCoverage]
     public class TriggerAdapterStub : TriggerAdapterBase
     {
         public TriggerAdapterStub(object changeHandler) : base(changeHandler)

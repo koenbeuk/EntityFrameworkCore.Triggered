@@ -57,7 +57,7 @@ namespace EntityFrameworkCore.Triggered.Tests
             using var context = new TestDbContext();
             var subject = CreateSubject(context);
 
-            await subject.RaiseBeforeSaveTriggers();
+            subject.DiscoverChanges();
             await subject.RaiseAfterSaveTriggers();
 
             Assert.Empty(context.TriggerStub.AfterSaveInvocations);
@@ -106,7 +106,7 @@ namespace EntityFrameworkCore.Triggered.Tests
                 Name = "test1"
             });
 
-            await subject.RaiseBeforeSaveTriggers();
+            subject.DiscoverChanges();
             await subject.RaiseAfterSaveTriggers();
 
             Assert.Equal(1, context.TriggerStub.AfterSaveInvocations.Count);
@@ -139,10 +139,11 @@ namespace EntityFrameworkCore.Triggered.Tests
                 Name = "test1"
             });
 
+            subject.DiscoverChanges();
+            
             var cancellationTokenSource = new CancellationTokenSource();
-            await subject.RaiseBeforeSaveTriggers();
-
             cancellationTokenSource.Cancel();
+
             await Assert.ThrowsAsync<OperationCanceledException>(async () => await subject.RaiseAfterSaveTriggers(cancellationTokenSource.Token));
         }
     }

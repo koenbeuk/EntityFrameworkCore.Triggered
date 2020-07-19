@@ -15,11 +15,11 @@ jobs:
         with:
           dotnet-version: 3.1.101
       - name: Install dependencies
-        run: dotnet restore .\EntityFrameworkCore.Triggered.sln
+        run: dotnet restore EntityFrameworkCore.Triggered.sln
       - name: Build
-        run: dotnet build --configuration Release --no-restore .\EntityFrameworkCore.Triggered.sln
+        run: dotnet build --configuration Release --no-restore EntityFrameworkCore.Triggered.sln
       - name: Test
-        run: dotnet test --no-restore --verbosity normal .\EntityFrameworkCore.Triggered.sln
+        run: dotnet test --no-restore --verbosity normal EntityFrameworkCore.Triggered.sln
   build-samples:
     runs-on: ubuntu-latest
 
@@ -30,6 +30,6 @@ jobs:
         with:
           dotnet-version: 3.1.101
       - name: Install dependencies
-        run: dotnet restore .\EntityFrameworkCore.Triggered.Samples.sln
+        run: dotnet restore EntityFrameworkCore.Triggered.Samples.sln
       - name: Build
-        run: dotnet build --configuration Release --no-restore  .\EntityFrameworkCore.Triggered.Samples.sln
+        run: dotnet build --configuration Release --no-restore  EntityFrameworkCore.Triggered.Samples.sln

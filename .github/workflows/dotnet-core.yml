@@ -1,12 +1,27 @@
+# Credits due: by https://dusted.codes/github-actions-for-dotnet-core-nuget-packages#branch-and-pull-request-trigger
+
 name: .NET Core
 
 on:
   - push
   - pull_request
-
+    
+env:
+  # Stop wasting time caching packages
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  # Disable sending usage data to Microsoft
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  # GitHub Packages Feed settings
+  GITHUB_FEED: https://nuget.pkg.github.com/koenbeuk/
+  GITHUB_USER: koenbeuk
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  
 jobs:
   build:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on:  ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v2
@@ -20,9 +35,25 @@ jobs:
         run: dotnet build --configuration Release --no-restore EntityFrameworkCore.Triggered.sln
       - name: Test
         run: dotnet test --no-restore --verbosity normal EntityFrameworkCore.Triggered.sln
+      - name: Pack
+        if: matrix.os == 'ubuntu-latest'
+        run: | 
+          dotnet pack -v normal -c Release --no-restore --include-symbols --include-source -p:PackageVersion=$GITHUB_RUN_ID -o dist/ src/EntityFrameworkCore.Triggered/EntityFrameworkCore.Triggered.csproj |
+          dotnet pack -v normal -c Release --no-restore --include-symbols --include-source -p:PackageVersion=$GITHUB_RUN_ID -o dist/ src/EntityFrameworkCore.Triggered.Abstractions/EntityFrameworkCore.Triggered.Abstractions.csproj |
+          dotnet pack -v normal -c Release --no-restore --include-symbols --include-source -p:PackageVersion=$GITHUB_RUN_ID -o dist/ src/EntityFrameworkCore.Triggered.Transactions/EntityFrameworkCore.Triggered.Transactions.csproj |
+          dotnet pack -v normal -c Release --no-restore --include-symbols --include-source -p:PackageVersion=$GITHUB_RUN_ID -o dist/ src/EntityFrameworkCore.Triggered.Transactions.Abstractions/EntityFrameworkCore.Triggered.Transactions.Abstractions.csproj
+      - name: Upload Artifact
+        if: matrix.os == 'ubuntu-latest'
+        uses: actions/upload-artifact@v2
+        with:
+          name: nupkg
+          path: ./dist/*.nupkg
   build-samples:
-    runs-on: ubuntu-latest
-
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on:  ${{ matrix.os }}
+    
     steps:
       - uses: actions/checkout@v2
       - name: Setup .NET Core
@@ -33,3 +64,18 @@ jobs:
         run: dotnet restore EntityFrameworkCore.Triggered.Samples.sln
       - name: Build
         run: dotnet build --configuration Release --no-restore  EntityFrameworkCore.Triggered.Samples.sln
+  prerelease:
+    needs: build
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Artifact
+        uses: actions/download-artifact@v1
+        with:
+          name: nupkg
+      - name: Push to GitHub Feed
+        run: |
+          for f in ./nupkg/*.nupkg
+          do
+            curl -vX PUT -u "$GITHUB_USER:$GITHUB_TOKEN" -F package=@$f $GITHUB_FEED
+          done

@@ -55,7 +55,8 @@ namespace EntityFrameworkCore.Triggered.Internal
             return DiscoverTriggersFromServiceProvider(entityType, _serviceProvider)
                 .Concat(DiscoverTriggersFromServiceProvider(entityType, _applicationServiceProvider))
                 .Distinct()
-                .Select(trigger => _executionStrategyFactory(trigger));
+                .Select(trigger => _executionStrategyFactory(trigger))
+                .OrderBy(x => x.Priority);
         }
     }
 }

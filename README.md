@@ -147,6 +147,5 @@ optionsBuilder.UseTriggers(triggerOptions => {
 })
 ```
 
-### Roadmap
-1. Support for triggering before and after transactions commit
-2. Extensibility model for your own custom trigger types
+### Trigger priorities
+In addition to recursion and the order in which triggers are registered, a trigger can also implement the `ITriggerPriority` interface. This allows a trigger to configure a custom priority (default: 0). Triggers will then be executed in order of their priority (lower goes first).

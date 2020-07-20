@@ -20,7 +20,7 @@ class BeforeSaveStudentTrigger : IBeforeSaveTrigger<Student>
         }
         else if (contexType == ChangeType.Modified) {
             if (context.Entity.Entity.Name != context.UnmodifiedEntity.Name) {
-                context.Entity.Name = context.Entity.UnmodifiedEntity.Name;
+                context.Entity.PreviousName = context.Entity.UnmodifiedEntity.Name;
             }
         }
 

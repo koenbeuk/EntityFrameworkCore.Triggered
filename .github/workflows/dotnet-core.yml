@@ -51,7 +51,7 @@ jobs:
   build-samples:
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-lates, macos-latest]
+        os: [ubuntu-latest, windowst-lates, macos-latest]
     runs-on:  ${{ matrix.os }}
     
     steps:
@@ -66,7 +66,7 @@ jobs:
         run: dotnet build --configuration Release --no-restore  EntityFrameworkCore.Triggered.Samples.sln
   prerelease:
     needs: build
-    if: github.ref == 'refs/heads/develop'
+    if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
       - name: Download Artifact

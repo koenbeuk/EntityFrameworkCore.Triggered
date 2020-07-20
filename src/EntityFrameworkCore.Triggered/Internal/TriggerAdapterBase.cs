@@ -11,6 +11,9 @@ namespace EntityFrameworkCore.Triggered.Internal
 {
     public abstract class TriggerAdapterBase
     {
+        readonly object _trigger;
+        readonly int _priority;
+
         public TriggerAdapterBase(object trigger)
         {
             if (trigger == null)
@@ -20,10 +23,18 @@ namespace EntityFrameworkCore.Triggered.Internal
 
             Debug.Assert(TypeHelpers.FindGenericInterfaces(trigger.GetType(), typeof(IBeforeSaveTrigger<>)) != null);
 
-            Trigger = trigger;
+
+            _trigger = trigger;
+
+            if (trigger is ITriggerPriority triggerPriority)
+            {
+                _priority = triggerPriority.Priority;
+            }
         }
 
-        protected object Trigger { get; }
+        public object Trigger => _trigger;
+
+        public int Priority => _priority;
 
         protected Task Execute(string methodName, object triggerContext, CancellationToken cancellationToken)
         {

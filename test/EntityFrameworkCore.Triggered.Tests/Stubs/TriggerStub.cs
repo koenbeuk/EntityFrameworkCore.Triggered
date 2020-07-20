@@ -8,11 +8,12 @@ using System.Threading.Tasks;
 
 namespace EntityFrameworkCore.Triggered.Tests.Stubs
 {
-    public class TriggerStub<TEntity> : IBeforeSaveTrigger<TEntity>, IAfterSaveTrigger<TEntity>
+    public class TriggerStub<TEntity> : IBeforeSaveTrigger<TEntity>, IAfterSaveTrigger<TEntity>, ITriggerPriority
         where TEntity: class
     {
         public ICollection<ITriggerContext<TEntity>> BeforeSaveInvocations { get; } = new List<ITriggerContext<TEntity>>();
         public ICollection<ITriggerContext<TEntity>> AfterSaveInvocations { get; } = new List<ITriggerContext<TEntity>>();
+        public int Priority { get; set; }
 
         public TriggerStub()
         {

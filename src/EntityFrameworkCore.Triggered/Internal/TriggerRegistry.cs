@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
@@ -15,6 +16,8 @@ namespace EntityFrameworkCore.Triggered.Internal
 {
     public sealed class TriggerRegistry
     {
+        static ConcurrentDictionary<Type, List<Type>> _cachedTriggerTypes = new ConcurrentDictionary<Type, List<Type>>();
+
         readonly Type _changeHandlerType;
         readonly IServiceProvider _serviceProvider;
         readonly IServiceProvider? _applicationServiceProvider;
@@ -34,19 +37,37 @@ namespace EntityFrameworkCore.Triggered.Internal
             _executionStrategyFactory = executionStrategyFactory;
         }
 
+        private IReadOnlyCollection<Type> GetTriggerTypes(Type entityType)
+        {
+            return _cachedTriggerTypes.GetOrAdd(entityType, entityType => {
+                var result = new List<Type>();
+
+                // Enumerable of the type hierarchy from base to concrete
+                var typeHierarchy = TypeHelpers.EnumerateTypeHierarchy(entityType).Reverse();
+                foreach (var type in typeHierarchy)
+                {
+                    foreach (var interfaceType in type.GetInterfaces())
+                    {
+                        result.Add((_changeHandlerType).MakeGenericType(interfaceType));
+                    }
+
+                    result.Add((_changeHandlerType).MakeGenericType(type));
+                }
+
+                return result;
+            });
+        }
+
         private IEnumerable<object> DiscoverTriggersFromServiceProvider(Type entityType, IServiceProvider? serviceProvider)
         {
-            if (serviceProvider == null)
+            if (serviceProvider != null)
             {
-                return Enumerable.Empty<TriggerAdapterBase>();
+                return GetTriggerTypes(entityType)
+                    .SelectMany(triggerType => serviceProvider.GetServices(triggerType));                    
             }
             else
             {
-                return entityType
-                    .GetInterfaces()
-                    .Concat(TypeHelpers.EnumerateTypeHierarchy(entityType))
-                    .Select(type => (_changeHandlerType).MakeGenericType(type))
-                    .SelectMany(type => serviceProvider.GetServices(type));                    
+                return Enumerable.Empty<object>();
             }
         }
 

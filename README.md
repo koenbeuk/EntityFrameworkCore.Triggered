@@ -139,7 +139,9 @@ public class ApplicationDbContext : TriggeredDbContext {
 }
 ```
 
-### Configuring recursion
+
+
+### Recursion
 `BeforeSaveTrigger<TEntity>` supports basic recursion. This is useful since it allows your triggers to modify for applicationDbContext further and have it call additional triggers. By default this behavior is turned on and protected from infite loops by limiting the number of recursion runs. If you don't like this behavior or want to change it, you can do so by:
 ```csharp
 optionsBuilder.UseTriggers(triggerOptions => {
@@ -147,5 +149,16 @@ optionsBuilder.UseTriggers(triggerOptions => {
 })
 ```
 
-### Trigger priorities
-In addition to recursion and the order in which triggers are registered, a trigger can also implement the `ITriggerPriority` interface. This allows a trigger to configure a custom priority (default: 0). Triggers will then be executed in order of their priority (lower goes first).
+### Inheritence
+Triggers support inheritence and sort execution of these triggers based on least concrete to most concrete. Given the following example:
+```csharp
+interface IAnimal { }
+class Animal : IAnimal { }
+interface ICat : IAnimal { }
+class Cat : Animal, ICat { }
+```
+
+Triggers will be executed in that order: First those for `IAnimal`, then those for `Animal`, then those for `ICat` and finally `Cat` itself. If multiple triggers are registered for the same type then they will execute in order or registration with the DI container.
+
+### Priorities
+In addition to inheritence and the order in which triggers are registered, a trigger can also implement the `ITriggerPriority` interface. This allows a trigger to configure a custom priority (default: 0). Triggers will then be executed in order of their priority (lower goes first). This means that a trigger for Cat can execute before a trigger for Animal, for as long as its priority is set higher

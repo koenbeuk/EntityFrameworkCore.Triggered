@@ -56,7 +56,7 @@ namespace EntityFrameworkCore.Triggered.Internal
 
                     if (changes.Any())
                     {
-                        logger.LogInformation("({iteration}/{maxRecursion}): Detected {changes} changes", iteration, maxRecursion, changes.Count());
+                        logger.LogInformation("({iteration}/{maxRecursion}): Detected changes: {changes}", iteration, maxRecursion, changes.Count());
 
                         foreach (var triggerContextDescriptor in changes)
                         {

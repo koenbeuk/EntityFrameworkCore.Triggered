@@ -19,11 +19,10 @@ namespace EntityFrameworkCore.Triggered.Internal
         static ConcurrentDictionary<Type, List<Type>> _cachedTriggerTypes = new ConcurrentDictionary<Type, List<Type>>();
 
         readonly Type _changeHandlerType;
-        readonly IServiceProvider _serviceProvider;
-        readonly IServiceProvider? _applicationServiceProvider;
+        readonly IServiceProvider _applicationServiceProvider;
         readonly Func<object, TriggerAdapterBase> _executionStrategyFactory;
 
-        public TriggerRegistry(Type changeHandlerType, IServiceProvider serviceProvider, IServiceProvider? applicationServiceProvider, Func<object, TriggerAdapterBase> executionStrategyFactory)
+        public TriggerRegistry(Type changeHandlerType, IServiceProvider applicationServiceProvider, Func<object, TriggerAdapterBase> executionStrategyFactory)
         {
             if (!changeHandlerType.IsGenericTypeDefinition || changeHandlerType.GenericTypeArguments.Length == 1)
             {
@@ -31,8 +30,7 @@ namespace EntityFrameworkCore.Triggered.Internal
                 throw new ArgumentException("A valid change handler type should accept 1 type argument and contain just 1 method", nameof(changeHandlerType));
             }
 
-            _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
-            _applicationServiceProvider = applicationServiceProvider;
+            _applicationServiceProvider = applicationServiceProvider ?? throw new ArgumentNullException(nameof(applicationServiceProvider));
             _changeHandlerType = changeHandlerType;
             _executionStrategyFactory = executionStrategyFactory;
         }
@@ -73,8 +71,7 @@ namespace EntityFrameworkCore.Triggered.Internal
 
         public IEnumerable<TriggerAdapterBase> DiscoverTriggers(Type entityType)
         {
-            return DiscoverTriggersFromServiceProvider(entityType, _serviceProvider)
-                .Concat(DiscoverTriggersFromServiceProvider(entityType, _applicationServiceProvider))
+            return DiscoverTriggersFromServiceProvider(entityType, _applicationServiceProvider)
                 .Distinct()
                 .Select(trigger => _executionStrategyFactory(trigger))
                 .OrderBy(x => x.Priority);

@@ -12,15 +12,13 @@ namespace EntityFrameworkCore.Triggered.Internal
 {
     public sealed class TriggerRegistryService : ITriggerRegistryService
     {
-        readonly IServiceProvider _serviceProvider;
-        readonly IServiceProvider? _applicationServiceProvider;
+        readonly IServiceProvider _triggerServiceProviderAccessor;
 
         private Dictionary<Type, TriggerRegistry>? _resolvedRegistries;
 
-        public TriggerRegistryService(IServiceProvider serviceProvider, IServiceProvider? applicationServiceProvider)
+        public TriggerRegistryService(ITriggerServiceProviderAccessor triggerServiceProviderAccessor)
         {
-            _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
-            _applicationServiceProvider = applicationServiceProvider;
+            _triggerServiceProviderAccessor = triggerServiceProviderAccessor.GetTriggerServiceProvider();
         }
 
         public TriggerRegistry GetRegistry(Type triggerType, Func<object, TriggerAdapterBase> executionStrategyFactory)
@@ -32,7 +30,7 @@ namespace EntityFrameworkCore.Triggered.Internal
 
             if (!_resolvedRegistries.TryGetValue(triggerType, out var registry))
             {
-                registry = new TriggerRegistry(triggerType, _serviceProvider, _applicationServiceProvider, executionStrategyFactory);
+                registry = new TriggerRegistry(triggerType, _triggerServiceProviderAccessor, executionStrategyFactory);
                 _resolvedRegistries[triggerType] = registry;
             }
 

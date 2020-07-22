@@ -16,7 +16,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
             var serviceProvider = new ServiceCollection()
                 .BuildServiceProvider();
 
-            var registryService = new TriggerRegistryService(serviceProvider, null);
+            var registryService = new TriggerRegistryService(new TriggerServiceProviderAccessorStub(serviceProvider));
 
             var registry1 = registryService.GetRegistry(typeof(IBeforeSaveTrigger<>), _ => null);
             var registry2 = registryService.GetRegistry(typeof(IBeforeSaveTrigger<>), _ => null);
@@ -30,7 +30,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
             var serviceProvider = new ServiceCollection()
                 .BuildServiceProvider();
 
-            var registryService = new TriggerRegistryService(serviceProvider, null);
+            var registryService = new TriggerRegistryService(new TriggerServiceProviderAccessorStub(serviceProvider));
 
             var registry1 = registryService.GetRegistry(typeof(IBeforeSaveTrigger<>), _ => null);
             var registry2 = registryService.GetRegistry(typeof(IAfterSaveTrigger<>), _ => null);

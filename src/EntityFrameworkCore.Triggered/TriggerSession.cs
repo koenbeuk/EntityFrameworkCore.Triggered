@@ -47,6 +47,8 @@ namespace EntityFrameworkCore.Triggered
             foreach (var (triggerAdapter, triggerContextDescriptor) in discoveryResult)
             {
                 cancellationToken.ThrowIfCancellationRequested();
+
+                _logger.LogInformation("Invoking trigger: {trigger}", triggerAdapter.Trigger.GetType().FullName);
                 await triggerAdapter.Execute(triggerContextDescriptor.GetTriggerContext(), cancellationToken).ConfigureAwait(false);
             }
         }

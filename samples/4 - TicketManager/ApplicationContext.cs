@@ -26,7 +26,6 @@ namespace TicketManager
 
     public class ApplicationContext
     {
-        public DbSet MyProperty { get; set; }
 
     }
 }

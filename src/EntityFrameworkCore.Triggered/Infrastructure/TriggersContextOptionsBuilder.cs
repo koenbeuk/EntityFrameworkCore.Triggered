@@ -41,6 +41,9 @@ namespace EntityFrameworkCore.Triggered.Infrastructure
         public TriggersContextOptionsBuilder AddTriggerType(Type triggerType)
             => WithOption(e => e.WithAdditionalTriggerType(triggerType));
 
+        public TriggersContextOptionsBuilder UseApplicationScopedServiceProviderAccessor(Func<IServiceProvider, IServiceProvider> serviceProviderTransform)
+            => WithOption(e => e.WithApplicationScopedServiceProviderAccessor(serviceProviderTransform));
+
         /// <summary>
         ///     Sets an option by cloning the extension used to store the settings. This ensures the builder
         ///     does not modify options that are already in use elsewhere.

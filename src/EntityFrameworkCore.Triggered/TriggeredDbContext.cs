@@ -22,7 +22,10 @@ namespace EntityFrameworkCore.Triggered
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseTriggers();
+            if (!optionsBuilder.IsConfigured)
+            {
+                optionsBuilder.UseTriggers();
+            }
 
             base.OnConfiguring(optionsBuilder);
         }
@@ -46,9 +49,9 @@ namespace EntityFrameworkCore.Triggered
 
             var triggerSession = triggerService.CreateSession(this);
 
-            await triggerSession.RaiseBeforeSaveTriggers(default).ConfigureAwait(false);
+            await triggerSession.RaiseBeforeSaveTriggers(cancellationToken).ConfigureAwait(false);
             var result = base.SaveChanges(acceptAllChangesOnSuccess);
-            await triggerSession.RaiseAfterSaveTriggers(default).ConfigureAwait(false);
+            await triggerSession.RaiseAfterSaveTriggers(cancellationToken).ConfigureAwait(false);
 
             return result;
         }

@@ -66,6 +66,11 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
                     hashCode ^= extension._maxRecursion.GetHashCode();
                     hashCode ^= extension._recursionMode.GetHashCode();
 
+                    if (extension._serviceProviderTransform != null)
+                    {
+                        hashCode ^= extension._serviceProviderTransform.GetHashCode();
+                    }
+
                     _serviceProviderHash = hashCode;
                 }
 
@@ -91,6 +96,7 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
         private IEnumerable<Type>? _triggerTypes;
         private int _maxRecursion = 100;
         private RecursionMode _recursionMode = RecursionMode.EntityAndType;
+        private Func<IServiceProvider, IServiceProvider>? _serviceProviderTransform;
 
         public TriggersOptionExtension()
         {
@@ -111,6 +117,7 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
 
             _maxRecursion = copyFrom._maxRecursion;
             _recursionMode = copyFrom._recursionMode;
+            _serviceProviderTransform = copyFrom._serviceProviderTransform;
         }
 
         public DbContextOptionsExtensionInfo Info
@@ -122,13 +129,9 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
 
         public void ApplyServices(IServiceCollection services)
         {
-            services.TryAddScoped<ITriggerRegistryService>(serviceProvider => {
-                // todo: Find a better way of getting our hands on the ApplicationServiceProvider
-                var dbContextOptions = serviceProvider.GetRequiredService<IDbContextOptions>();
-                var coreOptionsExtension = dbContextOptions.FindExtension<CoreOptionsExtension>();
-                
-                return new TriggerRegistryService(serviceProvider, coreOptionsExtension.ApplicationServiceProvider);
-            });
+            services.TryAddScoped<ITriggerServiceProviderAccessor>(serviceProvider => new ApplicationTriggerServiceProviderAccessor(serviceProvider, _serviceProviderTransform));
+            services.TryAddScoped<ITriggerRegistryService, TriggerRegistryService>();
+
             services.TryAddScoped<ITriggerService, TriggerService>();
 
             services.Configure<TriggerOptions>(triggerServiceOptions => {
@@ -314,6 +317,14 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
                 clone._triggerTypes = clone._triggerTypes.Concat(triggerTypesEnumerable);
             }
 
+
+            return clone;
+        }
+
+        public TriggersOptionExtension WithApplicationScopedServiceProviderAccessor(Func<IServiceProvider, IServiceProvider> serviceProviderTransform)
+        {
+            var clone = Clone();
+            clone._serviceProviderTransform = serviceProviderTransform;
 
             return clone;
         }

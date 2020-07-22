@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using EntityFrameworkCore.Triggered.Infrastructure;
 using EntityFrameworkCore.Triggered.Infrastructure.Internal;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace EntityFrameworkCore.Triggered.Tests.Infrastructure
@@ -50,6 +51,5 @@ namespace EntityFrameworkCore.Triggered.Tests.Infrastructure
 
             Assert.Single(extensionAccessor().Triggers);
         }
-
     }
 }

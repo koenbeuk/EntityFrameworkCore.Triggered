@@ -23,11 +23,11 @@ namespace EntityFrameworkCore.Triggered.Internal
 
         public IEnumerable<(TriggerAdapterBase triggerAdapter, ITriggerContextDescriptor triggerContextDescriptor)> Discover(TriggerOptions options, ITriggerRegistryService triggerRegistryService, TriggerContextTracker tracker, ILogger logger)
         {
-            using (logger.BeginScope("Discovering {triggerType} triggers", _name))
+            using (logger.BeginScope(" {triggerType} triggers", _name))
             {
                 var changes = tracker.DiscoveredChanges ?? throw new InvalidOperationException("Trigger discovery process has not yet started. Please ensure that TriggerSession.DiscoverChanges() or TriggerSession.RaiseBeforeSaveTriggers() has been called");
 
-                logger.LogInformation("Detected {changes} changes", changes.Count());
+                logger.LogInformation("Detected changes: {changes}", changes.Count());
 
                 foreach (var triggerContextDescriptor in changes)
                 {

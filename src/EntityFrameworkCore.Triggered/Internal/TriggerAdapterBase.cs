@@ -16,15 +16,7 @@ namespace EntityFrameworkCore.Triggered.Internal
 
         public TriggerAdapterBase(object trigger)
         {
-            if (trigger == null)
-            {
-                throw new ArgumentNullException(nameof(trigger));
-            }
-
-            Debug.Assert(TypeHelpers.FindGenericInterfaces(trigger.GetType(), typeof(IBeforeSaveTrigger<>)) != null);
-
-
-            _trigger = trigger;
+            _trigger = trigger ?? throw new ArgumentNullException(nameof(trigger));
 
             if (trigger is ITriggerPriority triggerPriority)
             {

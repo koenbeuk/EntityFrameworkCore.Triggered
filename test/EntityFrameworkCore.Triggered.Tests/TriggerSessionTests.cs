@@ -37,7 +37,7 @@ namespace EntityFrameworkCore.Triggered.Tests
             }
         }
 
-        protected ITriggerSession CreateSubject(DbContext context)
+        protected static ITriggerSession CreateSubject(DbContext context)
             => context.Database.GetService<ITriggerService>().CreateSession(context);
 
         [Fact]

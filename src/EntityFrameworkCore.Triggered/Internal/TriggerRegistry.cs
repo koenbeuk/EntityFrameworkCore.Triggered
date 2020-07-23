@@ -16,7 +16,7 @@ namespace EntityFrameworkCore.Triggered.Internal
 {
     public sealed class TriggerRegistry
     {
-        static ConcurrentDictionary<Type, List<Type>> _cachedTriggerTypes = new ConcurrentDictionary<Type, List<Type>>();
+        readonly static ConcurrentDictionary<Type, List<Type>> _cachedTriggerTypes = new ConcurrentDictionary<Type, List<Type>>();
 
         readonly Type _changeHandlerType;
         readonly IServiceProvider _applicationServiceProvider;
@@ -56,22 +56,10 @@ namespace EntityFrameworkCore.Triggered.Internal
             });
         }
 
-        private IEnumerable<object> DiscoverTriggersFromServiceProvider(Type entityType, IServiceProvider? serviceProvider)
-        {
-            if (serviceProvider != null)
-            {
-                return GetTriggerTypes(entityType)
-                    .SelectMany(triggerType => serviceProvider.GetServices(triggerType));                    
-            }
-            else
-            {
-                return Enumerable.Empty<object>();
-            }
-        }
-
         public IEnumerable<TriggerAdapterBase> DiscoverTriggers(Type entityType)
         {
-            return DiscoverTriggersFromServiceProvider(entityType, _applicationServiceProvider)
+            return GetTriggerTypes(entityType)
+                .SelectMany(triggerType => _applicationServiceProvider.GetServices(triggerType))
                 .Distinct()
                 .Select(trigger => _executionStrategyFactory(trigger))
                 .OrderBy(x => x.Priority);

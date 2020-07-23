@@ -129,8 +129,14 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
 
         public void ApplyServices(IServiceCollection services)
         {
-            services.TryAddScoped<ITriggerServiceProviderAccessor>(serviceProvider => new ApplicationTriggerServiceProviderAccessor(serviceProvider, _serviceProviderTransform));
-            services.TryAddScoped<ITriggerRegistryService, TriggerRegistryService>();
+            services.AddScoped(serviceProvider => new ApplicationTriggerServiceProviderAccessor(serviceProvider, _serviceProviderTransform));
+            services.AddScoped<IResettableService>(serviceProvider => serviceProvider.GetRequiredService<ApplicationTriggerServiceProviderAccessor>());
+            services.TryAddScoped<ITriggerServiceProviderAccessor>(serviceProvider => serviceProvider.GetRequiredService<ApplicationTriggerServiceProviderAccessor>());
+
+
+            services.AddScoped<TriggerRegistryService>();
+            services.AddScoped<IResettableService>(serviceProvider => serviceProvider.GetRequiredService<TriggerRegistryService>());
+            services.TryAddScoped<ITriggerRegistryService>(ServiceProvider => ServiceProvider.GetRequiredService<TriggerRegistryService>());
 
             services.TryAddScoped<ITriggerService, TriggerService>();
 

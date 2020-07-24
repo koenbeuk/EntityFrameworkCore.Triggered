@@ -10,6 +10,11 @@ namespace EntityFrameworkCore.Triggered.Internal
 {
     public class NonRecursiveTriggerContextDiscoveryStrategy : ITriggerContextDiscoveryStrategy
     {
+        readonly static Action<ILogger, int, string, Exception?> _changesDetected = LoggerMessage.Define<int, string>(
+            LogLevel.Information,
+            new EventId(1, "Discovered"),
+            "Discovered changes: {changes} for {name}");
+
         readonly string _name;
 
         public NonRecursiveTriggerContextDiscoveryStrategy(string name)
@@ -19,14 +24,11 @@ namespace EntityFrameworkCore.Triggered.Internal
 
         public IEnumerable<ITriggerContextDescriptor> Discover(TriggerOptions options, TriggerContextTracker tracker, ILogger logger)
         {
-            using (logger.BeginScope(" {triggerType} triggers", _name))
-            {
-                var changes = tracker.DiscoveredChanges ?? throw new InvalidOperationException("Trigger discovery process has not yet started. Please ensure that TriggerSession.DiscoverChanges() or TriggerSession.RaiseBeforeSaveTriggers() has been called");
+            var changes = tracker.DiscoveredChanges ?? throw new InvalidOperationException("Trigger discovery process has not yet started. Please ensure that TriggerSession.DiscoverChanges() or TriggerSession.RaiseBeforeSaveTriggers() has been called");
 
-                logger.LogInformation("Detected changes: {changes}", changes.Count());
+            _changesDetected(logger, changes.Count(), _name, null);
 
-                return changes;
-            }
+            return changes;
         }
     }
 }

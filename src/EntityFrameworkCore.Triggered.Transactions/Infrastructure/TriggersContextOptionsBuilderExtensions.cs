@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using EntityFrameworkCore.Triggered.Infrastructure;
+using EntityFrameworkCore.Triggered.Transactions;
 
-namespace EntityFrameworkCore.Triggered.Transactions.Infrastructure
+namespace Microsoft.EntityFrameworkCore
 {
     public static class TriggersContextOptionsBuilderExtensions
     {

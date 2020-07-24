@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using EntityFrameworkCore.Triggered.Transactions.Infrastructure;
+using EntityFrameworkCore.Triggered.Infrastructure;
 using EntityFrameworkCore.Triggered.Transactions.Tests.Stubs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;

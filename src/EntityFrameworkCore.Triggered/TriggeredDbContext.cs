@@ -15,7 +15,7 @@ namespace EntityFrameworkCore.Triggered
         {
         }
 
-        public TriggeredDbContext(DbContextOptions options)
+        protected TriggeredDbContext(DbContextOptions options)
             : base(options)
         {
         }

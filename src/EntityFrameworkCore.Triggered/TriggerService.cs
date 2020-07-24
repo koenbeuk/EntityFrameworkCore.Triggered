@@ -9,14 +9,14 @@ namespace EntityFrameworkCore.Triggered
 {
     public class TriggerService : ITriggerService
     {
-        readonly ITriggerRegistryService _triggerRegistryService;
+        readonly ITriggerDiscoveryService _triggerDiscoveryService;
         readonly IRecursionStrategy _recursionStrategy;
         readonly ILoggerFactory _loggerFactory;
         readonly TriggerOptions _options;
 
-        public TriggerService(ITriggerRegistryService triggerRegistryService, IRecursionStrategy recursionStrategy, ILoggerFactory loggerFactory, IOptionsSnapshot<TriggerOptions> triggerOptionsSnapshot)
+        public TriggerService(ITriggerDiscoveryService triggerDiscoveryService, IRecursionStrategy recursionStrategy, ILoggerFactory loggerFactory, IOptionsSnapshot<TriggerOptions> triggerOptionsSnapshot)
         {
-            _triggerRegistryService = triggerRegistryService ?? throw new ArgumentNullException(nameof(triggerRegistryService));
+            _triggerDiscoveryService = triggerDiscoveryService ?? throw new ArgumentNullException(nameof(triggerDiscoveryService));
             _recursionStrategy = recursionStrategy ?? throw new ArgumentNullException(nameof(recursionStrategy));
             _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
             _options = triggerOptionsSnapshot.Value;
@@ -31,7 +31,7 @@ namespace EntityFrameworkCore.Triggered
 
             var triggerContextTracker = new TriggerContextTracker(context.ChangeTracker, _recursionStrategy);
 
-            return new TriggerSession(_options, _triggerRegistryService, triggerContextTracker, _loggerFactory.CreateLogger<TriggerSession>());
+            return new TriggerSession(_options, _triggerDiscoveryService, triggerContextTracker, _loggerFactory.CreateLogger<TriggerSession>());
         }
     }
 }

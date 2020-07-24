@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,14 +7,38 @@ using System.Threading.Tasks;
 using EntityFrameworkCore.Triggered.Internal.RecursionStrategy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace EntityFrameworkCore.Triggered.Internal
 {
     public sealed class TriggerContextTracker 
     {
+        [ThreadStatic]
+        static Dictionary<Type, Func<EntityEntry, ChangeType, object>>? _cachedTriggerContextFactories;
+
+        private ITriggerContextDescriptor CreateTriggerContext(Type entityType, EntityEntry entityEntry, ChangeType changeType)
+        {
+            if (_cachedTriggerContextFactories == null)
+            {
+                _cachedTriggerContextFactories = new Dictionary<Type, Func<EntityEntry, ChangeType, object>>();
+            }
+
+            if (!_cachedTriggerContextFactories.TryGetValue(entityType, out var triggerContextFactory))
+            {
+                triggerContextFactory = (Func<EntityEntry, ChangeType, object>)typeof(TriggerContextFactory<>).MakeGenericType(entityType)
+                    .GetMethod(nameof(TriggerContextFactory<object>.Activate))
+                    .CreateDelegate(typeof(Func<EntityEntry, ChangeType, object>));
+
+                _cachedTriggerContextFactories.Add(entityType, triggerContextFactory);
+            }
+
+            return (ITriggerContextDescriptor)triggerContextFactory(entityEntry, changeType);
+        }
+
+
         readonly ChangeTracker _changeTracker;
         readonly IRecursionStrategy _recursionStrategy;
-        
+
         List<ITriggerContextDescriptor>? _discoveredChanges;
 
         public TriggerContextTracker(ChangeTracker changeTracker, IRecursionStrategy recursionStrategy)
@@ -36,7 +61,7 @@ namespace EntityFrameworkCore.Triggered.Internal
             {
                 _discoveredChanges = new List<ITriggerContextDescriptor>();
             }
-    
+
             _changeTracker.DetectChanges();
             foreach (var entry in _changeTracker.Entries())
             {
@@ -51,8 +76,7 @@ namespace EntityFrameworkCore.Triggered.Internal
                     }
 
                     var entityType = entry.Entity.GetType();
-                    var changeContextType = typeof(TriggerContext<>).MakeGenericType(entityType);
-                    var triggerContext = (ITriggerContextDescriptor)Activator.CreateInstance(changeContextType, new object[] { entry, changeType.Value });
+                    var triggerContext = CreateTriggerContext(entityType, entry, changeType.Value);
 
                     _discoveredChanges.Add(triggerContext);
 
@@ -63,6 +87,4 @@ namespace EntityFrameworkCore.Triggered.Internal
 
         public IEnumerable<ITriggerContextDescriptor>? DiscoveredChanges => _discoveredChanges;
     }
-
-
 }

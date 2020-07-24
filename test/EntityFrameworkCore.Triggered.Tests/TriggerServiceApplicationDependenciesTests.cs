@@ -121,7 +121,39 @@ namespace EntityFrameworkCore.Triggered.Tests
             var triggerStub = scopedServiceProvider.GetRequiredService<IBeforeSaveTrigger<TestModel>>() as TriggerStub<TestModel>;
 
             Assert.Equal(1, triggerStub.BeforeSaveInvocations.Count);
+        }
 
+        [Fact]
+        public void ScopedTriggers_ForPooledDbContext_DoNotShareServiceProvider()
+        {
+            IServiceProvider scopedServiceProvider = null;
+
+            var applicationServiceProvider = new ServiceCollection()
+                .AddDbContextPool<TestDbContext>(options => {
+                    options.UseInMemoryDatabase("Test");
+                    options.UseTriggers(triggerOptions => {
+                        triggerOptions.UseApplicationScopedServiceProviderAccessor(_ => scopedServiceProvider);
+                    });
+                })
+                .AddScoped<IBeforeSaveTrigger<TestModel>, TriggerStub<TestModel>>()
+                .BuildServiceProvider();
+
+            void SimulateRequest()
+            {
+                using var serviceScope = applicationServiceProvider.CreateScope();
+                scopedServiceProvider = serviceScope.ServiceProvider;
+                var dbContext = serviceScope.ServiceProvider.GetRequiredService<TestDbContext>();
+
+                dbContext.Add(new TestModel { });
+                dbContext.SaveChanges();
+
+                var triggerStub = scopedServiceProvider.GetRequiredService<IBeforeSaveTrigger<TestModel>>() as TriggerStub<TestModel>;
+
+                Assert.Equal(1, triggerStub.BeforeSaveInvocations.Count);
+            }
+
+            SimulateRequest();
+            SimulateRequest();
         }
     }
 }

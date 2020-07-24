@@ -27,11 +27,11 @@ namespace EntityFrameworkCore.Triggered
 
             if (_beforeCommitTriggerContextDiscoveryStrategy == null)
             {
-                _beforeCommitTriggerContextDiscoveryStrategy = new NonRecursiveTriggerContextDiscoveryStrategy("BeforeCommit", typeof(IBeforeCommitTrigger<>), trigger => new BeforeCommitTriggerAdapter(trigger));
+                _beforeCommitTriggerContextDiscoveryStrategy = new NonRecursiveTriggerContextDiscoveryStrategy("BeforeCommit");
             }
 
 
-            return ((TriggerSession)triggerSession).RaiseTriggers(_beforeCommitTriggerContextDiscoveryStrategy, cancellationToken);
+            return ((TriggerSession)triggerSession).RaiseTriggers(typeof(IBeforeCommitTrigger<>), _beforeCommitTriggerContextDiscoveryStrategy, entityType => new BeforeCommitTriggerDescriptor(entityType), cancellationToken);
         }
 
         public static Task RaiseAfterCommitTriggers(this ITriggerSession triggerSession, CancellationToken cancellationToken = default)
@@ -43,11 +43,10 @@ namespace EntityFrameworkCore.Triggered
 
             if (_afterCommitTriggerContextDiscoveryStrategy == null)
             {
-                _afterCommitTriggerContextDiscoveryStrategy = new NonRecursiveTriggerContextDiscoveryStrategy("AfterCommit", typeof(IAfterCommitTrigger<>), trigger => new AfterCommitTriggerAdapter(trigger));
+                _afterCommitTriggerContextDiscoveryStrategy = new NonRecursiveTriggerContextDiscoveryStrategy("AfterCommit");
             }
 
-
-            return ((TriggerSession)triggerSession).RaiseTriggers(_afterCommitTriggerContextDiscoveryStrategy, cancellationToken);
+            return ((TriggerSession)triggerSession).RaiseTriggers(typeof(IAfterCommitTrigger<>), _afterCommitTriggerContextDiscoveryStrategy, entityType => new AfterCommitTriggerDescriptor(entityType), cancellationToken);
         }
         public static Task RaiseBeforeRollbackTriggers(this ITriggerSession triggerSession, CancellationToken cancellationToken = default)
         {
@@ -58,11 +57,11 @@ namespace EntityFrameworkCore.Triggered
 
             if (_beforeRollbackTriggerContextDiscoveryStrategy == null)
             {
-                _beforeRollbackTriggerContextDiscoveryStrategy = new NonRecursiveTriggerContextDiscoveryStrategy("BeforeRollback", typeof(IBeforeRollbackTrigger<>), trigger => new BeforeRollbackTriggerAdapter(trigger));
+                _beforeRollbackTriggerContextDiscoveryStrategy = new NonRecursiveTriggerContextDiscoveryStrategy("BeforeRollback");
             }
 
+            return ((TriggerSession)triggerSession).RaiseTriggers(typeof(IBeforeRollbackTrigger<>), _beforeRollbackTriggerContextDiscoveryStrategy, entityType => new BeforeRollbackTriggerDescriptor(entityType), cancellationToken);
 
-            return ((TriggerSession)triggerSession).RaiseTriggers(_beforeRollbackTriggerContextDiscoveryStrategy, cancellationToken);
         }
 
         public static Task RaiseAfterRollbackTriggers(this ITriggerSession triggerSession, CancellationToken cancellationToken = default)
@@ -74,11 +73,11 @@ namespace EntityFrameworkCore.Triggered
 
             if (_afterRollbackTriggerContextDiscoveryStrategy == null)
             {
-                _afterRollbackTriggerContextDiscoveryStrategy = new NonRecursiveTriggerContextDiscoveryStrategy("AfterRollback", typeof(IAfterRollbackTrigger<>), trigger => new AfterRollbackTriggerAdapter(trigger));
+                _afterRollbackTriggerContextDiscoveryStrategy = new NonRecursiveTriggerContextDiscoveryStrategy("AfterRollback");
             }
 
 
-            return ((TriggerSession)triggerSession).RaiseTriggers(_afterRollbackTriggerContextDiscoveryStrategy, cancellationToken);
+            return ((TriggerSession)triggerSession).RaiseTriggers(typeof(IAfterRollbackTrigger<>), _afterRollbackTriggerContextDiscoveryStrategy, entityType => new AfterRollbackTriggerDescriptor(entityType), cancellationToken);
         }
 
     }

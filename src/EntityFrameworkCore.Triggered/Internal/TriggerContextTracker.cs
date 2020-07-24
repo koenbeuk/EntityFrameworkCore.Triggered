@@ -13,7 +13,7 @@ namespace EntityFrameworkCore.Triggered.Internal
     {
         readonly ChangeTracker _changeTracker;
         readonly IRecursionStrategy _recursionStrategy;
-        
+
         List<ITriggerContextDescriptor>? _discoveredChanges;
 
         public TriggerContextTracker(ChangeTracker changeTracker, IRecursionStrategy recursionStrategy)
@@ -36,7 +36,7 @@ namespace EntityFrameworkCore.Triggered.Internal
             {
                 _discoveredChanges = new List<ITriggerContextDescriptor>();
             }
-    
+
             _changeTracker.DetectChanges();
             foreach (var entry in _changeTracker.Entries())
             {

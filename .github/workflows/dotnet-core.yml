@@ -10,7 +10,6 @@ on:
       - published
     
 env:
-  DOTNET_VERSION: '3.1.x'
   # Stop wasting time caching packages
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   # Disable sending usage data to Microsoft
@@ -35,7 +34,7 @@ jobs:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: $DOTNET_VERSION
+          dotnet-version: 3.1.x
       - name: Install dependencies
         run: dotnet restore EntityFrameworkCore.Triggered.sln
       - name: Build
@@ -64,7 +63,7 @@ jobs:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: $DOTNET_VERSION
+          dotnet-version: 3.1.x
       - name: Install dependencies
         run: dotnet restore EntityFrameworkCore.Triggered.Samples.sln
       - name: Build
@@ -95,7 +94,7 @@ jobs:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: $DOTNET_VERSION
+          dotnet-version: 3.1.x
       - name: Create Release NuGet package
         run: |
           arrTag=(${GITHUB_REF//\// })

@@ -10,6 +10,7 @@ on:
       - published
     
 env:
+  DOTNET_VERSION: 3.1
   # Stop wasting time caching packages
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   # Disable sending usage data to Microsoft
@@ -34,7 +35,7 @@ jobs:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 3.1.101
+          dotnet-version: $DOTNET_VERSION
       - name: Install dependencies
         run: dotnet restore EntityFrameworkCore.Triggered.sln
       - name: Build
@@ -44,7 +45,7 @@ jobs:
       - name: Pack
         if: matrix.os == 'ubuntu-latest'
         run: | 
-          dotnet pack -v normal -c Debug --include-symbols --include-source -p:PackageVersion=$VERSION -o nupkg EntityFrameworkCore.Triggered.sln
+          dotnet pack -v normal -c Release --include-symbols --include-source -p:PackageVersion=$GITHUB_RUN_ID -o nupkg EntityFrameworkCore.Triggered.sln
       - name: Upload Artifact
         if: matrix.os == 'ubuntu-latest'
         uses: actions/upload-artifact@v2
@@ -63,7 +64,7 @@ jobs:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 3.1.101
+          dotnet-version: $DOTNET_VERSION
       - name: Install dependencies
         run: dotnet restore EntityFrameworkCore.Triggered.Samples.sln
       - name: Build
@@ -94,7 +95,7 @@ jobs:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 3.1.301
+          dotnet-version: $DOTNET_VERSION
       - name: Create Release NuGet package
         run: |
           arrTag=(${GITHUB_REF//\// })

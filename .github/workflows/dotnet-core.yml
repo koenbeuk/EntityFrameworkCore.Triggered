@@ -10,7 +10,7 @@ on:
       - published
     
 env:
-  DOTNET_VERSION: 3.1
+  DOTNET_VERSION: '3.1.x'
   # Stop wasting time caching packages
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   # Disable sending usage data to Microsoft

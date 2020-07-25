@@ -50,7 +50,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: nupkg
-          path: ./dist/*.nupkg
+          path: ./nupkg/*.nupkg
   
   build-samples:
     strategy:

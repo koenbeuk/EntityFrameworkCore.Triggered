@@ -1,16 +1,16 @@
 <Project>
   <PropertyGroup>
     <DefaultNetCoreTargetFramework>netcoreapp3.1</DefaultNetCoreTargetFramework>
+    <Description>Triggers for EF Core. Respond to changes in your ApplicationDbContext before and after they are committed to the database</Description>
+    <RepositoryType>Git</RepositoryType>
+    <RepositoryUrl>https://github.com/koenbeuk/EntityFrameworkCore.Triggered</RepositoryUrl>
     <Authors>Koen Bekkenutte</Authors>
     <PackageTags>EntityFramework;EFCore;Triggers;SQLServer;SqlLite;CosmosDb;.NET Core;aspnetcore</PackageTags>
     <PackageProjectUrl>https://github.com/koenbeuk/EntityFrameworkCore.Triggered</PackageProjectUrl>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <VersionPrefix>0.1.0</VersionPrefix>
-    <Description>Triggers for EF Core. Respond to changes in your ApplicationDbContext before and after they are committed to the database</Description>
-    <RepositoryType>Git</RepositoryType>
-    <RepositoryUrl>https://github.com/koenbeuk/EntityFrameworkCore.Triggered</RepositoryUrl>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -18,4 +18,13 @@
     <LangVersion>8.0</LangVersion>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+
+  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+  </ItemGroup>
+  
 </Project>

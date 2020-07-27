@@ -34,6 +34,7 @@ namespace StudentManager
                 .AddDbContext<ApplicationContext>(options => {
                     options
                         .UseSqlite("Data source=TestDatabase.db")
+                        .UseTriggers();
                 })
                 .AddScoped<IBeforeSaveTrigger<Course>, Triggers.CourseAutoSignupStudents>()
                 .AddScoped<IBeforeSaveTrigger<Student>, Triggers.StudentAssignRegistrationDate>()

@@ -68,8 +68,8 @@ namespace EntityFrameworkCore.Triggered.Internal
                 var changeType = ResolveChangeType(entry);
                 if (changeType != null)
                 {
-                    var existingChange = _discoveredChanges.Find(x => x.Entity == entry.Entity);
-                    if (existingChange != null && !_recursionStrategy.CanRecurse(entry, changeType.Value, existingChange))
+                    var existingChanges = _discoveredChanges.Where(x => x.Entity == entry.Entity);
+                    if (existingChanges.Any() && existingChanges.Any(existingChange => !_recursionStrategy.CanRecurse(entry, changeType.Value, existingChange)))
                     {
                         // skip this detection when we already detected it
                         continue;

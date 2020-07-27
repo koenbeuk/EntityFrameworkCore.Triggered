@@ -3,8 +3,11 @@
 name: .NET Core
 
 on:
-  - push
-  - pull_request
+  push:
+  pull_request:
+  release:
+    types:
+      - published
     
 env:
   # Stop wasting time caching packages
@@ -15,6 +18,9 @@ env:
   GITHUB_FEED: https://nuget.pkg.github.com/koenbeuk/
   GITHUB_USER: koenbeuk
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  # Official NuGet Feed settings
+  NUGET_FEED: https://api.nuget.org/v3/index.json
+  NUGET_KEY: ${{ secrets.NUGET_KEY }}
   
 jobs:
   build:
@@ -28,7 +34,7 @@ jobs:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 3.1.101
+          dotnet-version: 3.1.x
       - name: Install dependencies
         run: dotnet restore EntityFrameworkCore.Triggered.sln
       - name: Build
@@ -38,16 +44,14 @@ jobs:
       - name: Pack
         if: matrix.os == 'ubuntu-latest'
         run: | 
-          dotnet pack -v normal -c Release --no-restore --include-symbols --include-source -p:PackageVersion=$GITHUB_RUN_ID -o dist/ src/EntityFrameworkCore.Triggered/EntityFrameworkCore.Triggered.csproj |
-          dotnet pack -v normal -c Release --no-restore --include-symbols --include-source -p:PackageVersion=$GITHUB_RUN_ID -o dist/ src/EntityFrameworkCore.Triggered.Abstractions/EntityFrameworkCore.Triggered.Abstractions.csproj |
-          dotnet pack -v normal -c Release --no-restore --include-symbols --include-source -p:PackageVersion=$GITHUB_RUN_ID -o dist/ src/EntityFrameworkCore.Triggered.Transactions/EntityFrameworkCore.Triggered.Transactions.csproj |
-          dotnet pack -v normal -c Release --no-restore --include-symbols --include-source -p:PackageVersion=$GITHUB_RUN_ID -o dist/ src/EntityFrameworkCore.Triggered.Transactions.Abstractions/EntityFrameworkCore.Triggered.Transactions.Abstractions.csproj
+          dotnet pack -v normal -c Release --include-symbols --include-source -p:PackageVersion=$GITHUB_RUN_ID -o nupkg EntityFrameworkCore.Triggered.sln
       - name: Upload Artifact
         if: matrix.os == 'ubuntu-latest'
         uses: actions/upload-artifact@v2
         with:
           name: nupkg
-          path: ./dist/*.nupkg
+          path: ./nupkg/*.nupkg
+  
   build-samples:
     strategy:
       matrix:
@@ -59,11 +63,12 @@ jobs:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 3.1.101
+          dotnet-version: 3.1.x
       - name: Install dependencies
         run: dotnet restore EntityFrameworkCore.Triggered.Samples.sln
       - name: Build
         run: dotnet build --configuration Release --no-restore  EntityFrameworkCore.Triggered.Samples.sln
+  
   prerelease:
     needs: build
     if: github.ref == 'refs/heads/master'
@@ -79,3 +84,30 @@ jobs:
           do
             curl -vX PUT -u "$GITHUB_USER:$GITHUB_TOKEN" -F package=@$f $GITHUB_FEED
           done
+
+  deploy:
+    needs: build
+    if: github.event_name == 'release'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 3.1.x
+      - name: Create Release NuGet package
+        run: |
+          arrTag=(${GITHUB_REF//\// })
+          VERSION="${arrTag[2]}"
+          echo Version: $VERSION
+          VERSION="${VERSION//v}"
+          echo Clean Version: $VERSION
+          dotnet pack -v normal -c Release --include-symbols --include-source -p:PackageVersion=$VERSION -o nupkg EntityFrameworkCore.Triggered.sln
+      - name: Push to GitHub Feed
+        run: |
+          for f in ./nupkg/*.nupkg
+          do
+            curl -vX PUT -u "$GITHUB_USER:$GITHUB_TOKEN" -F package=@$f $GITHUB_FEED
+          done
+      - name: Push to NuGet Feed
+        run: dotnet nuget push ./nupkg/*.nupkg --source $NUGET_FEED --skip-duplicate --api-key $NUGET_KEY

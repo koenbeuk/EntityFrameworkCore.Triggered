@@ -49,10 +49,6 @@ namespace EntityFrameworkCore.Triggered.Internal
                 {
                     changes = tracker.DiscoveredChanges!;
                 }
-                else
-                {
-                    changes = tracker.DiscoverChanges().ToList();
-                }
 
                 if (changes.Any())
                 {

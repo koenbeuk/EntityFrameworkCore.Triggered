@@ -15,7 +15,8 @@ namespace PrimarySchool
                .AddLogging()
                .AddDbContext<ApplicationContext>(options => {
                    options
-                      .UseInMemoryDatabase("ElementarySchool");
+                      .UseInMemoryDatabase("ElementarySchool")
+                      .UseTriggers();
                })
                .AddScoped<IBeforeSaveTrigger<Student>, Triggers.StudentSignupToMandatoryCourses>()
                .BuildServiceProvider();

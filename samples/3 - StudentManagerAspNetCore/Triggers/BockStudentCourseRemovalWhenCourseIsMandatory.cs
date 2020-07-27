@@ -19,7 +19,7 @@ namespace StudentManager.Triggers
 
         public async Task BeforeSave(ITriggerContext<StudentCourse> context, CancellationToken cancellationToken)
         {
-            if (context.Type == ChangeType.Deleted)
+            if (context.ChangeType == ChangeType.Deleted)
             {
                 var course = await _applicationContext.Courses.FindAsync(new object[] { context.Entity.CourseId }, cancellationToken);
                 if (course.IsMandatory)

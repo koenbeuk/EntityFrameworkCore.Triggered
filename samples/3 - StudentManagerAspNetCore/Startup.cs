@@ -33,7 +33,7 @@ namespace StudentManager
             services
                 .AddDbContext<ApplicationContext>(options => {
                     options
-                        .UseSqlite("Data source=TestDatabase.db")
+                        .UseSqlite("Data source=test.db")
                         .UseTriggers();
                 })
                 .AddScoped<IBeforeSaveTrigger<Course>, Triggers.CourseAutoSignupStudents>()

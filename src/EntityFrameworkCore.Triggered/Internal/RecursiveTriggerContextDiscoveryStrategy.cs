@@ -47,7 +47,7 @@ namespace EntityFrameworkCore.Triggered.Internal
                 // In case someone made a call to TriggerSession.DetectChanges, prior to calling RaiseBeforeSaveTriggers, we want to make sure that we include that discovery result in the first iteration
                 if (iteration == 0)
                 {
-                    changes = tracker.DiscoveredChanges!;
+                    changes = tracker.DiscoveredChanges.ToList();
                 }
 
                 if (changes.Any())

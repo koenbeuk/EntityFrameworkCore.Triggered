@@ -11,17 +11,25 @@ namespace PrimarySchool
     {
         static void Main(string[] args)
         {
+            IServiceScope serviceScope = null;
+
             var serviceProvider = new ServiceCollection()
-               .AddLogging()
                .AddDbContext<ApplicationContext>(options => {
                    options
-                      .UseInMemoryDatabase("ElementarySchool")
-                      .UseTriggers();
+                      .UseSqlite("Data source=test.db")
+                      .UseTriggers(triggerOptions => {
+                          triggerOptions.UseApplicationScopedServiceProviderAccessor(_ => serviceScope.ServiceProvider);
+                      });
                })
                .AddScoped<IBeforeSaveTrigger<Student>, Triggers.StudentSignupToMandatoryCourses>()
                .BuildServiceProvider();
 
-            var applicationContext = serviceProvider.GetRequiredService<ApplicationContext>();
+            serviceScope = serviceProvider.CreateScope();
+
+            var applicationContext = serviceScope.ServiceProvider.GetRequiredService<ApplicationContext>();
+
+            applicationContext.Database.EnsureDeleted();
+            applicationContext.Database.EnsureCreated();
 
             applicationContext.Courses.Add(new Course {
                 Id = 1,

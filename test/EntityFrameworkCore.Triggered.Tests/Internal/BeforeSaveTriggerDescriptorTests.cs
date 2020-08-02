@@ -23,7 +23,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
         }
 
         [Fact]
-        public async Task Execute_ForwardsCall()
+        public async Task Invoke_ForwardsCall()
         {
             var entityType = typeof(string);
             var triggerStub = new TriggerStub<string>();

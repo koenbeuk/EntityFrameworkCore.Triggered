@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using EntityFrameworkCore.Triggered.Internal;
 using EntityFrameworkCore.Triggered.Internal.RecursionStrategy;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
@@ -22,6 +23,14 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
 
         class TestDbContext : DbContext
         {
+            public TestDbContext(DbContextOptions options) : base(options)
+            {
+            }
+
+            public TestDbContext()
+            {
+            }
+
             public DbSet<TestModel> TestModels { get; set; }
 
             protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -50,5 +59,6 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
 
             Assert.NotEqual(initialContextDescriptors, contextDescriptors);
         }
+
     }
 }

@@ -148,18 +148,26 @@ namespace EntityFrameworkCore.Triggered.Tests
         }
 
         [Fact]
-        public async Task RaiseBeforeSaveTriggers_SkipDetectedChangesAsFalse_IncludesDetectedChanges()
+        public async Task RaiseBeforeSaveTriggers_RecursiveCall_SkipsDiscoveredChanges()
         {
             using var context = new TestDbContext();
             var subject = CreateSubject(context);
 
+            context.TriggerStub.BeforeSaveHandler = (_1, _2) => {
+                if (context.TriggerStub.BeforeSaveInvocations.Count > 1)
+                {
+                    return Task.CompletedTask; 
+                }
+                return subject.RaiseBeforeSaveTriggers(default);
+            };
+            
             context.TestModels.Add(new TestModel {
                 Id = Guid.NewGuid(),
                 Name = "test1"
             });
 
             subject.DiscoverChanges();
-            await subject.RaiseBeforeSaveTriggers(default, false);
+            await subject.RaiseBeforeSaveTriggers(default);
 
             Assert.NotEmpty(context.TriggerStub.BeforeSaveInvocations);
         }
@@ -176,9 +184,26 @@ namespace EntityFrameworkCore.Triggered.Tests
             });
 
             subject.DiscoverChanges();
-            await subject.RaiseBeforeSaveTriggers(default, true);
+            await subject.RaiseBeforeSaveTriggers();
 
             Assert.Empty(context.TriggerStub.BeforeSaveInvocations);
+        }
+
+        [Fact]
+        public async Task RaiseBeforeSaveTriggers_SkipDetectedChangesAsFalse_IncludesDetectedChanges()
+        {
+            using var context = new TestDbContext();
+            var subject = CreateSubject(context);
+
+            context.TestModels.Add(new TestModel {
+                Id = Guid.NewGuid(),
+                Name = "test1"
+            });
+
+            subject.DiscoverChanges();
+            await subject.RaiseBeforeSaveTriggers();
+
+            Assert.NotEmpty(context.TriggerStub.BeforeSaveInvocations);
         }
     }
 }

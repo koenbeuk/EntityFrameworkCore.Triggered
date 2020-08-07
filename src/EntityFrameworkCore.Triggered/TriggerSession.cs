@@ -23,6 +23,8 @@ namespace EntityFrameworkCore.Triggered
         readonly TriggerContextTracker _tracker;
         readonly ILogger<TriggerSession> _logger;
 
+        bool _raiseBeforeSaveTriggersCalled;
+
         public TriggerSession(TriggerOptions options, ITriggerDiscoveryService triggerDiscoveryService, TriggerContextTracker tracker, ILogger<TriggerSession> logger)
         {
             _options = options ?? throw new ArgumentNullException(nameof(options));
@@ -63,9 +65,13 @@ namespace EntityFrameworkCore.Triggered
             }
         }
 
+        public Task RaiseBeforeSaveTriggers(CancellationToken cancellationToken)
+            => RaiseBeforeSaveTriggers(_raiseBeforeSaveTriggersCalled, cancellationToken);
 
-        public Task RaiseBeforeSaveTriggers(CancellationToken cancellationToken, bool skipDetectedChanges = false)
+        public Task RaiseBeforeSaveTriggers(bool skipDetectedChanges, CancellationToken cancellationToken)
         {
+            _raiseBeforeSaveTriggersCalled = true;
+
             ITriggerContextDiscoveryStrategy? strategy;
 
             if (skipDetectedChanges)
@@ -87,6 +93,7 @@ namespace EntityFrameworkCore.Triggered
                 strategy = _beforeSaveTriggerContextDiscoveryStrategy;
             }
 
+            _raiseBeforeSaveTriggersCalled = true;
             return RaiseTriggers(typeof(IBeforeSaveTrigger<>), strategy, entityType => new BeforeSaveTriggerDescriptor(entityType), cancellationToken);  
         }
 

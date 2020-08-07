@@ -1,7 +1,8 @@
 # EntityFrameworkCore.Triggered 👿
-Triggers for EF Core. Respond to changes in your ApplicationDbContext before and after they are committed to the database
+Triggers for EF Core. Respond to changes in your ApplicationDbContext before and after they are committed to the database.
 
-![.NET Core](https://github.com/koenbeuk/EntityFrameworkCore.Triggered/workflows/.NET%20Core/badge.svg)
+[![NuGet version (EntityFrameworkCore.Triggered)](https://img.shields.io/nuget/v/EntityFrameworkCore.Triggered.svg?style=flat-square)](https://www.nuget.org/packages/EntityFrameworkCore.Triggered/)
+[![Build status](https://github.com/koenbeuk/EntityFrameworkCore.Triggered/workflows/.NET%20Core/badge.svg)](https://github.com/koenbeuk/EntityFrameworkCore.Triggered/actions?query=workflow%3A%22.NET+Core%22)
 
 ## Getting started
 1. Install the package from [NuGet](https://www.nuget.org/packages/EntityFrameworkCore.Triggered)
@@ -40,7 +41,7 @@ public class ApplicationDbContext : TriggeredDbContext {
     {
         optionsBuilder
             .UseTriggers(triggerOptions => {
-                triggerOptions.AddTrigger<BeforeSaveStudentTrigger>();
+                triggerOptions.AddTrigger<BeforeSaveStudentTrigger>();  
             });
 
         base.OnConfiguring(optionsBuilder);

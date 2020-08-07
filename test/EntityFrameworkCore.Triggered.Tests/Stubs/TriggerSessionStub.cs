@@ -25,7 +25,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Stubs
             return Task.CompletedTask;
         }
 
-        public Task RaiseBeforeSaveTriggers(CancellationToken cancellationToken = default)
+        public Task RaiseBeforeSaveTriggers(CancellationToken cancellationToken = default, bool skipDetectedChanges = false)
         {
             RaiseBeforeSaveTriggersCalls += 1;
             return Task.CompletedTask;

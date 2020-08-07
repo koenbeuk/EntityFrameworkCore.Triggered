@@ -146,5 +146,39 @@ namespace EntityFrameworkCore.Triggered.Tests
 
             await Assert.ThrowsAsync<OperationCanceledException>(async () => await subject.RaiseAfterSaveTriggers(cancellationTokenSource.Token));
         }
+
+        [Fact]
+        public async Task RaiseBeforeSaveTriggers_SkipDetectedChangesAsFalse_IncludesDetectedChanges()
+        {
+            using var context = new TestDbContext();
+            var subject = CreateSubject(context);
+
+            context.TestModels.Add(new TestModel {
+                Id = Guid.NewGuid(),
+                Name = "test1"
+            });
+
+            subject.DiscoverChanges();
+            await subject.RaiseBeforeSaveTriggers(default, false);
+
+            Assert.NotEmpty(context.TriggerStub.BeforeSaveInvocations);
+        }
+
+        [Fact]
+        public async Task RaiseBeforeSaveTriggers_SkipDetectedChangesAsTrue_ExcludesDetectedChanges()
+        {
+            using var context = new TestDbContext();
+            var subject = CreateSubject(context);
+
+            context.TestModels.Add(new TestModel {
+                Id = Guid.NewGuid(),
+                Name = "test1"
+            });
+
+            subject.DiscoverChanges();
+            await subject.RaiseBeforeSaveTriggers(default, true);
+
+            Assert.Empty(context.TriggerStub.BeforeSaveInvocations);
+        }
     }
 }

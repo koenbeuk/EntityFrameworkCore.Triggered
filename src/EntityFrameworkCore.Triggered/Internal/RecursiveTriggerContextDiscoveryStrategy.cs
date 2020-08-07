@@ -23,10 +23,12 @@ namespace EntityFrameworkCore.Triggered.Internal
             "Discovered changes: {changes} for {name}. Iteration ({iteration}/{maxRecursion})");
 
         readonly string _name;
+        readonly bool _skipDetectedChanges;
 
-        public RecursiveTriggerContextDiscoveryStrategy(string name)
+        public RecursiveTriggerContextDiscoveryStrategy(string name, bool skipDetectedChanges)
         {
             _name = name ?? throw new ArgumentNullException(nameof(name));
+            _skipDetectedChanges = skipDetectedChanges;
         }
 
         public IEnumerable<ITriggerContextDescriptor> Discover(TriggerOptions options, TriggerContextTracker tracker, ILogger logger)
@@ -45,7 +47,7 @@ namespace EntityFrameworkCore.Triggered.Internal
                 IEnumerable<ITriggerContextDescriptor> changes = tracker.DiscoverChanges().ToList();
                     
                 // In case someone made a call to TriggerSession.DetectChanges, prior to calling RaiseBeforeSaveTriggers, we want to make sure that we include that discovery result in the first iteration
-                if (iteration == 0)
+                if (iteration == 0 && !_skipDetectedChanges)
                 {
                     changes = tracker.DiscoveredChanges!;
                 }

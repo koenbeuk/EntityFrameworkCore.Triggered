@@ -15,6 +15,7 @@ namespace EntityFrameworkCore.Triggered
     public class TriggerSession : ITriggerSession
     {
         static ITriggerContextDiscoveryStrategy? _beforeSaveTriggerContextDiscoveryStrategy;
+        static ITriggerContextDiscoveryStrategy? _beforeSaveTriggerContextDiscoveryStrategyWithSkipDetectedChanges; // To satisfy RaiseBeforeSaveTrigger's overload
         static ITriggerContextDiscoveryStrategy? _afterSaveTriggerContextDiscoveryStrategy;
 
         readonly TriggerOptions _options;
@@ -63,14 +64,30 @@ namespace EntityFrameworkCore.Triggered
         }
 
 
-        public Task RaiseBeforeSaveTriggers(CancellationToken cancellationToken)
+        public Task RaiseBeforeSaveTriggers(CancellationToken cancellationToken, bool skipDetectedChanges = false)
         {
-            if (_beforeSaveTriggerContextDiscoveryStrategy == null)
+            ITriggerContextDiscoveryStrategy? strategy;
+
+            if (skipDetectedChanges)
             {
-                _beforeSaveTriggerContextDiscoveryStrategy = new RecursiveTriggerContextDiscoveryStrategy("BeforeSave");
+                if (_beforeSaveTriggerContextDiscoveryStrategyWithSkipDetectedChanges == null)
+                {
+                    _beforeSaveTriggerContextDiscoveryStrategyWithSkipDetectedChanges = new RecursiveTriggerContextDiscoveryStrategy("BeforeSave", true);
+                }
+
+                strategy = _beforeSaveTriggerContextDiscoveryStrategyWithSkipDetectedChanges;
+            }
+            else
+            {
+                if (_beforeSaveTriggerContextDiscoveryStrategy == null)
+                {
+                    _beforeSaveTriggerContextDiscoveryStrategy = new RecursiveTriggerContextDiscoveryStrategy("BeforeSave", false);
+                }
+
+                strategy = _beforeSaveTriggerContextDiscoveryStrategy;
             }
 
-            return RaiseTriggers(typeof(IBeforeSaveTrigger<>), _beforeSaveTriggerContextDiscoveryStrategy, entityType => new BeforeSaveTriggerDescriptor(entityType), cancellationToken);  
+            return RaiseTriggers(typeof(IBeforeSaveTrigger<>), strategy, entityType => new BeforeSaveTriggerDescriptor(entityType), cancellationToken);  
         }
 
         public Task RaiseAfterSaveTriggers(CancellationToken cancellationToken = default)

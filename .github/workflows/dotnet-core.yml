@@ -110,4 +110,8 @@ jobs:
             curl -vX PUT -u "$GITHUB_USER:$GITHUB_TOKEN" -F package=@$f $GITHUB_FEED
           done
       - name: Push to NuGet Feed
-        run: dotnet nuget push ./nupkg/*.nupkg --source $NUGET_FEED --skip-duplicate --api-key $NUGET_KEY
+        run: |
+          for f in ./nupkg/*.nupkg
+          do
+            dotnet nuget push $f --source $NUGET_FEED --skip-duplicate --api-key $NUGET_KEY
+          done

@@ -19,7 +19,7 @@ namespace StudentManager.Triggers
         }
 
         public async Task BeforeSave(ITriggerContext<Student> context, CancellationToken cancellationToken)
-        {
+        {  
             var mandatoryCourses = await _applicationContext.Courses
                 .Where(x => x.IsMandatory)
                 .ToListAsync(cancellationToken);

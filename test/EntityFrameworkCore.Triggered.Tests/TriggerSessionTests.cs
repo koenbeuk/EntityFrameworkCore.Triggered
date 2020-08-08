@@ -7,6 +7,7 @@ using EntityFrameworkCore.Triggered.Tests.Stubs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Xunit;
 
 namespace EntityFrameworkCore.Triggered.Tests
@@ -29,6 +30,7 @@ namespace EntityFrameworkCore.Triggered.Tests
             {
                 base.OnConfiguring(optionsBuilder);
 
+                optionsBuilder.EnableServiceProviderCaching(false);
                 optionsBuilder.UseInMemoryDatabase("test");
                 optionsBuilder.UseTriggers(triggerOptions =>
                 {
@@ -100,8 +102,7 @@ namespace EntityFrameworkCore.Triggered.Tests
             using var context = new TestDbContext();
             var subject = CreateSubject(context);
 
-            context.TestModels.Add(new TestModel
-            {
+            context.TestModels.Add(new TestModel {
                 Id = Guid.NewGuid(),
                 Name = "test1"
             });
@@ -167,7 +168,7 @@ namespace EntityFrameworkCore.Triggered.Tests
             });
 
             subject.DiscoverChanges();
-            await subject.RaiseBeforeSaveTriggers(default);
+            await subject.RaiseBeforeSaveTriggers();
 
             Assert.NotEmpty(context.TriggerStub.BeforeSaveInvocations);
         }
@@ -184,7 +185,7 @@ namespace EntityFrameworkCore.Triggered.Tests
             });
 
             subject.DiscoverChanges();
-            await subject.RaiseBeforeSaveTriggers();
+            await subject.RaiseBeforeSaveTriggers(true);
 
             Assert.Empty(context.TriggerStub.BeforeSaveInvocations);
         }

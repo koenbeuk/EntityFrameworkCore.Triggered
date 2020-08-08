@@ -39,7 +39,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
         public void DiscoverChanges_MultipleCalls_ReturnsDeltaOfChanges()
         {
             using var dbContext = new TestDbContext();
-            var subject = new RecursiveTriggerContextDiscoveryStrategy("test");
+            var subject = new RecursiveTriggerContextDiscoveryStrategy("test", false);
             var triggerContextTracker = new TriggerContextTracker(dbContext.ChangeTracker, new EntityAndTypeRecursionStrategy());
             triggerContextTracker.DiscoverChanges().Count();
             var initialContextDescriptors = subject.Discover(new TriggerOptions { }, triggerContextTracker, new NullLogger<object>()).ToList();

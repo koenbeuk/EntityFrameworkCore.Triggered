@@ -96,6 +96,7 @@ namespace EntityFrameworkCore.Triggered.Tests
             Assert.Equal(1, triggerStub.BeforeSaveInvocations.Count);
         }
 
+
         [Fact]
         public void ScopedTriggers_WithScopedApplicationServiceProvider_ForPooledDbContext()
         {

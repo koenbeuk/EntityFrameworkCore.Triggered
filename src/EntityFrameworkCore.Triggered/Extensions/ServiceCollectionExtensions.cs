@@ -16,6 +16,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 options.UseTriggers();
             }, contextLifetime, optionsLifetime);
 
+
             return serviceCollection;
         }
 
@@ -26,6 +27,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 optionsAction?.Invoke(options);
                 options.UseTriggers();
             }, poolSize);
+
 
             return serviceCollection;
         }

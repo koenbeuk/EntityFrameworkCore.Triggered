@@ -15,6 +15,9 @@ namespace EntityFrameworkCore.Triggered.Tests.Stubs
         public ICollection<ITriggerContext<TEntity>> AfterSaveInvocations { get; } = new List<ITriggerContext<TEntity>>();
         public int Priority { get; set; }
 
+        public Func<ITriggerContext<TEntity>, CancellationToken, Task> BeforeSaveHandler { get; set; }
+        public Func<ITriggerContext<TEntity>, CancellationToken, Task> AfterSaveHandler { get; set; }
+
         public TriggerStub()
         {
 
@@ -22,12 +25,16 @@ namespace EntityFrameworkCore.Triggered.Tests.Stubs
 
         public Task BeforeSave(ITriggerContext<TEntity> context, CancellationToken cancellationToken)
         {
+            BeforeSaveHandler?.Invoke(context, cancellationToken);
+
             BeforeSaveInvocations.Add(context);
             return Task.CompletedTask;
         }
 
         public Task AfterSave(ITriggerContext<TEntity> context, CancellationToken cancellationToken)
         {
+            AfterSaveHandler?.Invoke(context, cancellationToken);
+
             AfterSaveInvocations.Add(context);
             return Task.CompletedTask;
         }

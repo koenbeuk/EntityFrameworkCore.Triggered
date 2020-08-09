@@ -10,6 +10,8 @@ namespace EntityFrameworkCore.Triggered
 {
     public abstract class TriggeredDbContext : DbContext
     {
+        private ITriggerSession? _triggerSession;
+
         protected TriggeredDbContext()
             : this(new DbContextOptions<DbContext>())
         {
@@ -32,28 +34,53 @@ namespace EntityFrameworkCore.Triggered
 
         public override int SaveChanges(bool acceptAllChangesOnSuccess)
         {
-            var triggerService = this.GetService<ITriggerService>() ?? throw new InvalidOperationException("Triggers are not configured");
+            if (_triggerSession == null)
+            {
+                var triggerService = this.GetService<ITriggerService>() ?? throw new InvalidOperationException("Triggers are not configured");
+                _triggerSession = triggerService.CreateSession(this);
+            }
 
-            var triggerSession = triggerService.CreateSession(this);
+            try
+            {
 
-            triggerSession.RaiseBeforeSaveTriggers(default).GetAwaiter().GetResult();
-            var result = base.SaveChanges(acceptAllChangesOnSuccess);
-            triggerSession.RaiseAfterSaveTriggers(default).GetAwaiter().GetResult();
+                _triggerSession.RaiseBeforeSaveTriggers(default).GetAwaiter().GetResult();
+                var result = base.SaveChanges(acceptAllChangesOnSuccess);
+                _triggerSession.RaiseAfterSaveTriggers(default).GetAwaiter().GetResult();
 
-            return result;
+                return result;
+            }
+            finally
+            {
+                _triggerSession = null;
+            }
         }
 
         public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
         {
-            var triggerService = this.GetService<ITriggerService>() ?? throw new InvalidOperationException("Triggers are not configured");
+            bool createdTriggerSession = false;
 
-            var triggerSession = triggerService.CreateSession(this);
+            if (_triggerSession == null)
+            {
+                var triggerService = this.GetService<ITriggerService>() ?? throw new InvalidOperationException("Triggers are not configured");
+                _triggerSession = triggerService.CreateSession(this);
+                createdTriggerSession = true;
+            }
+            try
+            {
 
-            await triggerSession.RaiseBeforeSaveTriggers(cancellationToken).ConfigureAwait(false);
-            var result = base.SaveChanges(acceptAllChangesOnSuccess);
-            await triggerSession.RaiseAfterSaveTriggers(cancellationToken).ConfigureAwait(false);
+                await _triggerSession.RaiseBeforeSaveTriggers(cancellationToken).ConfigureAwait(false);
+                var result = base.SaveChanges(acceptAllChangesOnSuccess);
+                await _triggerSession.RaiseAfterSaveTriggers(cancellationToken).ConfigureAwait(false);
 
-            return result;
+                return result;
+            }
+            finally
+            {
+                if (createdTriggerSession)
+                {
+                    _triggerSession = null;
+                }
+            }
         }
     }
 }

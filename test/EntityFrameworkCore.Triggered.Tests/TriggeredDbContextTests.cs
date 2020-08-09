@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using EntityFrameworkCore.Triggered.Tests.Stubs;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +21,13 @@ namespace EntityFrameworkCore.Triggered.Tests
 
         class TestDbContext : TriggeredDbContext
         {
+            readonly bool _stubService;
+
+            public TestDbContext(bool stubService)
+            {
+                _stubService = stubService;
+            }
+
             public TriggerStub<TestModel> TriggerStub { get; } = new TriggerStub<TestModel>();
 
             public DbSet<TestModel> TestModels { get; set; }
@@ -32,12 +40,16 @@ namespace EntityFrameworkCore.Triggered.Tests
                 optionsBuilder.UseTriggers(triggerOptions => {
                     triggerOptions.AddTrigger(TriggerStub);
                 });
-                optionsBuilder.ReplaceService<ITriggerService, TriggerServiceStub>();
+
+                if (_stubService)
+                {
+                    optionsBuilder.ReplaceService<ITriggerService, TriggerServiceStub>();
+                }
             }
         }
 
-        TestDbContext CreateSubject()
-            => new TestDbContext();
+        TestDbContext CreateSubject(bool stubService = true)
+            => new TestDbContext(stubService);
 
         [Fact]
         public void SaveChanges_CreatesChangeHandlerSession()
@@ -73,10 +85,34 @@ namespace EntityFrameworkCore.Triggered.Tests
         public async Task SaveChangesAsyncWithAccept_CreatesChangeHandlerSession()
         {
             var subject = CreateSubject();
-            var TriggersessionStub = (TriggerServiceStub)subject.GetService<ITriggerService>();
+            var triggerSessionStub = (TriggerServiceStub)subject.GetService<ITriggerService>();
 
             await subject.SaveChangesAsync(true);
-            Assert.Equal(1, TriggersessionStub.CreateSessionCalls);
+            Assert.Equal(1, triggerSessionStub.CreateSessionCalls);
+        }
+
+        [Fact]
+        public async Task SaveChangesAsync_RecursiveCall_ReturnsActiveTriggerSession()
+        {
+            var subject = CreateSubject(false);
+
+            subject.TriggerStub.BeforeSaveHandler = (_1, _2) => {
+                if (subject.TriggerStub.BeforeSaveInvocations.Count > 1)
+                {
+                    return Task.CompletedTask;
+                }
+
+                return subject.SaveChangesAsync();
+            };
+
+            subject.TestModels.Add(new TestModel {
+                Id = Guid.NewGuid(),
+                Name = "test1"
+            });
+
+            await subject.SaveChangesAsync();
+
+            Assert.Equal(1, subject.TriggerStub.BeforeSaveInvocations.Count);
         }
     }
 }

@@ -46,22 +46,31 @@ namespace EntityFrameworkCore.Triggered
             cancellationToken.ThrowIfCancellationRequested();
 
             var triggerContextDescriptors = triggerContextDiscoveryStrategy.Discover(_options, _tracker, _logger);
-
-            foreach (var triggerContextDescriptor in triggerContextDescriptors)
+            IEnumerable<(ITriggerContextDescriptor triggerContextDescriptor, TriggerDescriptor triggerDescriptor)> triggerInvocations = triggerContextDescriptors
+                .SelectMany(triggerContextDescriptor => 
+                    _triggerDiscoveryService
+                        .DiscoverTriggers(openTriggerType, triggerContextDescriptor.EntityType, triggerTypeDescriptorFactory)
+                        .Select(triggerDescriptor => (triggerContextDescriptor, triggerDescriptor))
+                )
+                .OrderBy(x => x.triggerDescriptor.Priority);
+            
+            if (_logger.IsEnabled(LogLevel.Debug))
             {
-                var triggerDescriptors = _triggerDiscoveryService
-                    .DiscoverTriggers(openTriggerType, triggerContextDescriptor.EntityType, triggerTypeDescriptorFactory)
-                    .ToList();
 
-                _logger.LogDebug("Discovered {triggers} triggers for change of type {entityType}", triggerDescriptors.Count(), triggerContextDescriptor.EntityType);
+                triggerInvocations = triggerInvocations.ToList();
+                _logger.LogDebug("Discovered {triggers} triggers of type {openTriggerType}", triggerInvocations.Count(), openTriggerType);
+            }
 
-                foreach (var triggerDescriptor in triggerDescriptors)
+            foreach (var triggerInvocation in triggerInvocations)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                if (_logger.IsEnabled(LogLevel.Information))
                 {
-                    cancellationToken.ThrowIfCancellationRequested();
-
-                    _logger.LogInformation("Invoking trigger: {trigger} as {triggerType}", triggerDescriptor.Trigger.GetType().Name, triggerDescriptor.TypeDescriptor.TriggerType.Name);
-                    await triggerDescriptor.Invoke(triggerContextDescriptor.GetTriggerContext(), cancellationToken).ConfigureAwait(false);
+                    _logger.LogInformation("Invoking trigger: {trigger} as {triggerType}", triggerInvocation.triggerDescriptor.GetType().Name, triggerInvocation.triggerDescriptor.TypeDescriptor.TriggerType.Name);
                 }
+
+                await triggerInvocation.triggerDescriptor.Invoke(triggerInvocation.triggerContextDescriptor .GetTriggerContext(), cancellationToken).ConfigureAwait(false);
             }
         }
 

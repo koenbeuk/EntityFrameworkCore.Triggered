@@ -14,14 +14,22 @@ namespace EntityFrameworkCore.Triggered.Tests
 {
     public class TriggerSessionTests
     {
-        class TestModel
+        public class TestModel
         {
-            public Guid Id { get; set; }
+            public int Id { get; set; }
             public string Name { get; set; }
         }
 
-        class TestDbContext : DbContext
+        public class TestDbContext : DbContext
         {
+            public TestDbContext(DbContextOptions options) : base(options)
+            {
+            }
+
+            public TestDbContext()
+            {
+            }
+
             public TriggerStub<TestModel> TriggerStub { get; } = new TriggerStub<TestModel>();
 
             public DbSet<TestModel> TestModels { get; set; }
@@ -32,8 +40,7 @@ namespace EntityFrameworkCore.Triggered.Tests
 
                 optionsBuilder.EnableServiceProviderCaching(false);
                 optionsBuilder.UseInMemoryDatabase("test");
-                optionsBuilder.UseTriggers(triggerOptions =>
-                {
+                optionsBuilder.UseTriggers(triggerOptions => {
                     triggerOptions.AddTrigger(TriggerStub);
                 });
             }
@@ -71,9 +78,8 @@ namespace EntityFrameworkCore.Triggered.Tests
             using var context = new TestDbContext();
             var subject = CreateSubject(context);
 
-            context.TestModels.Add(new TestModel
-            {
-                Id = Guid.NewGuid(),
+            context.TestModels.Add(new TestModel {
+                Id = 1,
                 Name = "test1"
             });
 
@@ -89,7 +95,7 @@ namespace EntityFrameworkCore.Triggered.Tests
             var subject = CreateSubject(context);
 
             context.TestModels.Add(new TestModel {
-                Id = Guid.NewGuid(),
+                Id = 1,
                 Name = "test1"
             });
 
@@ -103,7 +109,7 @@ namespace EntityFrameworkCore.Triggered.Tests
             var subject = CreateSubject(context);
 
             context.TestModels.Add(new TestModel {
-                Id = Guid.NewGuid(),
+                Id = 1,
                 Name = "test1"
             });
 
@@ -120,7 +126,7 @@ namespace EntityFrameworkCore.Triggered.Tests
             var subject = CreateSubject(context);
 
             context.TestModels.Add(new TestModel {
-                Id = Guid.NewGuid(),
+                Id = 1,
                 Name = "test1"
             });
 
@@ -136,12 +142,12 @@ namespace EntityFrameworkCore.Triggered.Tests
             var subject = CreateSubject(context);
 
             context.TestModels.Add(new TestModel {
-                Id = Guid.NewGuid(),
+                Id = 1,
                 Name = "test1"
             });
 
             subject.DiscoverChanges();
-            
+
             var cancellationTokenSource = new CancellationTokenSource();
             cancellationTokenSource.Cancel();
 
@@ -157,13 +163,13 @@ namespace EntityFrameworkCore.Triggered.Tests
             context.TriggerStub.BeforeSaveHandler = (_1, _2) => {
                 if (context.TriggerStub.BeforeSaveInvocations.Count > 1)
                 {
-                    return Task.CompletedTask; 
+                    return Task.CompletedTask;
                 }
                 return subject.RaiseBeforeSaveTriggers(default);
             };
-            
+
             context.TestModels.Add(new TestModel {
-                Id = Guid.NewGuid(),
+                Id = 1,
                 Name = "test1"
             });
 
@@ -180,7 +186,7 @@ namespace EntityFrameworkCore.Triggered.Tests
             var subject = CreateSubject(context);
 
             context.TestModels.Add(new TestModel {
-                Id = Guid.NewGuid(),
+                Id = 1,
                 Name = "test1"
             });
 
@@ -197,7 +203,7 @@ namespace EntityFrameworkCore.Triggered.Tests
             var subject = CreateSubject(context);
 
             context.TestModels.Add(new TestModel {
-                Id = Guid.NewGuid(),
+                Id = 1,
                 Name = "test1"
             });
 
@@ -205,6 +211,52 @@ namespace EntityFrameworkCore.Triggered.Tests
             await subject.RaiseBeforeSaveTriggers();
 
             Assert.NotEmpty(context.TriggerStub.BeforeSaveInvocations);
+        }
+
+        [Fact]
+        public void RaiseBeforeSaveTriggers_MultipleEntities_SortByPriorities()
+        {
+            var capturedInvocations = new List<(string, ITriggerContext<TestModel>)>();
+
+            var earlyTrigger = new TriggerStub<TestModel> {
+                Priority = CommonTriggerPriority.Early,
+                BeforeSaveHandler = (context, _) => {
+                    capturedInvocations.Add(("Early", context));
+                    return Task.CompletedTask;
+                }
+            };
+
+            var lateTrigger = new TriggerStub<TestModel> {
+                Priority = CommonTriggerPriority.Late,
+                BeforeSaveHandler = (context, _) => {
+                    capturedInvocations.Add(("Late", context));
+                    return Task.CompletedTask;
+                }
+            };
+
+            var serviceProvider = new ServiceCollection()
+                .AddSingleton<IBeforeSaveTrigger<TestModel>>(lateTrigger)
+                .AddSingleton<IBeforeSaveTrigger<TestModel>>(earlyTrigger)
+                .AddTriggeredDbContext<TestDbContext>(options => {
+                    options.UseInMemoryDatabase("Test");
+                })
+                .BuildServiceProvider();
+
+            var scope = serviceProvider.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<TestDbContext>();
+            var subject = CreateSubject(dbContext);
+
+            dbContext.TestModels.Add(new TestModel { Id = 1 });
+            dbContext.TestModels.Add(new TestModel { Id = 2 });
+
+            subject.RaiseBeforeSaveTriggers();
+
+            Assert.Equal(4, capturedInvocations.Count);
+            Assert.Equal("Early", capturedInvocations[0].Item1);
+            Assert.Equal("Early", capturedInvocations[1].Item1);
+            Assert.Equal("Late", capturedInvocations[2].Item1);
+            Assert.Equal("Late", capturedInvocations[3].Item1);
+
         }
     }
 }

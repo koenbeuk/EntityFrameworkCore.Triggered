@@ -31,7 +31,7 @@ namespace EntityFrameworkCore.Triggered.Internal
             _skipDetectedChanges = skipDetectedChanges;
         }
 
-        public IEnumerable<ITriggerContextDescriptor> Discover(TriggerOptions options, TriggerContextTracker tracker, ILogger logger)
+        public IEnumerable<IEnumerable<ITriggerContextDescriptor>> Discover(TriggerOptions options, TriggerContextTracker tracker, ILogger logger)
         {
             var maxRecursion = options.MaxRecursion;
             _discoveryStarted(logger, _name, maxRecursion, null);
@@ -56,10 +56,7 @@ namespace EntityFrameworkCore.Triggered.Internal
                 {
                     _changesDetected(logger, changes.Count(), _name, iteration, maxRecursion, null);
                      
-                    foreach (var change in changes)
-                    {
-                        yield return change;
-                    }
+                    yield return changes;
                 }
                 else
                 {

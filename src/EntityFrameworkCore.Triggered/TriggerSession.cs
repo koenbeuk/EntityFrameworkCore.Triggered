@@ -45,32 +45,34 @@ namespace EntityFrameworkCore.Triggered
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            var triggerContextDescriptors = triggerContextDiscoveryStrategy.Discover(_options, _tracker, _logger);
-            IEnumerable<(ITriggerContextDescriptor triggerContextDescriptor, TriggerDescriptor triggerDescriptor)> triggerInvocations = triggerContextDescriptors
-                .SelectMany(triggerContextDescriptor => 
-                    _triggerDiscoveryService
-                        .DiscoverTriggers(openTriggerType, triggerContextDescriptor.EntityType, triggerTypeDescriptorFactory)
-                        .Select(triggerDescriptor => (triggerContextDescriptor, triggerDescriptor))
-                )
-                .OrderBy(x => x.triggerDescriptor.Priority);
-            
-            if (_logger.IsEnabled(LogLevel.Debug))
+            var triggerContextDescriptorBatches = triggerContextDiscoveryStrategy.Discover(_options, _tracker, _logger);
+            foreach (var triggerContextDescriptorBatch in triggerContextDescriptorBatches)
             {
+                IEnumerable<(ITriggerContextDescriptor triggerContextDescriptor, TriggerDescriptor triggerDescriptor)> triggerInvocations = triggerContextDescriptorBatch
+                    .SelectMany(triggerContextDescriptor =>
+                        _triggerDiscoveryService
+                            .DiscoverTriggers(openTriggerType, triggerContextDescriptor.EntityType, triggerTypeDescriptorFactory)
+                            .Select(triggerDescriptor => (triggerContextDescriptor, triggerDescriptor))
+                    )
+                    .OrderBy(x => x.triggerDescriptor.Priority);
 
-                triggerInvocations = triggerInvocations.ToList();
-                _logger.LogDebug("Discovered {triggers} triggers of type {openTriggerType}", triggerInvocations.Count(), openTriggerType);
-            }
-
-            foreach (var triggerInvocation in triggerInvocations)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-
-                if (_logger.IsEnabled(LogLevel.Information))
+                if (_logger.IsEnabled(LogLevel.Debug))
                 {
-                    _logger.LogInformation("Invoking trigger: {trigger} as {triggerType}", triggerInvocation.triggerDescriptor.GetType().Name, triggerInvocation.triggerDescriptor.TypeDescriptor.TriggerType.Name);
+                    triggerInvocations = triggerInvocations.ToList();
+                    _logger.LogDebug("Discovered {triggers} triggers of type {openTriggerType}", triggerInvocations.Count(), openTriggerType);
                 }
 
-                await triggerInvocation.triggerDescriptor.Invoke(triggerInvocation.triggerContextDescriptor .GetTriggerContext(), cancellationToken).ConfigureAwait(false);
+                foreach (var triggerInvocation in triggerInvocations)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    if (_logger.IsEnabled(LogLevel.Information))
+                    {
+                        _logger.LogInformation("Invoking trigger: {trigger} as {triggerType}", triggerInvocation.triggerDescriptor.GetType().Name, triggerInvocation.triggerDescriptor.TypeDescriptor.TriggerType.Name);
+                    }
+
+                    await triggerInvocation.triggerDescriptor.Invoke(triggerInvocation.triggerContextDescriptor.GetTriggerContext(), cancellationToken).ConfigureAwait(false);
+                }
             }
         }
 

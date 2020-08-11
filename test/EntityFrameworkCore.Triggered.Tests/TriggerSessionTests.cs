@@ -256,7 +256,41 @@ namespace EntityFrameworkCore.Triggered.Tests
             Assert.Equal("Early", capturedInvocations[1].Item1);
             Assert.Equal("Late", capturedInvocations[2].Item1);
             Assert.Equal("Late", capturedInvocations[3].Item1);
+        }
 
+
+        [Fact]
+        public void RaiseBeforeSaveTriggers_RecursiveAdd_RaisesSubsequentTriggers()
+        {
+            TestDbContext dbContext = null;
+
+            var trigger = new TriggerStub<TestModel> {
+                Priority = CommonTriggerPriority.Early,
+                BeforeSaveHandler = (context, _) => {
+                    if (context.Entity.Id == 1)
+                    {
+                        dbContext.TestModels.Add(new TestModel { Id = 2 });
+                    }
+                    return Task.CompletedTask;
+                }
+            };
+
+            var serviceProvider = new ServiceCollection()
+                .AddSingleton<IBeforeSaveTrigger<TestModel>>(trigger)
+                .AddTriggeredDbContext<TestDbContext>(options => {
+                    options.UseInMemoryDatabase("Test");
+                })
+                .BuildServiceProvider();
+
+            var scope = serviceProvider.CreateScope();
+            dbContext = scope.ServiceProvider.GetRequiredService<TestDbContext>();
+            var subject = CreateSubject(dbContext);
+
+            dbContext.TestModels.Add(new TestModel { Id = 1 });
+
+            subject.RaiseBeforeSaveTriggers();
+
+            Assert.Equal(2, trigger.BeforeSaveInvocations.Count);
         }
     }
 }

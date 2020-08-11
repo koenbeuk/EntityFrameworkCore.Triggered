@@ -10,6 +10,6 @@ namespace EntityFrameworkCore.Triggered.Internal
 {
     public interface ITriggerContextDiscoveryStrategy
     {
-        IEnumerable<ITriggerContextDescriptor> Discover(TriggerOptions options, TriggerContextTracker tracker, ILogger logger);
+        IEnumerable<IEnumerable<ITriggerContextDescriptor>> Discover(TriggerOptions options, TriggerContextTracker tracker, ILogger logger);
     }
 }

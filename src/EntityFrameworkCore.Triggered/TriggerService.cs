@@ -22,7 +22,7 @@ namespace EntityFrameworkCore.Triggered
             _options = triggerOptionsSnapshot.Value;
         }
 
-        public ITriggerSession CreateSession(DbContext context)
+        public ITriggerSession CreateSession(DbContext context, IServiceProvider? serviceProvider)
         {
             if (context is null)
             {
@@ -30,6 +30,11 @@ namespace EntityFrameworkCore.Triggered
             }
 
             var triggerContextTracker = new TriggerContextTracker(context.ChangeTracker, _recursionStrategy);
+
+            if (serviceProvider != null)
+            {
+                _triggerDiscoveryService.SetServiceProvider(serviceProvider);
+            }
 
             return new TriggerSession(_options, _triggerDiscoveryService, triggerContextTracker, _loggerFactory.CreateLogger<TriggerSession>());
         }

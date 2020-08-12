@@ -10,6 +10,6 @@ namespace EntityFrameworkCore.Triggered
 {
     public interface ITriggerService
     {
-        ITriggerSession CreateSession(DbContext context);
+        ITriggerSession CreateSession(DbContext context, IServiceProvider? serviceProvider = null);
     }
 }

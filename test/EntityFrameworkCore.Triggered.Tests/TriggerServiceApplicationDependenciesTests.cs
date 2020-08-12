@@ -143,7 +143,7 @@ namespace EntityFrameworkCore.Triggered.Tests
             {
                 using var serviceScope = applicationServiceProvider.CreateScope();
                 scopedServiceProvider = serviceScope.ServiceProvider;
-                var dbContext = serviceScope.ServiceProvider.GetRequiredService<TestDbContext>();
+                using var dbContext = serviceScope.ServiceProvider.GetRequiredService<TestDbContext>();
 
                 dbContext.Add(new TestModel { });
                 dbContext.SaveChanges();

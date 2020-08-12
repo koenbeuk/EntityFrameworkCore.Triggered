@@ -11,7 +11,6 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
 {
     public class TriggerDiscoveryServiceTests
     {
-
         class TriggerServiceProviderAccessor : ITriggerServiceProviderAccessor
         {
             readonly IServiceProvider _serviceProvider;
@@ -139,12 +138,10 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
             var earlyTrigger = new TriggerStub<object> { Priority = CommonTriggerPriority.Early };
             var lateTrigger = new TriggerStub<object> { Priority = CommonTriggerPriority.Late };
 
-
             var serviceProvider = new ServiceCollection()
                 .AddSingleton<IBeforeSaveTrigger<object>>(lateTrigger)
                 .AddSingleton<IBeforeSaveTrigger<object>>(earlyTrigger)
                 .BuildServiceProvider();
-
 
             var subject = new TriggerDiscoveryService(new TriggerServiceProviderAccessor(serviceProvider), new TriggerTypeRegistryService());
 
@@ -153,6 +150,27 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
             Assert.Equal(2, result.Count());
             Assert.Equal(earlyTrigger, result.First().Trigger);
             Assert.Equal(lateTrigger, result.Last().Trigger);
+        }
+
+        [Fact]
+        public void SetServiceProvider_OverridesDefaultServiceProvider()
+        {
+            var defaultServiceProviderTrigger = new TriggerStub<object>();
+            var externalServiceProviderTrigger = new TriggerStub<object>();
+
+            var defaultServiceProvider = new ServiceCollection()
+                .BuildServiceProvider();
+
+            var externalServiceProvider = new ServiceCollection()
+                .AddSingleton<IBeforeSaveTrigger<object>>(externalServiceProviderTrigger)
+                .BuildServiceProvider();
+
+            var subject = new TriggerDiscoveryService(new TriggerServiceProviderAccessor(defaultServiceProvider), new TriggerTypeRegistryService());
+            subject.SetServiceProvider(externalServiceProvider);
+
+            var result = subject.DiscoverTriggers(typeof(IBeforeSaveTrigger<>), typeof(string), type => new BeforeSaveTriggerDescriptor(type));
+
+            Assert.Single(result);
         }
     }
 }

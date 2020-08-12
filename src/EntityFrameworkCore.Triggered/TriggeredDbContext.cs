@@ -42,7 +42,6 @@ namespace EntityFrameworkCore.Triggered
 
             try
             {
-
                 _triggerSession.RaiseBeforeSaveTriggers(default).GetAwaiter().GetResult();
                 var result = base.SaveChanges(acceptAllChangesOnSuccess);
                 _triggerSession.RaiseAfterSaveTriggers(default).GetAwaiter().GetResult();

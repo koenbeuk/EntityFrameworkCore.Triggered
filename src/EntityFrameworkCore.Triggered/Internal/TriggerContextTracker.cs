@@ -37,9 +37,12 @@ namespace EntityFrameworkCore.Triggered.Internal
         {
             int startIndex;
 
+            _changeTracker.DetectChanges();
+            var entries = _changeTracker.Entries();
+
             if (_discoveredChanges == null)
             {
-                _discoveredChanges = new List<TriggerContextDescriptor>();
+                _discoveredChanges = new List<TriggerContextDescriptor>(entries.Count());
                 startIndex = 0;
             }
             else
@@ -47,8 +50,6 @@ namespace EntityFrameworkCore.Triggered.Internal
                 startIndex = _discoveredChanges.Count;
             }
 
-            _changeTracker.DetectChanges();
-            var entries = _changeTracker.Entries();
             foreach (var entry in entries)
             {
                 var changeType = ResolveChangeType(entry);

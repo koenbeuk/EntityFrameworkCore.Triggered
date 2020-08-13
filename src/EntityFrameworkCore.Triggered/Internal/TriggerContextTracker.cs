@@ -8,33 +8,21 @@ using EntityFrameworkCore.Triggered.Internal.RecursionStrategy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.Extensions.ObjectPool;
 
 namespace EntityFrameworkCore.Triggered.Internal
 {
-    public sealed class TriggerContextTracker 
+    public sealed class TriggerContextTracker : IDisposable
     {
-        [ThreadStatic]
-        static Dictionary<Type, Func<EntityEntry, ChangeType, object>>? _cachedTriggerContextFactories;
+        static readonly ObjectPool<TriggerContextDescriptor> _triggerContextDescriptorPool = new DefaultObjectPool<TriggerContextDescriptor>(new TriggerContextDescriptorPooledPolicy());
 
-        private ITriggerContextDescriptor CreateTriggerContext(Type entityType, EntityEntry entityEntry, ChangeType changeType)
+        private ITriggerContextDescriptor CreateTriggerContextDescriptor(EntityEntry entityEntry, ChangeType changeType)
         {
-            if (_cachedTriggerContextFactories == null)
-            {
-                _cachedTriggerContextFactories = new Dictionary<Type, Func<EntityEntry, ChangeType, object>>();
-            }
+            var descriptor = _triggerContextDescriptorPool.Get();
+            descriptor.Initialize(entityEntry, changeType);
 
-            if (!_cachedTriggerContextFactories.TryGetValue(entityType, out var triggerContextFactory))
-            {
-                triggerContextFactory = (Func<EntityEntry, ChangeType, object>)typeof(TriggerContextFactory<>).MakeGenericType(entityType)
-                    .GetMethod(nameof(TriggerContextFactory<object>.Activate))
-                    .CreateDelegate(typeof(Func<EntityEntry, ChangeType, object>));
-
-                _cachedTriggerContextFactories.Add(entityType, triggerContextFactory);
-            }
-
-            return (ITriggerContextDescriptor)triggerContextFactory(entityEntry, changeType);
+            return descriptor;
         }
-
 
         readonly ChangeTracker _changeTracker;
         readonly IRecursionStrategy _recursionStrategy;
@@ -75,16 +63,30 @@ namespace EntityFrameworkCore.Triggered.Internal
                         continue;
                     }
 
-                    var entityType = entry.Entity.GetType();
-                    var triggerContext = CreateTriggerContext(entityType, entry, changeType.Value);
+                    var triggerContextDescriptor = CreateTriggerContextDescriptor(entry, changeType.Value);
 
-                    _discoveredChanges.Add(triggerContext);
+                    _discoveredChanges.Add(triggerContextDescriptor);
 
-                    yield return triggerContext;
+                    yield return triggerContextDescriptor;
                 }
             }
         }
 
         public IEnumerable<ITriggerContextDescriptor>? DiscoveredChanges => _discoveredChanges;
+
+        public void Dispose()
+        {
+            var discoveredChanges = _discoveredChanges;
+
+            if (discoveredChanges != null)
+            {
+                foreach (var triggerContextDescriptor in discoveredChanges)
+                {
+                    _triggerContextDescriptorPool.Return((TriggerContextDescriptor)triggerContextDescriptor);
+                }
+                   
+                _discoveredChanges = null;
+            }
+        }
     }
 }

@@ -10,16 +10,28 @@ namespace EntityFrameworkCore.Triggered
 {
     public abstract class TriggeredDbContext : DbContext
     {
-        private ITriggerSession? _triggerSession;
+        readonly IServiceProvider? _triggerServiceProvider;
+        ITriggerSession? _triggerSession;
 
         protected TriggeredDbContext()
-            : this(new DbContextOptions<DbContext>())
+            : this(new DbContextOptions<DbContext>(), null)
         {
         }
 
         protected TriggeredDbContext(DbContextOptions options)
+            : this(options, null)
+        {
+        }
+
+        protected TriggeredDbContext(IServiceProvider? serviceProvider)
+            : this(new DbContextOptions<DbContext>(), serviceProvider)
+        {
+        }
+
+        protected TriggeredDbContext(DbContextOptions options, IServiceProvider? serviceProvider)
             : base(options)
         {
+            _triggerServiceProvider = serviceProvider;
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -37,7 +49,7 @@ namespace EntityFrameworkCore.Triggered
             if (_triggerSession == null)
             {
                 var triggerService = this.GetService<ITriggerService>() ?? throw new InvalidOperationException("Triggers are not configured");
-                _triggerSession = triggerService.CreateSession(this);
+                _triggerSession = triggerService.CreateSession(this, _triggerServiceProvider);
             }
 
             try

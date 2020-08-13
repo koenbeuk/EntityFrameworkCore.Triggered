@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using EntityFrameworkCore.Triggered.Tests.Stubs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace EntityFrameworkCore.Triggered.Tests
@@ -26,6 +27,11 @@ namespace EntityFrameworkCore.Triggered.Tests
             public TestDbContext(bool stubService)
             {
                 _stubService = stubService;
+            }
+
+            public TestDbContext(IServiceProvider serviceProvider) : base(serviceProvider)
+            {
+                _stubService = true;
             }
 
             public TriggerStub<TestModel> TriggerStub { get; } = new TriggerStub<TestModel>();
@@ -113,6 +119,24 @@ namespace EntityFrameworkCore.Triggered.Tests
             await subject.SaveChangesAsync();
 
             Assert.Equal(1, subject.TriggerStub.BeforeSaveInvocations.Count);
+        }
+
+        [Fact]
+        public void SaveChanges_CapturedServiceProvider_Forwards()
+        {
+            var serviceProvider = new ServiceCollection().BuildServiceProvider();
+
+            var subject = new TestDbContext(serviceProvider);
+            var triggerServiceStub = (TriggerServiceStub)subject.GetService<ITriggerService>();
+
+            subject.TestModels.Add(new TestModel {
+                Id = Guid.NewGuid(),
+                Name = "test1"
+            });
+
+            subject.SaveChanges();
+
+            Assert.Equal(serviceProvider, triggerServiceStub.ServiceProvider);
         }
     }
 }

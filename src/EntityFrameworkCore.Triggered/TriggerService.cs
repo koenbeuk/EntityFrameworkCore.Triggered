@@ -29,7 +29,7 @@ namespace EntityFrameworkCore.Triggered
                 throw new ArgumentNullException(nameof(context));
             }
 
-            using var triggerContextTracker = new TriggerContextTracker(context.ChangeTracker, _recursionStrategy);
+            var triggerContextTracker = new TriggerContextTracker(context.ChangeTracker, _recursionStrategy);
 
             if (serviceProvider != null)
             {

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace EntityFrameworkCore.Triggered
 {
-    public interface ITriggerSession : IDisposable
+    public interface ITriggerSession
     {
         /// <summary>
         /// Captures any pending changes in the DbContext

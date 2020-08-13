@@ -39,7 +39,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal.RecursionStrategies
             var subject = CreateSubject();
             var entity = new TestModel { Property1 = 1 };
             dbContext.Add(entity);
-            var previousTriggerContextDescriptor = new TriggerContext<TestModel>(dbContext.Entry(entity), ChangeType.Added);
+            var previousTriggerContextDescriptor = new TriggerContextDescriptor(dbContext.Entry(entity), ChangeType.Added);
 
             var result = subject.CanRecurse(dbContext.Entry(entity), ChangeType.Added, previousTriggerContextDescriptor);
 
@@ -53,7 +53,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal.RecursionStrategies
             var subject = CreateSubject();
             var entity = new TestModel { Property1 = 1 };
             dbContext.Add(entity);
-            var previousTriggerContextDescriptor = new TriggerContext<TestModel>(dbContext.Entry(entity), ChangeType.Added);
+            var previousTriggerContextDescriptor = new TriggerContextDescriptor(dbContext.Entry(entity), ChangeType.Added);
 
             entity.Property1 = 2;
             var result = subject.CanRecurse(dbContext.Entry(entity), ChangeType.Added, previousTriggerContextDescriptor);
@@ -68,7 +68,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal.RecursionStrategies
             var subject = CreateSubject();
             var entity = new TestModel { Property1 = 1 };
             dbContext.Add(entity);
-            var previousTriggerContextDescriptor = new TriggerContext<TestModel>(dbContext.Entry(entity), ChangeType.Added);
+            var previousTriggerContextDescriptor = new TriggerContextDescriptor(dbContext.Entry(entity), ChangeType.Added);
 
             var result = subject.CanRecurse(dbContext.Entry(entity), ChangeType.Modified, previousTriggerContextDescriptor);
 
@@ -82,7 +82,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal.RecursionStrategies
             var subject = CreateSubject();
             var entity = new TestModel { Property1 = 1 };
             dbContext.Add(entity);
-            var previousTriggerContextDescriptor = new TriggerContext<TestModel>(dbContext.Entry(entity), ChangeType.Added);
+            var previousTriggerContextDescriptor = new TriggerContextDescriptor(dbContext.Entry(entity), ChangeType.Added);
 
             entity.Property1 = 2;
             var result = subject.CanRecurse(dbContext.Entry(entity), ChangeType.Modified, previousTriggerContextDescriptor);

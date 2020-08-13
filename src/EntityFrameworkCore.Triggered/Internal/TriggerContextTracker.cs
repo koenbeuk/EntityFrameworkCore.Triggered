@@ -12,24 +12,12 @@ using Microsoft.Extensions.ObjectPool;
 
 namespace EntityFrameworkCore.Triggered.Internal
 {
-    public sealed class TriggerContextTracker : IDisposable
+    public sealed class TriggerContextTracker
     {
-        //const int DefaultPooledTriggerContextDescriptorPoolSize = 1000;
-
-        //static readonly ObjectPool<TriggerContextDescriptor> _triggerContextDescriptorPool = new DefaultObjectPool<TriggerContextDescriptor>(new TriggerContextDescriptorPooledPolicy(), DefaultPooledTriggerContextDescriptorPoolSize);
-
-        private ITriggerContextDescriptor CreateTriggerContextDescriptor(EntityEntry entityEntry, ChangeType changeType)
-        {
-            var descriptor = _triggerContextDescriptorPool.Get();
-            descriptor.Initialize(entityEntry, changeType);
-
-            return descriptor;
-        }
-
         readonly ChangeTracker _changeTracker;
         readonly IRecursionStrategy _recursionStrategy;
 
-        List<ITriggerContextDescriptor>? _discoveredChanges;
+        List<TriggerContextDescriptor>? _discoveredChanges;
 
         public TriggerContextTracker(ChangeTracker changeTracker, IRecursionStrategy recursionStrategy)
         {
@@ -45,13 +33,13 @@ namespace EntityFrameworkCore.Triggered.Internal
             _ => null,
         };
 
-        public IEnumerable<ITriggerContextDescriptor> DiscoverChanges()
+        public IEnumerable<TriggerContextDescriptor> DiscoverChanges()
         {
             int startIndex;
 
             if (_discoveredChanges == null)
             {
-                _discoveredChanges = new List<ITriggerContextDescriptor>();
+                _discoveredChanges = new List<TriggerContextDescriptor>();
                 startIndex = 0;
             }
             else
@@ -89,7 +77,7 @@ namespace EntityFrameworkCore.Triggered.Internal
                         }
                     }
 
-                    var triggerContextDescriptor = CreateTriggerContextDescriptor(entry, changeType.Value);
+                    var triggerContextDescriptor = new TriggerContextDescriptor(entry, changeType.Value);
 
                     _discoveredChanges.Add(triggerContextDescriptor!);
                 }
@@ -105,21 +93,6 @@ namespace EntityFrameworkCore.Triggered.Internal
             }
         }
 
-        public IEnumerable<ITriggerContextDescriptor>? DiscoveredChanges => _discoveredChanges;
-
-        public void Dispose()
-        {
-            var discoveredChanges = _discoveredChanges;
-
-            if (discoveredChanges != null)
-            {
-                foreach (var triggerContextDescriptor in discoveredChanges)
-                {
-                    _triggerContextDescriptorPool.Return((TriggerContextDescriptor)triggerContextDescriptor);
-                }
-
-                _discoveredChanges = null;
-            }
-        }
+        public IEnumerable<TriggerContextDescriptor>? DiscoveredChanges => _discoveredChanges;
     }
 }

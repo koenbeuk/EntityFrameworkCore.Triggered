@@ -48,7 +48,7 @@ namespace EntityFrameworkCore.Triggered
             var triggerContextDescriptorBatches = triggerContextDiscoveryStrategy.Discover(_options, _tracker, _logger);
             foreach (var triggerContextDescriptorBatch in triggerContextDescriptorBatches)
             {
-                IEnumerable<(ITriggerContextDescriptor triggerContextDescriptor, TriggerDescriptor triggerDescriptor)> triggerInvocations = triggerContextDescriptorBatch
+                IEnumerable<(TriggerContextDescriptor triggerContextDescriptor, TriggerDescriptor triggerDescriptor)> triggerInvocations = triggerContextDescriptorBatch
                     .SelectMany(triggerContextDescriptor =>
                         _triggerDiscoveryService
                             .DiscoverTriggers(openTriggerType, triggerContextDescriptor.EntityType, triggerTypeDescriptorFactory)
@@ -116,11 +116,6 @@ namespace EntityFrameworkCore.Triggered
             }
 
             return RaiseTriggers(typeof(IAfterSaveTrigger<>), _afterSaveTriggerContextDiscoveryStrategy, entityType => new AfterSaveTriggerDescriptor(entityType), cancellationToken);
-        }
-
-        public void Dispose()
-        {
-            _tracker.Dispose();
         }
     }
 }

@@ -31,7 +31,7 @@ namespace EntityFrameworkCore.Triggered.Internal
             _skipDetectedChanges = skipDetectedChanges;
         }
 
-        public IEnumerable<IEnumerable<ITriggerContextDescriptor>> Discover(TriggerOptions options, TriggerContextTracker tracker, ILogger logger)
+        public IEnumerable<IEnumerable<TriggerContextDescriptor>> Discover(TriggerOptions options, TriggerContextTracker tracker, ILogger logger)
         {
             var maxRecursion = options.MaxRecursion;
             _discoveryStarted(logger, _name, maxRecursion, null);

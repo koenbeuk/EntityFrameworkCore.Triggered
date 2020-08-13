@@ -72,10 +72,6 @@ namespace PerfTest
                 }
 
                 Console.WriteLine("Courses: " + studentCoursesCount.ToString());
-
-#pragma warning disable EF1001 // Internal EF Core API usage.
-                Console.WriteLine($"Created: {TriggerContextTracker.Created}, Returned: {TriggerContextTracker.Returned}");
-#pragma warning restore EF1001 // Internal EF Core API usage.
             }
         }
     }

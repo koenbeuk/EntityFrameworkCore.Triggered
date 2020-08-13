@@ -26,7 +26,7 @@ namespace EntityFrameworkCore.Triggered.Benchmarks
                 .AddDbContext<TriggeredApplicationContext>(options => {
                     options
                         .UseInMemoryDatabase(nameof(WithTriggeredDbContext))
-                        .UseTriggers();;
+                        .UseTriggers();
                 })
                 .AddDbContext<ApplicationContextWithTriggers>(options => {
                     options

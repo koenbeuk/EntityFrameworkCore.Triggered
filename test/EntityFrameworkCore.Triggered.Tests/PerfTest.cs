@@ -35,7 +35,7 @@ namespace EntityFrameworkCore.Triggered.Tests
 
                 optionsBuilder.UseInMemoryDatabase("test");
                 optionsBuilder.UseTriggers(triggerOptions => {
-                    triggerOptions.AddTrigger(TriggerStub);
+                    //triggerOptions.AddTrigger(TriggerStub);
                 });
 
                 if (_stubService)
@@ -48,9 +48,9 @@ namespace EntityFrameworkCore.Triggered.Tests
         [Fact]
         public void Test()
         {
-            const int innerLoop = 1000;
+            const int innerLoop = 100;
 
-            var subject = new TestDbContext(false);
+            using var subject = new TestDbContext(false);
 
             for (var i = 0; i < innerLoop; i++)
             {

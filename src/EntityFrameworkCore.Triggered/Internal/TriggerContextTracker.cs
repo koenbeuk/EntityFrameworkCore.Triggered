@@ -14,7 +14,9 @@ namespace EntityFrameworkCore.Triggered.Internal
 {
     public sealed class TriggerContextTracker : IDisposable
     {
-        static readonly ObjectPool<TriggerContextDescriptor> _triggerContextDescriptorPool = new DefaultObjectPool<TriggerContextDescriptor>(new TriggerContextDescriptorPooledPolicy());
+        //const int DefaultPooledTriggerContextDescriptorPoolSize = 1000;
+
+        //static readonly ObjectPool<TriggerContextDescriptor> _triggerContextDescriptorPool = new DefaultObjectPool<TriggerContextDescriptor>(new TriggerContextDescriptorPooledPolicy(), DefaultPooledTriggerContextDescriptorPoolSize);
 
         private ITriggerContextDescriptor CreateTriggerContextDescriptor(EntityEntry entityEntry, ChangeType changeType)
         {
@@ -45,30 +47,61 @@ namespace EntityFrameworkCore.Triggered.Internal
 
         public IEnumerable<ITriggerContextDescriptor> DiscoverChanges()
         {
+            int startIndex;
+
             if (_discoveredChanges == null)
             {
                 _discoveredChanges = new List<ITriggerContextDescriptor>();
+                startIndex = 0;
+            }
+            else
+            {
+                startIndex = _discoveredChanges.Count;
             }
 
             _changeTracker.DetectChanges();
-            foreach (var entry in _changeTracker.Entries())
+            var entries = _changeTracker.Entries();
+            foreach (var entry in entries)
             {
                 var changeType = ResolveChangeType(entry);
                 if (changeType != null)
                 {
-                    var existingChanges = _discoveredChanges.Where(x => x.Entity == entry.Entity);
-                    if (existingChanges.Any() && existingChanges.Any(existingChange => !_recursionStrategy.CanRecurse(entry, changeType.Value, existingChange)))
+                    if (startIndex > 0)
                     {
-                        // skip this detection when we already detected it
-                        continue;
+                        var canRecurse = true;
+
+                        foreach (var discoveredChange in _discoveredChanges)
+                        {
+                            if (discoveredChange.Entity == entry.Entity)
+                            {
+                                canRecurse = _recursionStrategy.CanRecurse(entry, changeType.Value, discoveredChange);
+
+                                if (!canRecurse)
+                                {
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (!canRecurse)
+                        {
+                            continue;
+                        }
                     }
 
                     var triggerContextDescriptor = CreateTriggerContextDescriptor(entry, changeType.Value);
 
-                    _discoveredChanges.Add(triggerContextDescriptor);
-
-                    yield return triggerContextDescriptor;
+                    _discoveredChanges.Add(triggerContextDescriptor!);
                 }
+            }
+
+            if (startIndex == 0)
+            {
+                return _discoveredChanges;
+            }
+            else
+            {
+                return _discoveredChanges.Skip(startIndex);
             }
         }
 
@@ -84,7 +117,7 @@ namespace EntityFrameworkCore.Triggered.Internal
                 {
                     _triggerContextDescriptorPool.Return((TriggerContextDescriptor)triggerContextDescriptor);
                 }
-                   
+
                 _discoveredChanges = null;
             }
         }

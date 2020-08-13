@@ -69,7 +69,7 @@ namespace EntityFrameworkCore.Triggered.Benchmarks
         public DbSet<StudentCourse> StudentCourses { get; set; }
     }
 
-    public class ApplicationContextWithTriggers : DbContext, IApplicationContextContract
+    public class ApplicationContextWithTriggers : DbContextWithTriggers, IApplicationContextContract
     {
         public ApplicationContextWithTriggers(DbContextOptions<ApplicationContextWithTriggers> options) : base(options)
         {

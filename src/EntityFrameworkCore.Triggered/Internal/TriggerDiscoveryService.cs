@@ -37,14 +37,22 @@ namespace EntityFrameworkCore.Triggered.Internal
 
             var registry = _triggerTypeRegistryService.ResolveRegistry(openTriggerType, entityType, triggerTypeDescriptorFactory);
 
-            return registry.GetTriggerTypeDescriptors()
-                .SelectMany(triggerTypeDescriptor =>
-                    serviceProvider
-                        .GetServices(triggerTypeDescriptor.TriggerType)
-                        .Distinct()
-                        .Select(trigger => new TriggerDescriptor(triggerTypeDescriptor, trigger))
-                        .OrderBy(x => x.Priority)
-                );
+            var triggerTypeDescriptors = registry.GetTriggerTypeDescriptors();
+            if (triggerTypeDescriptors.Count == 0)
+            {
+                return Enumerable.Empty<TriggerDescriptor>();
+            }
+            else
+            {
+                return registry.GetTriggerTypeDescriptors()
+                    .SelectMany(triggerTypeDescriptor =>
+                        serviceProvider
+                            .GetServices(triggerTypeDescriptor.TriggerType)
+                            .Distinct()
+                            .Select(trigger => new TriggerDescriptor(triggerTypeDescriptor, trigger))
+                            .OrderBy(x => x.Priority)
+                    );
+            }
         }
 
         public void SetServiceProvider(IServiceProvider serviceProvider)

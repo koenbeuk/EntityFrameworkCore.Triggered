@@ -12,6 +12,7 @@ namespace EntityFrameworkCore.Triggered.Internal
         [ThreadStatic]
         static Dictionary<Type, Func<EntityEntry, ChangeType, object>>? _cachedTriggerContextFactories;
 
+        private object? _triggerContext;
         private EntityEntry? _entityEntry;
         private ChangeType _changeType;
 
@@ -25,6 +26,7 @@ namespace EntityFrameworkCore.Triggered.Internal
         {
             _entityEntry = null;
             _changeType = default;
+            _triggerContext = null;
         }
 
         public ChangeType ChangeType => _changeType;
@@ -33,31 +35,37 @@ namespace EntityFrameworkCore.Triggered.Internal
 
         public object GetTriggerContext()
         {
-            var entityEntry = _entityEntry;
-            var changeType = _changeType;
-
-            if (entityEntry == null)
+            if (_triggerContext == null)
             {
-                throw new InvalidOperationException("No initialized");
+                var entityEntry = _entityEntry;
+                var changeType = _changeType;
+
+                if (entityEntry == null)
+                {
+                    throw new InvalidOperationException("No initialized");
+                }
+
+                var entityType = entityEntry.Entity.GetType();
+
+                if (_cachedTriggerContextFactories == null)
+                {
+                    _cachedTriggerContextFactories = new Dictionary<Type, Func<EntityEntry, ChangeType, object>>();
+                }
+
+                if (!_cachedTriggerContextFactories.TryGetValue(entityType, out var triggerContextFactory))
+                {
+                    triggerContextFactory = (Func<EntityEntry, ChangeType, object>)typeof(TriggerContextFactory<>).MakeGenericType(entityType)
+                        .GetMethod(nameof(TriggerContextFactory<object>.Activate))
+                        .CreateDelegate(typeof(Func<EntityEntry, ChangeType, object>));
+
+                    _cachedTriggerContextFactories.Add(entityType, triggerContextFactory);
+                }
+
+                _triggerContext = triggerContextFactory(entityEntry, changeType);
+
             }
 
-            var entityType = entityEntry.Entity.GetType();
-
-            if (_cachedTriggerContextFactories == null)
-            {
-                _cachedTriggerContextFactories = new Dictionary<Type, Func<EntityEntry, ChangeType, object>>();
-            }
-
-            if (!_cachedTriggerContextFactories.TryGetValue(entityType, out var triggerContextFactory))
-            {
-                triggerContextFactory = (Func<EntityEntry, ChangeType, object>)typeof(TriggerContextFactory<>).MakeGenericType(entityType)
-                    .GetMethod(nameof(TriggerContextFactory<object>.Activate))
-                    .CreateDelegate(typeof(Func<EntityEntry, ChangeType, object>));
-
-                _cachedTriggerContextFactories.Add(entityType, triggerContextFactory);
-            }
-
-            return triggerContextFactory(entityEntry, changeType);
+            return _triggerContext;
         }
     }
 }

@@ -44,17 +44,21 @@ namespace EntityFrameworkCore.Triggered.Internal
                     throw new InvalidOperationException("MaxRecursion was reached");
                 }
 
-                IEnumerable<ITriggerContextDescriptor> changes = tracker.DiscoverChanges().ToList();
+                var changes = tracker.DiscoverChanges();
                     
                 // In case someone made a call to TriggerSession.DetectChanges, prior to calling RaiseBeforeSaveTriggers, we want to make sure that we include that discovery result in the first iteration
                 if (iteration == 0 && !_skipDetectedChanges)
                 {
-                    changes = tracker.DiscoveredChanges.ToList();
+                    changes = tracker.DiscoveredChanges!;
                 }
 
                 if (changes.Any())
                 {
-                    _changesDetected(logger, changes.Count(), _name, iteration, maxRecursion, null);
+                    if (logger.IsEnabled(LogLevel.Information))
+                    {
+                        changes = changes.ToList();
+                        _changesDetected(logger, changes.Count(), _name, iteration, maxRecursion, null);
+                    }
                      
                     yield return changes;
                 }

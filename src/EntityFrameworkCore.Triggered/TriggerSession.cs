@@ -117,5 +117,10 @@ namespace EntityFrameworkCore.Triggered
 
             return RaiseTriggers(typeof(IAfterSaveTrigger<>), _afterSaveTriggerContextDiscoveryStrategy, entityType => new AfterSaveTriggerDescriptor(entityType), cancellationToken);
         }
+
+        public void Dispose()
+        {
+            _tracker.Dispose();
+        }
     }
 }

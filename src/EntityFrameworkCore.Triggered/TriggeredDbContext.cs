@@ -62,7 +62,7 @@ namespace EntityFrameworkCore.Triggered
             }
             finally
             {
-                _triggerSession = null;
+                ClearTriggerSession();
             }
         }
 
@@ -92,6 +92,27 @@ namespace EntityFrameworkCore.Triggered
                     _triggerSession = null;
                 }
             }
+        }
+
+        private void ClearTriggerSession()
+        {
+            if (_triggerSession != null)
+            {
+                _triggerSession.Dispose();
+                _triggerSession = null;
+            }
+        }
+
+        public override void Dispose()
+        {
+            ClearTriggerSession();
+            base.Dispose();
+        }
+
+        public override ValueTask DisposeAsync()
+        {
+            ClearTriggerSession();
+            return base.DisposeAsync();
         }
     }
 }

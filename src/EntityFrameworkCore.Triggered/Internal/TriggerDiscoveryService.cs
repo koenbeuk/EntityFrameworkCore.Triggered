@@ -40,7 +40,7 @@ namespace EntityFrameworkCore.Triggered.Internal
             var registry = _triggerTypeRegistryService.ResolveRegistry(openTriggerType, entityType, triggerTypeDescriptorFactory);
 
             var triggerTypeDescriptors = registry.GetTriggerTypeDescriptors();
-            if (triggerTypeDescriptors.Count == 0)
+            if (triggerTypeDescriptors.Length == 0)
             {
                 return Enumerable.Empty<TriggerDescriptor>();
             }

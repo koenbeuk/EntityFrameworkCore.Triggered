@@ -11,16 +11,21 @@ namespace EntityFrameworkCore.Triggered.Internal
     {
         readonly ConcurrentDictionary<(Type, Type), TriggerTypeRegistry> _resolvedRegistries = new ConcurrentDictionary<(Type, Type), TriggerTypeRegistry>();
 
+        TriggerTypeRegistry CreateRegistry(Type openTriggerType, Type entityType, Func<Type, ITriggerTypeDescriptor> triggerTypeDescriptorFactory)
+        {
+            return _resolvedRegistries.GetOrAdd((openTriggerType, entityType), _ => new TriggerTypeRegistry(entityType, triggerTypeDescriptorFactory));
+        }
+
         public TriggerTypeRegistry ResolveRegistry(Type openTriggerType, Type entityType, Func<Type, ITriggerTypeDescriptor> triggerTypeDescriptorFactory)
         {
-            var key = (openTriggerType, entityType);
-            if (_resolvedRegistries.TryGetValue(key, out var registry))
+            if (_resolvedRegistries.TryGetValue((openTriggerType, entityType), out var registry))
             {
                 return registry;
             }
             else
             {
-                return _resolvedRegistries.GetOrAdd((openTriggerType, entityType), _ => new TriggerTypeRegistry(entityType, triggerTypeDescriptorFactory));
+                // Use an extra method to prevent allocation of a DispayClass in this method
+                return CreateRegistry(openTriggerType, entityType, triggerTypeDescriptorFactory);
             }
         }
     }

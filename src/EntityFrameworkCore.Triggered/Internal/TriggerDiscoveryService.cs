@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -44,14 +46,18 @@ namespace EntityFrameworkCore.Triggered.Internal
             }
             else
             {
-                return registry.GetTriggerTypeDescriptors()
-                    .SelectMany(triggerTypeDescriptor =>
-                        serviceProvider
-                            .GetServices(triggerTypeDescriptor.TriggerType)
-                            .Distinct()
-                            .Select(trigger => new TriggerDescriptor(triggerTypeDescriptor, trigger))
-                            .OrderBy(x => x.Priority)
-                    );
+                var triggerDescriptors = ImmutableSortedSet<TriggerDescriptor>.Empty;
+
+                foreach (var triggerTypeDescriptor in triggerTypeDescriptors)
+                {
+                    var triggers = serviceProvider.GetServices(triggerTypeDescriptor.TriggerType);
+                    foreach (var trigger in triggers)
+                    {
+                        triggerDescriptors = triggerDescriptors.Add(new TriggerDescriptor(triggerTypeDescriptor, trigger));
+                    }
+                }
+
+                return triggerDescriptors;
             }
         }
 

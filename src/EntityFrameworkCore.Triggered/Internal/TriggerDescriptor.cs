@@ -1,13 +1,15 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace EntityFrameworkCore.Triggered.Internal
 {
-    public class TriggerDescriptor
+    public class TriggerDescriptor : IComparable<TriggerDescriptor>, IEquatable<TriggerDescriptor>
     {
         readonly ITriggerTypeDescriptor _triggerTypeDescriptor;
         readonly object _trigger;
@@ -27,6 +29,12 @@ namespace EntityFrameworkCore.Triggered.Internal
         public ITriggerTypeDescriptor TypeDescriptor => _triggerTypeDescriptor;
         public object Trigger => _trigger;
         public int Priority => _priority;
+
+        public int CompareTo(TriggerDescriptor other)
+            => Priority - other?.Priority ?? 0;
+
+        public bool Equals(TriggerDescriptor other)
+            => Trigger == other?.Trigger && TypeDescriptor == other?.TypeDescriptor ;
 
         public Task Invoke(object triggerContext, CancellationToken cancellationToken)
             => _triggerTypeDescriptor.Invoke(_trigger, triggerContext, cancellationToken);

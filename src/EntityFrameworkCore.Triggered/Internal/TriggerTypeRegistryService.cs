@@ -12,6 +12,16 @@ namespace EntityFrameworkCore.Triggered.Internal
         readonly ConcurrentDictionary<(Type, Type), TriggerTypeRegistry> _resolvedRegistries = new ConcurrentDictionary<(Type, Type), TriggerTypeRegistry>();
 
         public TriggerTypeRegistry ResolveRegistry(Type openTriggerType, Type entityType, Func<Type, ITriggerTypeDescriptor> triggerTypeDescriptorFactory)
-            => _resolvedRegistries.GetOrAdd((openTriggerType, entityType), _ => new TriggerTypeRegistry(entityType, triggerTypeDescriptorFactory));
+        {
+            var key = (openTriggerType, entityType);
+            if (_resolvedRegistries.TryGetValue(key, out var registry))
+            {
+                return registry;
+            }
+            else
+            {
+                return _resolvedRegistries.GetOrAdd((openTriggerType, entityType), _ => new TriggerTypeRegistry(entityType, triggerTypeDescriptorFactory));
+            }
+        }
     }
 }

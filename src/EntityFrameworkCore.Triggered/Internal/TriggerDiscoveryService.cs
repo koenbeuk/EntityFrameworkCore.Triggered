@@ -13,6 +13,8 @@ namespace EntityFrameworkCore.Triggered.Internal
 {
     public sealed class TriggerDiscoveryService : ITriggerDiscoveryService
     {
+        static readonly TriggerDescriptorComparer _triggerDescriptorComparer = new TriggerDescriptorComparer();
+
         readonly ITriggerServiceProviderAccessor _triggerServiceProviderAccessor;
         readonly ITriggerTypeRegistryService _triggerTypeRegistryService;
 
@@ -46,18 +48,31 @@ namespace EntityFrameworkCore.Triggered.Internal
             }
             else
             {
-                var triggerDescriptors = ImmutableSortedSet<TriggerDescriptor>.Empty;
+                List<TriggerDescriptor>? triggerDescriptors = null;
 
                 foreach (var triggerTypeDescriptor in triggerTypeDescriptors)
                 {
                     var triggers = serviceProvider.GetServices(triggerTypeDescriptor.TriggerType);
                     foreach (var trigger in triggers)
                     {
-                        triggerDescriptors = triggerDescriptors.Add(new TriggerDescriptor(triggerTypeDescriptor, trigger));
+                        if (triggerDescriptors == null)
+                        {
+                            triggerDescriptors = new List<TriggerDescriptor>(triggers.Count());
+                        }
+
+                        triggerDescriptors.Add(new TriggerDescriptor(triggerTypeDescriptor, trigger));
                     }
                 }
 
-                return triggerDescriptors;
+                if (triggerDescriptors == null)
+                {
+                    return Enumerable.Empty<TriggerDescriptor>();
+                }
+                else
+                {
+                    triggerDescriptors.Sort(_triggerDescriptorComparer);
+                    return triggerDescriptors;
+                }
             }
         }
 

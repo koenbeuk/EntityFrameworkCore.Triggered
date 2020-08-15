@@ -71,7 +71,7 @@ namespace EntityFrameworkCore.Triggered.Benchmarks
 
     public class ApplicationContextWithTriggers : DbContextWithTriggers, IApplicationContextContract
     {
-        public ApplicationContextWithTriggers(DbContextOptions<ApplicationContextWithTriggers> options) : base(options)
+        public ApplicationContextWithTriggers(DbContextOptions<ApplicationContextWithTriggers> options, IServiceProvider serviceProvider) : base(serviceProvider, options)
         {
         }
 
@@ -90,7 +90,7 @@ namespace EntityFrameworkCore.Triggered.Benchmarks
 
     public class TriggeredApplicationContext : TriggeredDbContext, IApplicationContextContract
     {
-        public TriggeredApplicationContext(DbContextOptions<TriggeredApplicationContext> options) : base(options)
+        public TriggeredApplicationContext(DbContextOptions<TriggeredApplicationContext> options, IServiceProvider serviceProvider) : base(options, serviceProvider)
         {
         }
 

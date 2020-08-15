@@ -4,14 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using EntityFrameworkCore.Triggered;
 
-namespace EntityFrameworkCore.Triggered.Benchmarks.Triggers
+namespace PerfTest.Triggers
 {
     public class SignStudentUpForMandatoryCourses : IBeforeSaveTrigger<Student>
     {
-        readonly TriggeredApplicationContext _applicationContext;
+        readonly ApplicationContext _applicationContext;
 
-        public SignStudentUpForMandatoryCourses(TriggeredApplicationContext applicationContext)
+        public SignStudentUpForMandatoryCourses(ApplicationContext applicationContext)
         {
             _applicationContext = applicationContext;
         }

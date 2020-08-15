@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using EntityFrameworkCore.Triggered;
 using EntityFrameworkCore.Triggered.Internal;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,17 +15,19 @@ namespace PerfTest
             int InnerBatches = 100;
 
             var serviceProvider = new ServiceCollection()
-                .AddDbContext<TriggeredApplicationContext>(options => {
+                .AddDbContext<ApplicationContext>(options => {
                     options
-                        .UseInMemoryDatabase(nameof(TriggeredApplicationContext))
+                        .UseInMemoryDatabase(nameof(ApplicationContext))
                         .UseTriggers();
                 })
+                .AddSingleton<IBeforeSaveTrigger<Student>, Triggers.SetStudentRegistrationDateTrigger>()
+                .AddScoped<IBeforeSaveTrigger<Student>, Triggers.SignStudentUpForMandatoryCourses>()
                 .BuildServiceProvider();
 
             // setup
             {
                 using var scope = serviceProvider.CreateScope();
-                using var context = scope.ServiceProvider.GetRequiredService<TriggeredApplicationContext>();
+                using var context = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
 
                 context.Database.EnsureDeleted();
 
@@ -36,24 +39,12 @@ namespace PerfTest
             for (var outerBatch = 0; outerBatch < OuterBatches; outerBatch++)
             {
                 using var scope = serviceProvider.CreateScope();
-                using var context = scope.ServiceProvider.GetRequiredService<TriggeredApplicationContext>();
+                using var context = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
 
                 for (var innerBatch = 0; innerBatch < InnerBatches; innerBatch++)
                 {
                     var student = new Student { Id = Guid.NewGuid(), DisplayName = "Test" };
-                    student.RegistrationDate = DateTimeOffset.Now;
-
                     context.Students.Add(student);
-
-                    var mandatoryCourses = context.Courses.Where(x => x.IsMandatory).ToList();
-
-                    foreach (var mandatoryCourse in mandatoryCourses)
-                    {
-                        context.StudentCourses.Add(new StudentCourse {
-                            CourseId = mandatoryCourse.Id,
-                            StudentId = student.Id
-                        });
-                    }
                 }
 
                 context.SaveChanges();
@@ -62,7 +53,7 @@ namespace PerfTest
             // validation
             {
                 using var scope = serviceProvider.CreateScope();
-                using var context = scope.ServiceProvider.GetRequiredService<TriggeredApplicationContext>();
+                using var context = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
 
                 var studentCoursesCount = context.StudentCourses.Count();
 

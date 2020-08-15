@@ -7,7 +7,7 @@ namespace EntityFrameworkCore.Triggered.Benchmarks
     {
         public static void Main(string[] args)
         {
-            var summary = BenchmarkRunner.Run<PlainOverheadBenchmarks>();
+            BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args);
         }
     }
 }

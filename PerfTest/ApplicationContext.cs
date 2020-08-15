@@ -53,9 +53,9 @@ namespace PerfTest
             DbSet<StudentCourse> StudentCourses { get; set; }
         }
 
-        public class TriggeredApplicationContext : TriggeredDbContext, IApplicationContextContract
+        public class ApplicationContext : TriggeredDbContext, IApplicationContextContract
         {
-            public TriggeredApplicationContext(DbContextOptions<TriggeredApplicationContext> options) : base(options)
+            public ApplicationContext(DbContextOptions<ApplicationContext> options, IServiceProvider serviceProvider) : base(options, serviceProvider)
             {
             }
 

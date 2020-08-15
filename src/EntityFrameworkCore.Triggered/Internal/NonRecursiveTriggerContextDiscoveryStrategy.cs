@@ -22,7 +22,7 @@ namespace EntityFrameworkCore.Triggered.Internal
             _name = name ?? throw new ArgumentNullException(nameof(name));
         }
 
-        public IEnumerable<IEnumerable<ITriggerContextDescriptor>> Discover(TriggerOptions options, TriggerContextTracker tracker, ILogger logger)
+        public IEnumerable<IEnumerable<TriggerContextDescriptor>> Discover(TriggerOptions options, TriggerContextTracker tracker, ILogger logger)
         {
             var changes = tracker.DiscoveredChanges ?? throw new InvalidOperationException("Trigger discovery process has not yet started. Please ensure that TriggerSession.DiscoverChanges() or TriggerSession.RaiseBeforeSaveTriggers() has been called");
 

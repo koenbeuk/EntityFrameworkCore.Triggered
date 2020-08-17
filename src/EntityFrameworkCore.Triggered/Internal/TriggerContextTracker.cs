@@ -8,38 +8,16 @@ using EntityFrameworkCore.Triggered.Internal.RecursionStrategy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.Extensions.ObjectPool;
 
 namespace EntityFrameworkCore.Triggered.Internal
 {
-    public sealed class TriggerContextTracker 
+    public sealed class TriggerContextTracker
     {
-        [ThreadStatic]
-        static Dictionary<Type, Func<EntityEntry, ChangeType, object>>? _cachedTriggerContextFactories;
-
-        private ITriggerContextDescriptor CreateTriggerContext(Type entityType, EntityEntry entityEntry, ChangeType changeType)
-        {
-            if (_cachedTriggerContextFactories == null)
-            {
-                _cachedTriggerContextFactories = new Dictionary<Type, Func<EntityEntry, ChangeType, object>>();
-            }
-
-            if (!_cachedTriggerContextFactories.TryGetValue(entityType, out var triggerContextFactory))
-            {
-                triggerContextFactory = (Func<EntityEntry, ChangeType, object>)typeof(TriggerContextFactory<>).MakeGenericType(entityType)
-                    .GetMethod(nameof(TriggerContextFactory<object>.Activate))
-                    .CreateDelegate(typeof(Func<EntityEntry, ChangeType, object>));
-
-                _cachedTriggerContextFactories.Add(entityType, triggerContextFactory);
-            }
-
-            return (ITriggerContextDescriptor)triggerContextFactory(entityEntry, changeType);
-        }
-
-
         readonly ChangeTracker _changeTracker;
         readonly IRecursionStrategy _recursionStrategy;
 
-        List<ITriggerContextDescriptor>? _discoveredChanges;
+        List<TriggerContextDescriptor>? _discoveredChanges;
 
         public TriggerContextTracker(ChangeTracker changeTracker, IRecursionStrategy recursionStrategy)
         {
@@ -55,36 +33,67 @@ namespace EntityFrameworkCore.Triggered.Internal
             _ => null,
         };
 
-        public IEnumerable<ITriggerContextDescriptor> DiscoverChanges()
+        public IEnumerable<TriggerContextDescriptor> DiscoverChanges()
         {
-            if (_discoveredChanges == null)
-            {
-                _discoveredChanges = new List<ITriggerContextDescriptor>();
-            }
+            int startIndex;
 
             _changeTracker.DetectChanges();
-            foreach (var entry in _changeTracker.Entries())
+            var entries = _changeTracker.Entries();
+
+            if (_discoveredChanges == null)
+            {
+                _discoveredChanges = new List<TriggerContextDescriptor>(entries.Count());
+                startIndex = 0;
+            }
+            else
+            {
+                startIndex = _discoveredChanges.Count;
+            }
+
+            foreach (var entry in entries)
             {
                 var changeType = ResolveChangeType(entry);
                 if (changeType != null)
                 {
-                    var existingChanges = _discoveredChanges.Where(x => x.Entity == entry.Entity);
-                    if (existingChanges.Any() && existingChanges.Any(existingChange => !_recursionStrategy.CanRecurse(entry, changeType.Value, existingChange)))
+                    if (startIndex > 0)
                     {
-                        // skip this detection when we already detected it
-                        continue;
+                        var canRecurse = true;
+
+                        foreach (var discoveredChange in _discoveredChanges)
+                        {
+                            if (discoveredChange.Entity == entry.Entity)
+                            {
+                                canRecurse = _recursionStrategy.CanRecurse(entry, changeType.Value, discoveredChange);
+
+                                if (!canRecurse)
+                                {
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (!canRecurse)
+                        {
+                            continue;
+                        }
                     }
 
-                    var entityType = entry.Entity.GetType();
-                    var triggerContext = CreateTriggerContext(entityType, entry, changeType.Value);
+                    var triggerContextDescriptor = new TriggerContextDescriptor(entry, changeType.Value);
 
-                    _discoveredChanges.Add(triggerContext);
-
-                    yield return triggerContext;
+                    _discoveredChanges.Add(triggerContextDescriptor!);
                 }
+            }
+
+            if (startIndex == 0)
+            {
+                return _discoveredChanges;
+            }
+            else
+            {
+                return _discoveredChanges.Skip(startIndex);
             }
         }
 
-        public IEnumerable<ITriggerContextDescriptor>? DiscoveredChanges => _discoveredChanges;
+        public IEnumerable<TriggerContextDescriptor>? DiscoveredChanges => _discoveredChanges;
     }
 }

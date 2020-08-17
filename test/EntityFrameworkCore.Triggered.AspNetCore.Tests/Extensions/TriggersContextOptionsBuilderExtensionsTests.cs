@@ -57,5 +57,32 @@ namespace EntityFrameworkCore.Triggered.AspNetCore.Tests.Extensions
             Assert.NotNull(capturedServiceProvider);
             Assert.Equal(serviceScope.ServiceProvider, capturedServiceProvider);
         }
+
+        [Fact]
+        public void UseAspNetCoreIntegratio_ThrowsIfIHttpContextAccessIsNotConfigured()
+        {
+            IServiceProvider capturedServiceProvider = null;
+
+            var serviceProvider = new ServiceCollection()
+                .AddDbContext<TestDbContext>(options => {
+                    options.UseInMemoryDatabase("UseAspNetCoreIntegratio_ThrowsIfIHttpContextAccessIsNotConfigured");
+                    options.UseTriggers(triggerOptions => {
+                        triggerOptions.UseAspNetCoreIntegration();
+                    });
+                })
+                .AddTransient<IBeforeSaveTrigger<TestModel>>(serviceProvider => {
+                    capturedServiceProvider = serviceProvider;
+                    return new TriggerStub<TestModel>();
+                })
+                .BuildServiceProvider();
+
+            using var serviceScope = serviceProvider.CreateScope();
+            var dbContext = serviceScope.ServiceProvider.GetRequiredService<TestDbContext>();
+
+            dbContext.Add(new TestModel { });
+            Assert.Throws<InvalidOperationException>(() => {
+                dbContext.SaveChanges();
+            });
+        }
     }
 }

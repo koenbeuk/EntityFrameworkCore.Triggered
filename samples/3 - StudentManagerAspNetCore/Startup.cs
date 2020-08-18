@@ -34,13 +34,19 @@ namespace StudentManager
                 .AddDbContext<ApplicationContext>(options => {
                     options
                         .UseSqlite("Data source=test.db")
-                        .UseTriggers();
+                        .UseTriggers(triggerOptions => {
+                            triggerOptions.UseAspNetCoreIntegration();
+                        });
                 })
-                .AddScoped<IBeforeSaveTrigger<Course>, Triggers.CourseAutoSignupStudents>()
-                .AddScoped<IBeforeSaveTrigger<Student>, Triggers.StudentAssignRegistrationDate>()
-                .AddScoped<IBeforeSaveTrigger<Student>, Triggers.StudentSignupToMandatoryCourses>()
-                .AddScoped<IBeforeSaveTrigger<StudentCourse>, Triggers.BockStudentCourseRemovalWhenCourseIsMandatory>()
-                .AddScoped<IAfterSaveTrigger<StudentCourse>, Triggers.StudentCourseSendWelcomingEmail>();
+                .AddHttpContextAccessor()
+                .AddScoped<IBeforeSaveTrigger<Traits.ISoftDelete>, Triggers.Traits.SoftDelete.EnsureSoftDelete>()
+                .AddScoped<IBeforeSaveTrigger<Traits.IAudited>, Triggers.Traits.Audited.CreateAuditRecord>()
+
+                .AddScoped<IBeforeSaveTrigger<Course>, Triggers.Courses.AutoSignupStudents>()
+                .AddScoped<IBeforeSaveTrigger<Student>, Triggers.Students.AssignRegistrationDate>()
+                .AddScoped<IBeforeSaveTrigger<Student>, Triggers.Students.SignupToMandatoryCourses>()
+                .AddScoped<IBeforeSaveTrigger<StudentCourse>, Triggers.StudentCourses.BockRemovalWhenCourseIsMandatory>()
+                .AddScoped<IAfterSaveTrigger<StudentCourse>, Triggers.StudentCourses.SendWelcomingEmail>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

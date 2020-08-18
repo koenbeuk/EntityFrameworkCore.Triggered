@@ -1,0 +1,45 @@
+﻿@page
+@model StudentManager.Pages.AuditsModel
+
+@{
+    ViewData["Title"] = "Audits";
+}
+
+<h1>Audits</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Audit[0].Discriminator)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Audit[0].Id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Audit[0].RecordDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Audit[0].Record)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Audit) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Discriminator)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RecordDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Record)
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

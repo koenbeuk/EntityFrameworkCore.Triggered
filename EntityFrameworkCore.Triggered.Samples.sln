@@ -9,8 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "2 - PrimarySchool", "sample
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "3 - StudentManagerAspNetCore", "samples\3 - StudentManagerAspNetCore\3 - StudentManagerAspNetCore.csproj", "{5EFFD8A3-9DC6-4BB5-A557-EA737B6B134D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "4 - TicketManager", "samples\4 - TicketManager\4 - TicketManager.csproj", "{5280D1D2-EBAD-46A0-AE50-53F540F0E25A}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FBBD1EA1-974D-40AB-8B78-A1DBEF86D6E0}"
 	ProjectSection(SolutionItems) = preProject
 		samples\Directory.Build.props = samples\Directory.Build.props
@@ -34,10 +32,6 @@ Global
 		{5EFFD8A3-9DC6-4BB5-A557-EA737B6B134D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5EFFD8A3-9DC6-4BB5-A557-EA737B6B134D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5EFFD8A3-9DC6-4BB5-A557-EA737B6B134D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5280D1D2-EBAD-46A0-AE50-53F540F0E25A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5280D1D2-EBAD-46A0-AE50-53F540F0E25A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5280D1D2-EBAD-46A0-AE50-53F540F0E25A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5280D1D2-EBAD-46A0-AE50-53F540F0E25A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -19,6 +19,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.Course[0].IsMandatory)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Course[0].DeletedOn)
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -32,9 +35,17 @@
                 @Html.DisplayFor(modelItem => item.IsMandatory)
             </td>
             <td>
-                <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+                @Html.DisplayFor(modelItem => item.DeletedOn);
+            </td>
+            <td>
+                @if (item.DeletedOn == null)
+                {
+                    <text>
+                    <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+                    </text>
+                }
             </td>
         </tr>
 }

@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 using EntityFrameworkCore.Triggered;
 using Microsoft.EntityFrameworkCore;
 
-namespace StudentManager.Triggers
+namespace StudentManager.Triggers.Students
 {
-    public class StudentSignupToMandatoryCourses : IBeforeSaveTrigger<Student>
+    public class SignupToMandatoryCourses : IBeforeSaveTrigger<Student>
     {
         readonly ApplicationContext _applicationContext;
 
-        public StudentSignupToMandatoryCourses(ApplicationContext applicationContext)
+        public SignupToMandatoryCourses(ApplicationContext applicationContext)
         {
             _applicationContext = applicationContext;
         }

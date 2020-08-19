@@ -32,7 +32,10 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
         [Fact]
         public void Activate_ReturnsInstance()
         {
-            var result = TriggerContextFactory<object>.Activate(null, ChangeType.Added);
+            using var dbContext = new TestDbContext();
+            var entityEntry = dbContext.Entry(new TestModel { });
+
+            var result = TriggerContextFactory<object>.Activate(entityEntry, ChangeType.Added);
 
             Assert.NotNull(result);
         }

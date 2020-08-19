@@ -12,31 +12,23 @@ namespace EntityFrameworkCore.Triggered
         where TEntity: class
     {
         readonly ChangeType _type;
-        readonly EntityEntry _entityEntry;
-        readonly Lazy<TEntity?> _unmodifiedEntityLazy;
-
-        TEntity? CreateUnmodified()
-        {
-            if (ChangeType == ChangeType.Added)
-            {
-                return null;
-            }
-            else
-            {
-                return (TEntity)_entityEntry.OriginalValues.ToObject();
-            }
-        }
+        readonly TEntity _entity;
+        readonly TEntity? _unmodifiedEntity;
 
 
         public TriggerContext(EntityEntry entityEntry, ChangeType changeType)
         {
             _type = changeType;
-            _entityEntry = entityEntry;
-            _unmodifiedEntityLazy = new Lazy<TEntity?>(CreateUnmodified, false);
+            _entity = (TEntity)entityEntry.Entity;
+            
+            if (changeType != ChangeType.Added)
+            {
+                _unmodifiedEntity = (TEntity)entityEntry.OriginalValues.ToObject();
+            }
         }
 
         public ChangeType ChangeType => _type;
-        public TEntity Entity => (TEntity)_entityEntry.Entity;
-        public TEntity? UnmodifiedEntity => _unmodifiedEntityLazy.Value;
+        public TEntity Entity => _entity;
+        public TEntity? UnmodifiedEntity => _unmodifiedEntity;
     }
 }

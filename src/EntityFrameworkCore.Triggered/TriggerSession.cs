@@ -48,31 +48,43 @@ namespace EntityFrameworkCore.Triggered
             var triggerContextDescriptorBatches = triggerContextDiscoveryStrategy.Discover(_options, _tracker, _logger);
             foreach (var triggerContextDescriptorBatch in triggerContextDescriptorBatches)
             {
-                IEnumerable<(ITriggerContextDescriptor triggerContextDescriptor, TriggerDescriptor triggerDescriptor)> triggerInvocations = triggerContextDescriptorBatch
-                    .SelectMany(triggerContextDescriptor =>
-                        _triggerDiscoveryService
-                            .DiscoverTriggers(openTriggerType, triggerContextDescriptor.EntityType, triggerTypeDescriptorFactory)
-                            .Select(triggerDescriptor => (triggerContextDescriptor, triggerDescriptor))
-                    )
-                    .OrderBy(x => x.triggerDescriptor.Priority);
+                List<(TriggerContextDescriptor triggerContextDescriptor, TriggerDescriptor triggerDescriptor)>? triggerInvocations = null;
+
+                foreach (var triggerContextDescriptor in triggerContextDescriptorBatch)
+                {
+                    var triggerDescriptors = _triggerDiscoveryService.DiscoverTriggers(openTriggerType, triggerContextDescriptor.EntityType, triggerTypeDescriptorFactory);
+
+                    foreach (var triggerDescriptor in triggerDescriptors)
+                    {
+                        if (triggerInvocations == null)
+                        {
+                            triggerInvocations = new List<(TriggerContextDescriptor triggerContextDescriptor, TriggerDescriptor triggerDescriptor)>();
+                        }
+
+                        triggerInvocations.Add((triggerContextDescriptor, triggerDescriptor));
+                    }
+                }
 
                 if (_logger.IsEnabled(LogLevel.Debug))
                 {
-                    triggerInvocations = triggerInvocations.ToList();
-                    _logger.LogDebug("Discovered {triggers} triggers of type {openTriggerType}", triggerInvocations.Count(), openTriggerType);
+                    _logger.LogDebug("Discovered {triggers} triggers of type {openTriggerType}", triggerInvocations?.Count ?? 0, openTriggerType);
                 }
 
-                foreach (var triggerInvocation in triggerInvocations)
+                if (triggerInvocations != null)
                 {
-                    cancellationToken.ThrowIfCancellationRequested();
+                    foreach (var triggerInvocation in triggerInvocations.OrderBy(x => x.triggerDescriptor.Priority))
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
 
                     if (_logger.IsEnabled(LogLevel.Information))
                     {
                         _logger.LogInformation("Invoking trigger: {trigger} as {triggerType}", triggerInvocation.triggerDescriptor.Trigger.GetType().Name, triggerInvocation.triggerDescriptor.TypeDescriptor.TriggerType.Name);
                     }
 
-                    await triggerInvocation.triggerDescriptor.Invoke(triggerInvocation.triggerContextDescriptor.GetTriggerContext(), cancellationToken).ConfigureAwait(false);
+                        await triggerInvocation.triggerDescriptor.Invoke(triggerInvocation.triggerContextDescriptor.GetTriggerContext(), cancellationToken).ConfigureAwait(false);
+                    }
                 }
+
             }
         }
 

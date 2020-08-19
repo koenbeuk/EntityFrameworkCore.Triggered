@@ -9,9 +9,9 @@ namespace EntityFrameworkCore.Triggered.Benchmarks.Triggers
 {
     public class SignStudentUpForMandatoryCourses : IBeforeSaveTrigger<Student>
     {
-        readonly ApplicationContext _applicationContext;
+        readonly TriggeredApplicationContext _applicationContext;
 
-        public SignStudentUpForMandatoryCourses(ApplicationContext applicationContext)
+        public SignStudentUpForMandatoryCourses(TriggeredApplicationContext applicationContext)
         {
             _applicationContext = applicationContext;
         }

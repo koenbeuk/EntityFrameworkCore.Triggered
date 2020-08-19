@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -16,6 +18,8 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 throw new ArgumentNullException(nameof(serviceCollection));
             }
+             
+            serviceCollection.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             serviceCollection.AddTriggeredDbContext<TContext>(options => {
                 optionsAction?.Invoke(options);

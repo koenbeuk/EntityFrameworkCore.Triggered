@@ -18,7 +18,11 @@ namespace Microsoft.Extensions.DependencyInjection
             }
 
             builder.UseApplicationScopedServiceProviderAccessor(serviceProvider => {
-                var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
+                var httpContextAccessor = serviceProvider.GetService<IHttpContextAccessor>();
+                if (httpContextAccessor == null)
+                {
+                    throw new InvalidOperationException("No service for type 'Microsoft.AspNetCore.Http.IHttpContextAccessor' has been registered. Please make sure to call 'services.AddHttpContextAccessor()'");
+                }
                 return httpContextAccessor.HttpContext.RequestServices; 
             });
 

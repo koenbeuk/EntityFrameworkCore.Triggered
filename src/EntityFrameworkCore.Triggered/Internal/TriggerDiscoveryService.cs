@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -11,6 +13,8 @@ namespace EntityFrameworkCore.Triggered.Internal
 {
     public sealed class TriggerDiscoveryService : ITriggerDiscoveryService
     {
+        static readonly TriggerDescriptorComparer _triggerDescriptorComparer = new TriggerDescriptorComparer();
+
         readonly ITriggerServiceProviderAccessor _triggerServiceProviderAccessor;
         readonly ITriggerTypeRegistryService _triggerTypeRegistryService;
 
@@ -37,14 +41,39 @@ namespace EntityFrameworkCore.Triggered.Internal
 
             var registry = _triggerTypeRegistryService.ResolveRegistry(openTriggerType, entityType, triggerTypeDescriptorFactory);
 
-            return registry.GetTriggerTypeDescriptors()
-                .SelectMany(triggerTypeDescriptor =>
-                    serviceProvider
-                        .GetServices(triggerTypeDescriptor.TriggerType)
-                        .Distinct()
-                        .Select(trigger => new TriggerDescriptor(triggerTypeDescriptor, trigger))
-                        .OrderBy(x => x.Priority)
-                );
+            var triggerTypeDescriptors = registry.GetTriggerTypeDescriptors();
+            if (triggerTypeDescriptors.Length == 0)
+            {
+                return Enumerable.Empty<TriggerDescriptor>();
+            }
+            else
+            {
+                List<TriggerDescriptor>? triggerDescriptors = null;
+
+                foreach (var triggerTypeDescriptor in triggerTypeDescriptors)
+                {
+                    var triggers = serviceProvider.GetServices(triggerTypeDescriptor.TriggerType);
+                    foreach (var trigger in triggers)
+                    {
+                        if (triggerDescriptors == null)
+                        {
+                            triggerDescriptors = new List<TriggerDescriptor>(triggers.Count());
+                        }
+
+                        triggerDescriptors.Add(new TriggerDescriptor(triggerTypeDescriptor, trigger));
+                    }
+                }
+
+                if (triggerDescriptors == null)
+                {
+                    return Enumerable.Empty<TriggerDescriptor>();
+                }
+                else
+                {
+                    triggerDescriptors.Sort(_triggerDescriptorComparer);
+                    return triggerDescriptors;
+                }
+            }
         }
 
         public void SetServiceProvider(IServiceProvider serviceProvider)

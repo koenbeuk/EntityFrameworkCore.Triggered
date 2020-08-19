@@ -241,7 +241,7 @@ namespace EntityFrameworkCore.Triggered.Tests
                     options.UseInMemoryDatabase("Test");
                 })
                 .BuildServiceProvider();
-
+             
             var scope = serviceProvider.CreateScope();
             var dbContext = scope.ServiceProvider.GetRequiredService<TestDbContext>();
             var subject = CreateSubject(dbContext);

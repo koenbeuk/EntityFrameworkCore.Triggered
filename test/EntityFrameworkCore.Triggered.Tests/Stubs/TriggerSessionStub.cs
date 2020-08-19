@@ -19,6 +19,10 @@ namespace EntityFrameworkCore.Triggered.Tests.Stubs
 
         }
 
+        public void Dispose()
+        {
+        }
+
         public Task RaiseAfterSaveTriggers(CancellationToken cancellationToken = default)
         {
             RaiseAfterSaveTriggersCalls += 1;

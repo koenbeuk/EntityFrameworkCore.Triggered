@@ -20,7 +20,7 @@ namespace EntityFrameworkCore.Triggered.Internal
         readonly Type _entityType;
         readonly Func<Type, ITriggerTypeDescriptor> _triggerTypeDescriptorFactory;
         
-        List<ITriggerTypeDescriptor>? _resolvedDescriptors;
+        ITriggerTypeDescriptor[]? _resolvedDescriptors;
 
         public TriggerTypeRegistry(Type entityType, Func<Type, ITriggerTypeDescriptor> triggerTypeDescriptorFactory)
         {
@@ -44,7 +44,7 @@ namespace EntityFrameworkCore.Triggered.Internal
             }
         }
 
-        public IReadOnlyCollection<ITriggerTypeDescriptor> GetTriggerTypeDescriptors()
+        public ITriggerTypeDescriptor[] GetTriggerTypeDescriptors()
         {
             if (_resolvedDescriptors == null)
             {
@@ -56,7 +56,7 @@ namespace EntityFrameworkCore.Triggered.Internal
                     result.Add(descriptor);
                 }
 
-                _resolvedDescriptors = result;
+                _resolvedDescriptors = result.ToArray();
             }
 
             return _resolvedDescriptors;

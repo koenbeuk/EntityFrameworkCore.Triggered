@@ -26,7 +26,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
             var subject = CreateSubject<object>();
             var result = subject.GetTriggerTypeDescriptors();
 
-            Assert.Equal(1, result.Count);
+            Assert.Single(result);
             Assert.Equal(typeof(IBeforeSaveTrigger<object>), result.Skip(0).First().TriggerType);
         }
 
@@ -36,7 +36,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
             var subject = CreateSubject<BaseType>();
             var result = subject.GetTriggerTypeDescriptors();
 
-            Assert.Equal(2, result.Count);
+            Assert.Equal(2, result.Length);
             Assert.Equal(typeof(IBeforeSaveTrigger<object>), result.Skip(0).First().TriggerType);
             Assert.Equal(typeof(IBeforeSaveTrigger<BaseType>), result.Skip(1).First().TriggerType);
         }
@@ -47,7 +47,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
             var subject = CreateSubject<IInterfaceType>();
             var result = subject.GetTriggerTypeDescriptors();
 
-            Assert.Equal(1, result.Count);
+            Assert.Single(result);
             Assert.Equal(typeof(IBeforeSaveTrigger<IInterfaceType>), result.Skip(0).First().TriggerType);
         }
 
@@ -57,7 +57,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
             var subject = CreateSubject<BaseTypeWithInterface>();
             var result = subject.GetTriggerTypeDescriptors();
 
-            Assert.Equal(3, result.Count);
+            Assert.Equal(3, result.Length);
             Assert.Equal(typeof(IBeforeSaveTrigger<object>), result.Skip(0).First().TriggerType);
             Assert.Equal(typeof(IBeforeSaveTrigger<IInterfaceType>), result.Skip(1).First().TriggerType);
             Assert.Equal(typeof(IBeforeSaveTrigger<BaseTypeWithInterface>), result.Skip(2).First().TriggerType);
@@ -69,7 +69,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
             var subject = CreateSubject<DerivedTypeWithInterface>();
             var result = subject.GetTriggerTypeDescriptors();
 
-            Assert.Equal(4, result.Count);
+            Assert.Equal(4, result.Length);
             Assert.Equal(typeof(IBeforeSaveTrigger<object>), result.Skip(0).First().TriggerType);
             Assert.Equal(typeof(IBeforeSaveTrigger<IInterfaceType>), result.Skip(1).First().TriggerType);
             Assert.Equal(typeof(IBeforeSaveTrigger<BaseTypeWithInterface>), result.Skip(2).First().TriggerType);

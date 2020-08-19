@@ -26,7 +26,7 @@ namespace StudentManager.Triggers.Traits.Audited
             
             var changes = context.Entity.GetType()
                 .GetProperties()
-                .Select(property => (name: property.Name, oldValue: property.GetValue(context.UnmodifiedEntity), newValue: property.GetValue(context.Entity)))
+                .Select(property => (name: property.Name, oldValue: context.ChangeType != ChangeType.Added ? property.GetValue(context.UnmodifiedEntity) : null, newValue: property.GetValue(context.Entity)))
                 .Where(x => context.ChangeType == ChangeType.Added || x.newValue != x.oldValue);
 
             foreach (var change in changes)

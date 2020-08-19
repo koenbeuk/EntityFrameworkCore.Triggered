@@ -68,7 +68,7 @@ namespace EntityFrameworkCore.Triggered
 
                     if (_logger.IsEnabled(LogLevel.Information))
                     {
-                        _logger.LogInformation("Invoking trigger: {trigger} as {triggerType}", triggerInvocation.triggerDescriptor.GetType().Name, triggerInvocation.triggerDescriptor.TypeDescriptor.TriggerType.Name);
+                        _logger.LogInformation("Invoking trigger: {trigger} as {triggerType}", triggerInvocation.triggerDescriptor.Trigger.GetType().Name, triggerInvocation.triggerDescriptor.TypeDescriptor.TriggerType.Name);
                     }
 
                     await triggerInvocation.triggerDescriptor.Invoke(triggerInvocation.triggerContextDescriptor.GetTriggerContext(), cancellationToken).ConfigureAwait(false);

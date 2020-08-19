@@ -11,7 +11,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
 {
     public class TriggerContextTests
     {
-        class TestModel { public int Id { get; set; } }
+        class TestModel { public int Id { get; set; } public string Name { get; set; } }
 
         class TestDbContext : DbContext
         {
@@ -51,6 +51,40 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
             var subject = new TriggerContext<object>(dbContext.Entry(sample1), ChangeType.Modified);
 
             Assert.NotNull(subject.UnmodifiedEntity);
+        }
+
+        [Fact]
+        public void UnmodifiedEntity_WhenTypeModified_HoldsUnmodifiedStateBeforeSaveChanges()
+        {
+            using var dbContext = new TestDbContext();
+            var sample1 = new TestModel { Name = "test1" };
+            dbContext.Add(sample1);
+            dbContext.SaveChanges();
+
+            var subject = new TriggerContext<TestModel>(dbContext.Entry(sample1), ChangeType.Modified);
+            sample1.Name = "test2";
+
+            Assert.NotNull(subject.UnmodifiedEntity);
+            Assert.Equal("test1", subject.UnmodifiedEntity.Name);
+
+            dbContext.SaveChanges();
+        }
+
+        [Fact]
+        public void UnmodifiedEntity_WhenTypeModified_HoldsUnmodifiedStateAfterSaveChanges()
+        {
+            using var dbContext = new TestDbContext();
+            var sample1 = new TestModel { Name = "test1" };
+            dbContext.Add(sample1);
+            dbContext.SaveChanges();
+
+            var subject = new TriggerContext<TestModel>(dbContext.Entry(sample1), ChangeType.Modified);
+            sample1.Name = "test2";
+
+            dbContext.SaveChanges();
+             
+            Assert.NotNull(subject.UnmodifiedEntity);
+            Assert.Equal("test1", subject.UnmodifiedEntity.Name);
         }
 
         [Fact]

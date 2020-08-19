@@ -2,7 +2,6 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <OutputType>Exe</OutputType>
-    <Nullable>disable</Nullable>
   </PropertyGroup>
   <PropertyGroup>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -14,8 +13,6 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" Version="0.12.1" />
-    <PackageReference Include="BenchmarkDotNet.Diagnostics.Windows" Version="0.12.1" />
-    <!--<PackageReference Include="EntityFrameworkCore.Triggered" Version="0.3.2" />-->
     <PackageReference Include="EntityFrameworkCore.Triggers" Version="1.2.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="3.1.7" />
   </ItemGroup>

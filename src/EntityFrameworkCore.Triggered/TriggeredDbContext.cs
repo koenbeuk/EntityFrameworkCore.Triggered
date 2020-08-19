@@ -46,10 +46,13 @@ namespace EntityFrameworkCore.Triggered
 
         public override int SaveChanges(bool acceptAllChangesOnSuccess)
         {
+            bool createdTriggerSession = false;
+
             if (_triggerSession == null)
             {
                 var triggerService = this.GetService<ITriggerService>() ?? throw new InvalidOperationException("Triggers are not configured");
                 _triggerSession = triggerService.CreateSession(this, _triggerServiceProvider);
+                createdTriggerSession = true;
             }
 
             try
@@ -62,7 +65,10 @@ namespace EntityFrameworkCore.Triggered
             }
             finally
             {
-                _triggerSession = null;
+                if (createdTriggerSession)
+                {
+                    _triggerSession = null;
+                }
             }
         }
 

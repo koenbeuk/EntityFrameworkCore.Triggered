@@ -88,6 +88,32 @@ namespace EntityFrameworkCore.Triggered.Tests
         }
 
         [Fact]
+        public void SaveChanges_RecursiveCall_ReturnsActiveTriggerSession()
+        {
+            var subject = CreateSubject(false);
+
+            subject.TriggerStub.BeforeSaveHandler = (_1, _2) => {
+                if (subject.TriggerStub.BeforeSaveInvocations.Count > 1)
+                {
+                    return Task.CompletedTask;
+                }
+
+                subject.SaveChanges();
+
+                return Task.CompletedTask;
+            };
+
+            subject.TestModels.Add(new TestModel {
+                Id = Guid.NewGuid(),
+                Name = "test1"
+            });
+
+            subject.SaveChanges();
+
+            Assert.Equal(1, subject.TriggerStub.BeforeSaveInvocations.Count);
+        }
+
+        [Fact]
         public async Task SaveChangesAsyncWithAccept_CreatesChangeHandlerSession()
         {
             var subject = CreateSubject();

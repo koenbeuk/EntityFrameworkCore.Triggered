@@ -27,9 +27,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityFrameworkCore.Trigger
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityFrameworkCore.Triggered.Transactions.Tests", "test\EntityFrameworkCore.Triggered.Transactions.Tests\EntityFrameworkCore.Triggered.Transactions.Tests.csproj", "{20CD4CB9-A061-4C32-8F9E-E2C26D19A219}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EntityFrameworkCore.Triggered.AspNetCore", "src\EntityFrameworkCore.Triggered.AspNetCore\EntityFrameworkCore.Triggered.AspNetCore.csproj", "{9D83E93D-FF88-4034-BB37-20BA92379CAF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityFrameworkCore.Triggered.AspNetCore", "src\EntityFrameworkCore.Triggered.AspNetCore\EntityFrameworkCore.Triggered.AspNetCore.csproj", "{9D83E93D-FF88-4034-BB37-20BA92379CAF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EntityFrameworkCore.Triggered.AspNetCore.Tests", "test\EntityFrameworkCore.Triggered.AspNetCore.Tests\EntityFrameworkCore.Triggered.AspNetCore.Tests.csproj", "{A87E7272-8E3E-4D14-A1FA-DB25E25B214B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityFrameworkCore.Triggered.AspNetCore.Tests", "test\EntityFrameworkCore.Triggered.AspNetCore.Tests\EntityFrameworkCore.Triggered.AspNetCore.Tests.csproj", "{A87E7272-8E3E-4D14-A1FA-DB25E25B214B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "benchmarks", "benchmarks", "{576DC62C-80DA-4BB0-9BB8-EE67DDE977B6}"
+	ProjectSection(SolutionItems) = preProject
+		benchmarks\Directory.Build.props = benchmarks\Directory.Build.props
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityFrameworkCore.Triggered.Benchmarks", "benchmarks\EntityFrameworkCore.Triggered.Benchmarks\EntityFrameworkCore.Triggered.Benchmarks.csproj", "{7B8B835E-C286-413D-A275-24283BE13945}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -69,6 +76,10 @@ Global
 		{A87E7272-8E3E-4D14-A1FA-DB25E25B214B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A87E7272-8E3E-4D14-A1FA-DB25E25B214B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A87E7272-8E3E-4D14-A1FA-DB25E25B214B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7B8B835E-C286-413D-A275-24283BE13945}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B8B835E-C286-413D-A275-24283BE13945}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B8B835E-C286-413D-A275-24283BE13945}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B8B835E-C286-413D-A275-24283BE13945}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -82,6 +93,7 @@ Global
 		{20CD4CB9-A061-4C32-8F9E-E2C26D19A219} = {0FAE4F6A-93BB-453C-8FB4-B24A9F30DA59}
 		{9D83E93D-FF88-4034-BB37-20BA92379CAF} = {EDFABD48-3C79-47AE-B84C-47CE2A52C20D}
 		{A87E7272-8E3E-4D14-A1FA-DB25E25B214B} = {0FAE4F6A-93BB-453C-8FB4-B24A9F30DA59}
+		{7B8B835E-C286-413D-A275-24283BE13945} = {576DC62C-80DA-4BB0-9BB8-EE67DDE977B6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {847A0017-23D6-4513-B78E-CAADBD836A7D}

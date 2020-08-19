@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace EntityFrameworkCore.Triggered
 {
-    public class TriggerContext<TEntity> : ITriggerContext<TEntity> , ITriggerContextDescriptor
+    public class TriggerContext<TEntity> : ITriggerContext<TEntity>
         where TEntity: class
     {
         readonly ChangeType _type;
@@ -38,9 +38,5 @@ namespace EntityFrameworkCore.Triggered
         public ChangeType ChangeType => _type;
         public TEntity Entity => (TEntity)_entityEntry.Entity;
         public TEntity? UnmodifiedEntity => _unmodifiedEntityLazy.Value;
-
-        object ITriggerContextDescriptor.Entity => Entity;
-        Type ITriggerContextDescriptor.EntityType => typeof(TEntity);
-        object ITriggerContextDescriptor.GetTriggerContext() => this;
     }
 }

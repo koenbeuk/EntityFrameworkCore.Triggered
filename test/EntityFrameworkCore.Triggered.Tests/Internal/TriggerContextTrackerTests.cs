@@ -42,7 +42,6 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
 
             var triggerContextDescriptor = subject.DiscoverChanges().FirstOrDefault();
 
-            Assert.NotNull(triggerContextDescriptor);
             Assert.Equal(ChangeType.Added, triggerContextDescriptor.ChangeType);
         }
 
@@ -56,7 +55,6 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
 
             var triggerContextDescriptor = subject.DiscoverChanges().FirstOrDefault();
 
-            Assert.NotNull(triggerContextDescriptor);
             Assert.Equal(ChangeType.Modified, triggerContextDescriptor.ChangeType);
         }
 
@@ -70,7 +68,6 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
 
             var triggerContextDescriptor = subject.DiscoverChanges().FirstOrDefault();
 
-            Assert.NotNull(triggerContextDescriptor);
             Assert.Equal(ChangeType.Deleted, triggerContextDescriptor.ChangeType);
         }
 

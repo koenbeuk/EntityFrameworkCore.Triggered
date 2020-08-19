@@ -138,5 +138,42 @@ namespace EntityFrameworkCore.Triggered.Tests
 
             Assert.Equal(serviceProvider, triggerServiceStub.ServiceProvider);
         }
+
+
+        [Fact]
+        public void SaveChanges_CallsCapturedChanges()
+        {
+            var serviceProvider = new ServiceCollection().BuildServiceProvider();
+
+            var subject = new TestDbContext(serviceProvider);
+            var triggerServiceStub = (TriggerServiceStub)subject.GetService<ITriggerService>();
+
+            subject.TestModels.Add(new TestModel {
+                Id = Guid.NewGuid(),
+                Name = "test1"
+            });
+
+            subject.SaveChanges();
+
+            Assert.Equal(1, triggerServiceStub.LastSession.CaptureDiscoveredChangesCalls);
+        }
+
+        [Fact]
+        public async Task SaveChangesAysnc_CallsCapturedChanges()
+        {
+            var serviceProvider = new ServiceCollection().BuildServiceProvider();
+
+            var subject = new TestDbContext(serviceProvider);
+            var triggerServiceStub = (TriggerServiceStub)subject.GetService<ITriggerService>();
+
+            subject.TestModels.Add(new TestModel {
+                Id = Guid.NewGuid(),
+                Name = "test1"
+            });
+
+            await subject.SaveChangesAsync();
+
+            Assert.Equal(1, triggerServiceStub.LastSession.CaptureDiscoveredChangesCalls);
+        }
     }
 }

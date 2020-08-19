@@ -120,6 +120,11 @@ namespace EntityFrameworkCore.Triggered
             return RaiseTriggers(typeof(IBeforeSaveTrigger<>), strategy, entityType => new BeforeSaveTriggerDescriptor(entityType), cancellationToken);  
         }
 
+        public void CaptureDiscoveredChanges()
+        {
+            _tracker.CaptureChanges();
+        }
+
         public Task RaiseAfterSaveTriggers(CancellationToken cancellationToken = default)
         {
             if (_afterSaveTriggerContextDiscoveryStrategy == null)

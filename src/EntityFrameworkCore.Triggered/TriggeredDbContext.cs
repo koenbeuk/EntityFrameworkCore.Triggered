@@ -58,6 +58,7 @@ namespace EntityFrameworkCore.Triggered
             try
             {
                 _triggerSession.RaiseBeforeSaveTriggers(default).GetAwaiter().GetResult();
+                _triggerSession.CaptureDiscoveredChanges();
                 var result = base.SaveChanges(acceptAllChangesOnSuccess);
                 _triggerSession.RaiseAfterSaveTriggers(default).GetAwaiter().GetResult();
 
@@ -86,6 +87,7 @@ namespace EntityFrameworkCore.Triggered
             {
 
                 await _triggerSession.RaiseBeforeSaveTriggers(cancellationToken).ConfigureAwait(false);
+                _triggerSession.CaptureDiscoveredChanges();
                 var result = base.SaveChanges(acceptAllChangesOnSuccess);
                 await _triggerSession.RaiseAfterSaveTriggers(cancellationToken).ConfigureAwait(false);
 

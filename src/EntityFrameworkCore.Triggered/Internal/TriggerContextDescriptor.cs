@@ -23,7 +23,6 @@ namespace EntityFrameworkCore.Triggered.Internal
             
         }
 
-
         public ChangeType ChangeType => _changeType;
         public object Entity => _entityEntry!.Entity;
         public Type EntityType => _entityEntry!.Entity.GetType();

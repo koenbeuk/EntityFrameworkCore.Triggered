@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace EntityFrameworkCore.Triggered.Internal
 {
-    public class BeforeSaveTriggerDescriptor : ITriggerTypeDescriptor
+    public sealed class BeforeSaveTriggerDescriptor : ITriggerTypeDescriptor
     {
         readonly Func<object, object, CancellationToken, Task> _invocationDelegate;
         readonly Type _triggerType;

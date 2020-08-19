@@ -98,5 +98,63 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
 
             Assert.Equal(2, discoveredChanges.Count());
         }
+
+        [Fact]
+        public void CaptureDiscoveredChangesAfterAdd_UnchangedEntry_RemovesDiscoveredChange()
+        {
+            using var dbContext = new TestDbContext();
+            var subject = new TriggerContextTracker(dbContext.ChangeTracker, new EntityAndTypeRecursionStrategy());
+
+            var testModel = new TestModel();
+            dbContext.Entry(testModel).State = EntityState.Added;
+
+            var disoveredChanges = subject.DiscoverChanges();
+            Assert.Single(disoveredChanges);
+            Assert.Single(subject.DiscoveredChanges);
+
+            dbContext.Entry(testModel).State = EntityState.Unchanged;
+            disoveredChanges = subject.DiscoverChanges();
+            subject.CaptureChanges();
+            Assert.Empty(subject.DiscoveredChanges);
+        }
+
+        [Fact]
+        public void CaptureDiscoveredChangesAfterAdd_DetachedEntry_RemovesDiscoveredChange()
+        {
+            using var dbContext = new TestDbContext();
+            var subject = new TriggerContextTracker(dbContext.ChangeTracker, new EntityAndTypeRecursionStrategy());
+
+            var testModel = new TestModel();
+            dbContext.Entry(testModel).State = EntityState.Added;
+
+            var disoveredChanges = subject.DiscoverChanges();
+            Assert.Single(disoveredChanges);
+            Assert.Single(subject.DiscoveredChanges);
+
+            dbContext.Entry(testModel).State = EntityState.Detached;
+            subject.CaptureChanges();
+            Assert.Empty(subject.DiscoveredChanges);
+        }
+
+        [Fact]
+        public void CaptureDiscoveredChanges_DeletedEntry_UpdatesDiscoveredChange()
+        {
+            using var dbContext = new TestDbContext();
+            var subject = new TriggerContextTracker(dbContext.ChangeTracker, new EntityAndTypeRecursionStrategy());
+
+            var testModel = new TestModel();
+            dbContext.Entry(testModel).State = EntityState.Added;
+
+            var disoveredChanges = subject.DiscoverChanges();
+            Assert.Single(disoveredChanges);
+            Assert.Single(subject.DiscoveredChanges);
+
+            dbContext.Entry(testModel).State = EntityState.Deleted;
+            disoveredChanges = subject.DiscoverChanges();
+            Assert.Equal(2, subject.DiscoveredChanges.Count());
+
+            subject.CaptureChanges();
+            Assert.Single(subject.DiscoveredChanges);
+        }
     }
 }

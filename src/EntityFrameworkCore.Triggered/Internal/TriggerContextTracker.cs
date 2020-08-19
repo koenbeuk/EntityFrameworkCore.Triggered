@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using EntityFrameworkCore.Triggered.Internal.RecursionStrategy;
@@ -91,6 +93,38 @@ namespace EntityFrameworkCore.Triggered.Internal
             else
             {
                 return _discoveredChanges.Skip(startIndex);
+            }
+        }
+
+        public void CaptureChanges()
+        {
+            if (_discoveredChanges != null && _discoveredChanges.Count > 0)
+            {
+                List<TriggerContextDescriptor>? ignoreCandidates = null;
+
+                foreach (var discoveredChange in _discoveredChanges)
+                {
+                    var currentEntityEntry = _changeTracker.Context.Entry(discoveredChange.Entity);
+                    var changeType = ResolveChangeType(currentEntityEntry);
+
+                    if (changeType != discoveredChange.ChangeType)
+                    {
+                        if (ignoreCandidates == null)
+                        {
+                            ignoreCandidates = new List<TriggerContextDescriptor>();
+                        }
+
+                        ignoreCandidates.Add(discoveredChange);
+                    }
+                }
+
+                if (ignoreCandidates != null)
+                {
+                    foreach (var ignoreCandidate in ignoreCandidates)
+                    {
+                        _discoveredChanges.Remove(ignoreCandidate);
+                    }
+                }
             }
         }
 

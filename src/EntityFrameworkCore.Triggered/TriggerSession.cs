@@ -76,10 +76,10 @@ namespace EntityFrameworkCore.Triggered
                     {
                         cancellationToken.ThrowIfCancellationRequested();
 
-                        if (_logger.IsEnabled(LogLevel.Information))
-                        {
-                            _logger.LogInformation("Invoking trigger: {trigger} as {triggerType}", triggerInvocation.triggerDescriptor.GetType().Name, triggerInvocation.triggerDescriptor.TypeDescriptor.TriggerType.Name);
-                        }
+                    if (_logger.IsEnabled(LogLevel.Information))
+                    {
+                        _logger.LogInformation("Invoking trigger: {trigger} as {triggerType}", triggerInvocation.triggerDescriptor.Trigger.GetType().Name, triggerInvocation.triggerDescriptor.TypeDescriptor.TriggerType.Name);
+                    }
 
                         await triggerInvocation.triggerDescriptor.Invoke(triggerInvocation.triggerContextDescriptor.GetTriggerContext(), cancellationToken).ConfigureAwait(false);
                     }

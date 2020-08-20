@@ -13,10 +13,17 @@ namespace EntityFrameworkCore.Triggered.Tests.Stubs
     {
         public int RaiseAfterSaveTriggersCalls;
         public int RaiseBeforeSaveTriggersCalls;
+        public int CaptureDiscoveredChangesCalls;
+        public int DiscoverChangesCalls;
+
+        public void CaptureDiscoveredChanges()
+        {
+            CaptureDiscoveredChangesCalls += 1;
+        }
 
         public void DiscoverChanges()
         {
-
+            DiscoverChangesCalls += 1;
         }
 
         public void Dispose()

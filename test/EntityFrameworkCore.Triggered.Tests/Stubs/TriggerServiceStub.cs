@@ -12,12 +12,14 @@ namespace EntityFrameworkCore.Triggered.Tests.Stubs
     {
         public int CreateSessionCalls;
         public IServiceProvider ServiceProvider;
+        public TriggerSessionStub LastSession;
 
         public ITriggerSession CreateSession(DbContext context, IServiceProvider serviceProvider)
         {
             CreateSessionCalls += 1;
             ServiceProvider = serviceProvider;
-            return new TriggerSessionStub();
+            LastSession = new TriggerSessionStub();
+            return LastSession;
         }
     }
 }

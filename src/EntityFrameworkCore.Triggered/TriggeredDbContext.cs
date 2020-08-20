@@ -46,15 +46,19 @@ namespace EntityFrameworkCore.Triggered
 
         public override int SaveChanges(bool acceptAllChangesOnSuccess)
         {
+            bool createdTriggerSession = false;
+
             if (_triggerSession == null)
             {
                 var triggerService = this.GetService<ITriggerService>() ?? throw new InvalidOperationException("Triggers are not configured");
                 _triggerSession = triggerService.CreateSession(this, _triggerServiceProvider);
+                createdTriggerSession = true;
             }
 
             try
             {
                 _triggerSession.RaiseBeforeSaveTriggers(default).GetAwaiter().GetResult();
+                _triggerSession.CaptureDiscoveredChanges();
                 var result = base.SaveChanges(acceptAllChangesOnSuccess);
                 _triggerSession.RaiseAfterSaveTriggers(default).GetAwaiter().GetResult();
 
@@ -62,7 +66,10 @@ namespace EntityFrameworkCore.Triggered
             }
             finally
             {
-                _triggerSession = null;
+                if (createdTriggerSession)
+                {
+                    _triggerSession = null;
+                }
             }
         }
 
@@ -80,6 +87,7 @@ namespace EntityFrameworkCore.Triggered
             {
 
                 await _triggerSession.RaiseBeforeSaveTriggers(cancellationToken).ConfigureAwait(false);
+                _triggerSession.CaptureDiscoveredChanges();
                 var result = base.SaveChanges(acceptAllChangesOnSuccess);
                 await _triggerSession.RaiseAfterSaveTriggers(cancellationToken).ConfigureAwait(false);
 

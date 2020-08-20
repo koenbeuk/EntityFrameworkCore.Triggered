@@ -12,7 +12,10 @@ namespace PrimarySchool.Triggers
     {
         public Task BeforeSave(ITriggerContext<Student> context, CancellationToken cancellationToken)
         {
-            context.Entity.RegistrationDate = DateTime.Today;
+            if (context.ChangeType == ChangeType.Added)
+            {
+                context.Entity.RegistrationDate = DateTime.Today;
+            }
 
             return Task.CompletedTask;
         }

@@ -13,8 +13,4 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.6" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\EntityFrameworkCore.Triggered\EntityFrameworkCore.Triggered.csproj" />
-  </ItemGroup>
-
 </Project>

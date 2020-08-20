@@ -78,11 +78,6 @@ namespace EntityFrameworkCore.Triggered.Internal
 
         public void SetServiceProvider(IServiceProvider serviceProvider)
         {
-            if (_serviceProvider != null)
-            {
-                throw new InvalidOperationException("Service provider needs to be set before discovery has started");
-            }
-
             _serviceProvider = serviceProvider;
         }
     }

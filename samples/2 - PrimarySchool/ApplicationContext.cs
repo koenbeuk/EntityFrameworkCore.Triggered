@@ -41,7 +41,7 @@ namespace PrimarySchool
 
     public class ApplicationContext : TriggeredDbContext
     {
-        public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
+        public ApplicationContext(DbContextOptions<ApplicationContext> options, IServiceProvider serviceProvider) : base(options, serviceProvider)
         {
 
         }

@@ -6,9 +6,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using EntityFrameworkCore.Triggered;
 
-namespace StudentManager.Triggers
+namespace StudentManager.Triggers.Students
 {
-    public class StudentAssignRegistrationDate : IBeforeSaveTrigger<Student>
+    public class AssignRegistrationDate : IBeforeSaveTrigger<Student>
     {
         public Task BeforeSave(ITriggerContext<Student> context, CancellationToken cancellationToken)
         {

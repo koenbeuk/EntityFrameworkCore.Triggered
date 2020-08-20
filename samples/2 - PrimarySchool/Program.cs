@@ -14,12 +14,9 @@ namespace PrimarySchool
             IServiceScope serviceScope = null;
 
             var serviceProvider = new ServiceCollection()
-               .AddDbContext<ApplicationContext>(options => {
+                .AddTriggeredDbContext<ApplicationContext>(options => {
                    options
-                      .UseSqlite("Data source=test.db")
-                      .UseTriggers(triggerOptions => {
-                          triggerOptions.UseApplicationScopedServiceProviderAccessor(_ => serviceScope.ServiceProvider);
-                      });
+                      .UseSqlite("Data source=test.db");
                })
                .AddScoped<IBeforeSaveTrigger<Student>, Triggers.StudentSignupToMandatoryCourses>()
                .BuildServiceProvider();

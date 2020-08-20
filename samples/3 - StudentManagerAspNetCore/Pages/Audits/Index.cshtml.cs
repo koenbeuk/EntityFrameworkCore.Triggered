@@ -7,22 +7,22 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using StudentManager;
 
-namespace StudentManager.Pages.Courses
+namespace StudentManager.Pages
 {
-    public class IndexModel : PageModel
+    public class AuditsModel : PageModel
     {
         private readonly StudentManager.ApplicationContext _context;
 
-        public IndexModel(StudentManager.ApplicationContext context)
+        public AuditsModel(StudentManager.ApplicationContext context)
         {
             _context = context;
         }
 
-        public IList<Course> Course { get;set; }
+        public IList<Audit> Audit { get;set; }
 
         public async Task OnGetAsync()
         {
-            Course = await _context.Courses.IgnoreQueryFilters().ToListAsync();
+            Audit = await _context.Audits.ToListAsync();
         }
     }
 }

@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 using EntityFrameworkCore.Triggered;
 using Microsoft.EntityFrameworkCore;
 
-namespace StudentManager.Triggers
+namespace StudentManager.Triggers.Courses
 {
-    public class CourseAutoSignupStudents : IBeforeSaveTrigger<Course>
+    public class AutoSignupStudents : IBeforeSaveTrigger<Course>
     {
         readonly ApplicationContext _applicationContext;
 
-        public CourseAutoSignupStudents(ApplicationContext applicationContext)
+        public AutoSignupStudents(ApplicationContext applicationContext)
         {
             _applicationContext = applicationContext;
         }

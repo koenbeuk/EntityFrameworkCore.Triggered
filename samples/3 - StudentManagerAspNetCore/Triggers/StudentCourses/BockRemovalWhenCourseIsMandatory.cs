@@ -6,13 +6,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using EntityFrameworkCore.Triggered;
 
-namespace StudentManager.Triggers
+namespace StudentManager.Triggers.StudentCourses
 {
-    public class BockStudentCourseRemovalWhenCourseIsMandatory : IBeforeSaveTrigger<StudentCourse>
+    public class BockRemovalWhenCourseIsMandatory : IBeforeSaveTrigger<StudentCourse>
     {
         readonly ApplicationContext _applicationContext;
 
-        public BockStudentCourseRemovalWhenCourseIsMandatory(ApplicationContext applicationContext)
+        public BockRemovalWhenCourseIsMandatory(ApplicationContext applicationContext)
         {
             _applicationContext = applicationContext;
         }

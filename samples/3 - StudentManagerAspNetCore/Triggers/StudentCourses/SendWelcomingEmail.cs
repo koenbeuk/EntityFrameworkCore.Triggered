@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 using EntityFrameworkCore.Triggered;
 using StudentManager.Services;
 
-namespace StudentManager.Triggers
+namespace StudentManager.Triggers.StudentCourses
 {
-    public class StudentCourseSendWelcomingEmail : IAfterSaveTrigger<StudentCourse>
+    public class SendWelcomingEmail : IAfterSaveTrigger<StudentCourse>
     {
         readonly ApplicationContext _applicationContext;
         readonly EmailService _emailService;
 
-        public StudentCourseSendWelcomingEmail(ApplicationContext applicationContext, EmailService emailService)
+        public SendWelcomingEmail(ApplicationContext applicationContext, EmailService emailService)
         {
             _applicationContext = applicationContext;
             _emailService = emailService;

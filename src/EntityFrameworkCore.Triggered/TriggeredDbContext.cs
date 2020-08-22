@@ -57,9 +57,22 @@ namespace EntityFrameworkCore.Triggered
 
             try
             {
-                _triggerSession.RaiseBeforeSaveTriggers(default).GetAwaiter().GetResult();
-                _triggerSession.CaptureDiscoveredChanges();
-                var result = base.SaveChanges(acceptAllChangesOnSuccess);
+                int result;
+                var defaultAutoDetectChangesEnabled = ChangeTracker.AutoDetectChangesEnabled;
+
+                try
+                {
+                    ChangeTracker.AutoDetectChangesEnabled = false;
+
+                    _triggerSession.RaiseBeforeSaveTriggers(default).GetAwaiter().GetResult();
+                    _triggerSession.CaptureDiscoveredChanges();
+                    result = base.SaveChanges(acceptAllChangesOnSuccess);
+                }
+                finally
+                {
+                    ChangeTracker.AutoDetectChangesEnabled = defaultAutoDetectChangesEnabled;
+                }
+
                 _triggerSession.RaiseAfterSaveTriggers(default).GetAwaiter().GetResult();
 
                 return result;
@@ -86,10 +99,23 @@ namespace EntityFrameworkCore.Triggered
             try
             {
 
-                await _triggerSession.RaiseBeforeSaveTriggers(cancellationToken).ConfigureAwait(false);
-                _triggerSession.CaptureDiscoveredChanges();
-                var result = base.SaveChanges(acceptAllChangesOnSuccess);
-                await _triggerSession.RaiseAfterSaveTriggers(cancellationToken).ConfigureAwait(false);
+                int result;
+                var defaultAutoDetectChangesEnabled = ChangeTracker.AutoDetectChangesEnabled;
+
+                try
+                {
+                    ChangeTracker.AutoDetectChangesEnabled = false;
+
+                    _triggerSession.RaiseBeforeSaveTriggers(default).GetAwaiter().GetResult();
+                    _triggerSession.CaptureDiscoveredChanges();
+                    result = await base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+                }
+                finally
+                {
+                    ChangeTracker.AutoDetectChangesEnabled = defaultAutoDetectChangesEnabled;
+                }
+
+                _triggerSession.RaiseAfterSaveTriggers(default).GetAwaiter().GetResult();
 
                 return result;
             }

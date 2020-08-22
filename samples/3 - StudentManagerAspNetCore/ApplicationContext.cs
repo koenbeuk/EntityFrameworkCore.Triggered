@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using EntityFrameworkCore.Triggered;
@@ -8,38 +9,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace StudentManager
 {
-    public class Student
-    {
-        public int Id { get; set; }
-
-        public string DisplayName { get; set; }
-
-        public DateTimeOffset RegistrationDate { get; set; }
-
-        public ICollection<StudentCourse> Courses { get; set; }
-    }
-
-    public class Course
-    {
-        public int Id { get; set; }
-
-        public string DisplayName { get; set; }
-
-        public bool IsMandatory { get; set; }
-
-    }
-
-    public class StudentCourse
-    {
-        public int StudentId { get; set; }
-
-        public int CourseId { get; set; }
-
-        public Student Student { get; set; }
-
-        public Course Course { get; set; }
-    }
-
 
     public class ApplicationContext : TriggeredDbContext
     {
@@ -53,6 +22,15 @@ namespace StudentManager
             modelBuilder.Entity<StudentCourse>()
                 .HasKey(x => new { x.StudentId, x.CourseId });
 
+            modelBuilder.Entity<Audit>()
+                .HasKey(x => new { x.Discriminator, x.Id, x.RecordDate });
+
+            modelBuilder.Entity<Course>()
+                .HasQueryFilter(x => x.DeletedOn == null);
+
+            modelBuilder.Entity<StudentCourse>()
+                .HasQueryFilter(x => x.Course.DeletedOn == null);
+
             base.OnModelCreating(modelBuilder);
         }
 
@@ -61,5 +39,7 @@ namespace StudentManager
         public DbSet<Course> Courses { get; set; }
 
         public DbSet<StudentCourse> StudentCourses { get; set; }
+
+        public DbSet<Audit> Audits { get; set; }
     }
 }

@@ -1,5 +1,5 @@
 <Project>
   <PropertyGroup>
-    <EFCoreTriggeredPackageVersion Condition=" '$(EFCoreTriggeredPackageVersion )'=='' ">0.3.2</EFCoreTriggeredPackageVersion >
+    <EFCoreTriggeredPackageVersion Condition=" '$(EFCoreTriggeredPackageVersion )'=='' ">0.4.1</EFCoreTriggeredPackageVersion >
   </PropertyGroup>
 </Project>

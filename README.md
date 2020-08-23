@@ -164,7 +164,6 @@ Triggers will be executed in that order: First those for `IAnimal`, then those f
 ### Priorities
 In addition to inheritence and the order in which triggers are registered, a trigger can also implement the `ITriggerPriority` interface. This allows a trigger to configure a custom priority (default: 0). Triggers will then be executed in order of their priority (lower goes first). This means that a trigger for Cat can execute before a trigger for Animal, for as long as its priority is set to run earlier. A convenient set of priorities are exposed in the `CommonTriggerPriority` class
 
-
 ### Dependency injection
 EntityFrameworkCore.Triggered integrates itself with EntityFrameworkCore as an extension and therefore uses EntityFrameworkCore's internal ServiceCollection to register and resolve internal dependencies. Triggers are then registered with either the same ServiceCollection or one controlled by the application. when the application does not use dependency injection, the default service provider will be EF cores internal service provider. When the context gets resolved through dependency injection, the default service provider wll be a new scope from the application service provider.
 
@@ -196,3 +195,7 @@ In this example we were not able to inherit from TriggeredDbContext since we wan
 
 ### Custom trigger types
 By default we offer 2 trigger types: BeforeSaveTrigger and AfterSaveTrigger. These will cover most cases. In addition we offer RaiseBeforeCommitTrigger and RaiseAfterCommitTrigger as an extension to further enhance your control of when triggers should run. We also offer support for custom triggers. Lets say we want to react to rollbacks of transactions. We can do so by creating a new interface: IRollbackTrigger and implementing an extension method for ITriggerSession to invoke triggers of that type. Please take a look at how [Transactional triggers](https://github.com/koenbeuk/EntityFrameworkCore.Triggered/tree/master/src/EntityFrameworkCore.Triggered.Transactions) are implemented as an example.
+
+### Similar products
+- [Ramses](https://github.com/JValck/Ramses): Lifecycle hooks for EFCore. A simple yet effective way of reacting to changes. Great for situations where you simply want to make sure that a property is set before saving to the databsae. Limited though in features as there is no dependency injection, no async support, no extensibility model and lifeycle hooks need to be implemented on the entity type itself.
+- [EntityFramework.Triggers](https://github.com/NickStrupat/EntityFramework.Triggers). Add triggers to your entities with insert, update, and delete events. There are three events for each: before, after, and upon failure. A fine alternative to EntityFrameworkCore.Triggered. It has been around for some time and has support for EF6 and boast a decent community. There are plenty of trigger types to opt into including the option to cancel SaveChanges from within a trigger. A big drawback however is that it does not support recursion so that triggers can never be relied on to enforce a domain constraint.

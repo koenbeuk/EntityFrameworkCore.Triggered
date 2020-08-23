@@ -31,7 +31,7 @@ namespace StudentManager
             services.AddSingleton<EmailService>();
 
             services
-                .AddDbContext<ApplicationContext>(options => {
+                .AddDbContextPool<ApplicationContext>(options => {
                     options
                         .UseSqlite("Data source=test.db")
                         .UseTriggers(triggerOptions => {
@@ -45,7 +45,7 @@ namespace StudentManager
                 .AddScoped<IBeforeSaveTrigger<Course>, Triggers.Courses.AutoSignupStudents>()
                 .AddScoped<IBeforeSaveTrigger<Student>, Triggers.Students.AssignRegistrationDate>()
                 .AddScoped<IBeforeSaveTrigger<Student>, Triggers.Students.SignupToMandatoryCourses>()
-                .AddScoped<IBeforeSaveTrigger<StudentCourse>, Triggers.StudentCourses.BockRemovalWhenCourseIsMandatory>()
+                .AddScoped<IBeforeSaveTrigger<StudentCourse>, Triggers.StudentCourses.BlockRemovalWhenCourseIsMandatory>()
                 .AddScoped<IAfterSaveTrigger<StudentCourse>, Triggers.StudentCourses.SendWelcomingEmail>();
         }
 

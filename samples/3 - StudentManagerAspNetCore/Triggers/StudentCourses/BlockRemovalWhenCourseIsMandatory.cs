@@ -8,11 +8,11 @@ using EntityFrameworkCore.Triggered;
 
 namespace StudentManager.Triggers.StudentCourses
 {
-    public class BockRemovalWhenCourseIsMandatory : IBeforeSaveTrigger<StudentCourse>
+    public class BlockRemovalWhenCourseIsMandatory : IBeforeSaveTrigger<StudentCourse>
     {
         readonly ApplicationContext _applicationContext;
 
-        public BockRemovalWhenCourseIsMandatory(ApplicationContext applicationContext)
+        public BlockRemovalWhenCourseIsMandatory(ApplicationContext applicationContext)
         {
             _applicationContext = applicationContext;
         }

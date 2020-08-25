@@ -33,6 +33,6 @@ namespace EntityFrameworkCore.Triggered
         /// <summary>
         /// Invokes AfterSaveFailedTriggers non-recursively. Calling this method expects that either RaiseBeforeSaveTriggers() or DiscoverChanges() has been called
         /// </summary>
-        Task RaiseAfterSaveFailedTriggers(CancellationToken cancellationToken = default);
+        Task RaiseAfterSaveFailedTriggers(Exception ex, CancellationToken cancellationToken = default);
     }
 }

@@ -46,6 +46,13 @@ namespace EntityFrameworkCore.Triggered
 
         public override int SaveChanges(bool acceptAllChangesOnSuccess)
         {
+            bool RaiseAfterSavFailedTriggers()
+            {
+                _triggerSession.RaiseAfterSaveFailedTriggers(default).GetAwaiter().GetResult();
+
+                return false;
+            }
+
             bool createdTriggerSession = false;
 
             if (_triggerSession == null)
@@ -66,7 +73,15 @@ namespace EntityFrameworkCore.Triggered
 
                     _triggerSession.RaiseBeforeSaveTriggers(default).GetAwaiter().GetResult();
                     _triggerSession.CaptureDiscoveredChanges();
-                    result = base.SaveChanges(acceptAllChangesOnSuccess);
+
+                    try
+                    {
+                        result = base.SaveChanges(acceptAllChangesOnSuccess);
+                    }
+                    catch when (RaiseAfterSavFailedTriggers())
+                    {
+                        throw; // Should never reach
+                    }
                 }
                 finally
                 {
@@ -88,11 +103,9 @@ namespace EntityFrameworkCore.Triggered
 
         public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
         {
-            bool RaiseAfterSavFailedTriggers()
+            Task RaiseAfterSavFailedTriggers()
             {
-                _triggerSession.RaiseAfterSaveFailedTriggers(default).GetAwaiter().GetResult();
-
-                return false;
+                return _triggerSession.RaiseAfterSaveFailedTriggers(default);
             }
 
             bool createdTriggerSession = false;
@@ -115,11 +128,15 @@ namespace EntityFrameworkCore.Triggered
 
                     await _triggerSession.RaiseBeforeSaveTriggers(default).ConfigureAwait(false);
                     _triggerSession.CaptureDiscoveredChanges();
-                    result = await base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
-                }
-                catch when (RaiseAfterSavFailedTriggers()) 
-                {
-                    throw; // Should never reach
+
+                    try
+                    {
+                        result = await base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+                    }
+                    catch (Exception ex)
+                    {
+
+                    }
                 }
                 finally
                 {

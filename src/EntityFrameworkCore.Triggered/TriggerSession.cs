@@ -136,7 +136,7 @@ namespace EntityFrameworkCore.Triggered
             return RaiseTriggers(typeof(IAfterSaveTrigger<>), _afterSaveTriggerContextDiscoveryStrategy, entityType => new AfterSaveTriggerDescriptor(entityType), cancellationToken);
         }
 
-        public Task RaiseAfterSaveFailedTriggers(CancellationToken cancellationToken = default)
+        public Task RaiseAfterSaveFailedTriggers(Exception ex, CancellationToken cancellationToken = default)
         {
             if (_afterSaveFailedTriggerContextDiscoveryStrategy == null)
             {

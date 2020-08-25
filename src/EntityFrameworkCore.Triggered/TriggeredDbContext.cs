@@ -113,7 +113,7 @@ namespace EntityFrameworkCore.Triggered
                 {
                     ChangeTracker.AutoDetectChangesEnabled = false;
 
-                    _triggerSession.RaiseBeforeSaveTriggers(default).GetAwaiter().GetResult();
+                    await _triggerSession.RaiseBeforeSaveTriggers(default).ConfigureAwait(false);
                     _triggerSession.CaptureDiscoveredChanges();
                     result = await base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
                 }
@@ -126,7 +126,7 @@ namespace EntityFrameworkCore.Triggered
                     ChangeTracker.AutoDetectChangesEnabled = defaultAutoDetectChangesEnabled;
                 }
 
-                _triggerSession.RaiseAfterSaveTriggers(default).GetAwaiter().GetResult();
+                await _triggerSession.RaiseAfterSaveTriggers(default).ConfigureAwait(false);
 
                 return result;
             }

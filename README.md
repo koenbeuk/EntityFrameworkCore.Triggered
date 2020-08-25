@@ -99,49 +99,6 @@ public class Startup
 }
 ```
 
-### When you can't inherit from TriggeredDbContext
-```csharp
-public class ApplicationDbContext : TriggeredDbContext {
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder
-            .UseTriggers(triggerOptions => {
-                triggerOptions.AddTrigger<BeforeSaveStudentTrigger>();
-            });
-
-        base.OnConfiguring(optionsBuilder);
-    }
-
-    public override int SaveChanges(bool acceptAllChangesOnSuccess)
-    {
-        var triggerService = this.GetService<ITriggerService>() ?? throw new InvalidOperationException("Triggers are not configured");
-
-        var triggerSession = triggerService.CreateSession(this);
-
-        triggerSession.RaiseBeforeSaveTriggers(default).GetAwaiter().GetResult();
-        var result = base.SaveChanges(acceptAllChangesOnSuccess);
-        triggerSession.RaiseAfterSaveTriggers(default).GetAwaiter().GetResult();
-
-        return result;
-    }
-
-    public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
-    {
-        var triggerService = this.GetService<ITriggerService>() ?? throw new InvalidOperationException("Triggers are not configured");
-
-        var triggerSession = triggerService.CreateSession(this);
-
-        await triggerSession.RaiseBeforeSaveTriggers(default);
-        var result = base.SaveChanges(acceptAllChangesOnSuccess);
-        await triggerSession.RaiseAfterSaveTriggers(default);
-
-        return result;
-    }
-}
-```
-
-
-
 ### Recursion
 `BeforeSaveTrigger<TEntity>` supports basic recursion. This is useful since it allows your triggers to modify for applicationDbContext further and have it call additional triggers. By default this behavior is turned on and protected from infite loops by limiting the number of recursion runs. If you don't like this behavior or want to change it, you can do so by:
 ```csharp
@@ -195,6 +152,47 @@ In this example we were not able to inherit from TriggeredDbContext since we wan
 
 ### Custom trigger types
 By default we offer 2 trigger types: BeforeSaveTrigger and AfterSaveTrigger. These will cover most cases. In addition we offer RaiseBeforeCommitTrigger and RaiseAfterCommitTrigger as an extension to further enhance your control of when triggers should run. We also offer support for custom triggers. Lets say we want to react to rollbacks of transactions. We can do so by creating a new interface: IRollbackTrigger and implementing an extension method for ITriggerSession to invoke triggers of that type. Please take a look at how [Transactional triggers](https://github.com/koenbeuk/EntityFrameworkCore.Triggered/tree/master/src/EntityFrameworkCore.Triggered.Transactions) are implemented as an example.
+
+### When you can't inherit from TriggeredDbContext
+```csharp
+public class ApplicationDbContext : TriggeredDbContext {
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder
+            .UseTriggers(triggerOptions => {
+                triggerOptions.AddTrigger<BeforeSaveStudentTrigger>();
+            });
+
+        base.OnConfiguring(optionsBuilder);
+    }
+
+    public override int SaveChanges(bool acceptAllChangesOnSuccess)
+    {
+        var triggerService = this.GetService<ITriggerService>() ?? throw new InvalidOperationException("Triggers are not configured");
+
+        var triggerSession = triggerService.CreateSession(this);
+
+        triggerSession.RaiseBeforeSaveTriggers(default).GetAwaiter().GetResult();
+        var result = base.SaveChanges(acceptAllChangesOnSuccess);
+        triggerSession.RaiseAfterSaveTriggers(default).GetAwaiter().GetResult();
+
+        return result;
+    }
+
+    public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
+    {
+        var triggerService = this.GetService<ITriggerService>() ?? throw new InvalidOperationException("Triggers are not configured");
+
+        var triggerSession = triggerService.CreateSession(this);
+
+        await triggerSession.RaiseBeforeSaveTriggers(default);
+        var result = base.SaveChanges(acceptAllChangesOnSuccess);
+        await triggerSession.RaiseAfterSaveTriggers(default);
+
+        return result;
+    }
+}
+```
 
 ### Similar products
 - [Ramses](https://github.com/JValck/Ramses): Lifecycle hooks for EFCore. A simple yet effective way of reacting to changes. Great for situations where you simply want to make sure that a property is set before saving to the databsae. Limited though in features as there is no dependency injection, no async support, no extensibility model and lifeycle hooks need to be implemented on the entity type itself.

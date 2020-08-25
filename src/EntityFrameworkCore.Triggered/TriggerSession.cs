@@ -17,6 +17,7 @@ namespace EntityFrameworkCore.Triggered
         static ITriggerContextDiscoveryStrategy? _beforeSaveTriggerContextDiscoveryStrategy;
         static ITriggerContextDiscoveryStrategy? _beforeSaveTriggerContextDiscoveryStrategyWithSkipDetectedChanges; // To satisfy RaiseBeforeSaveTrigger's overload
         static ITriggerContextDiscoveryStrategy? _afterSaveTriggerContextDiscoveryStrategy;
+        static ITriggerContextDiscoveryStrategy? _afterSaveFailedTriggerContextDiscoveryStrategy;
 
         readonly TriggerOptions _options;
         readonly ITriggerDiscoveryService _triggerDiscoveryService;
@@ -133,6 +134,16 @@ namespace EntityFrameworkCore.Triggered
             }
 
             return RaiseTriggers(typeof(IAfterSaveTrigger<>), _afterSaveTriggerContextDiscoveryStrategy, entityType => new AfterSaveTriggerDescriptor(entityType), cancellationToken);
+        }
+
+        public Task RaiseAfterSaveFailedTriggers(CancellationToken cancellationToken = default)
+        {
+            if (_afterSaveFailedTriggerContextDiscoveryStrategy == null)
+            {
+                _afterSaveFailedTriggerContextDiscoveryStrategy = new NonRecursiveTriggerContextDiscoveryStrategy("AfterSaveFailed");
+            }
+
+            return RaiseTriggers(typeof(IAfterSaveTrigger<>), _afterSaveFailedTriggerContextDiscoveryStrategy, entityType => new AfterSaveFailedTriggerDescriptor(entityType), cancellationToken);
         }
     }
 }

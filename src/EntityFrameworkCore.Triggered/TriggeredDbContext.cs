@@ -88,6 +88,13 @@ namespace EntityFrameworkCore.Triggered
 
         public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
         {
+            bool RaiseAfterSavFailedTriggers()
+            {
+                _triggerSession.RaiseAfterSaveFailedTriggers(default).GetAwaiter().GetResult();
+
+                return false;
+            }
+
             bool createdTriggerSession = false;
 
             if (_triggerSession == null)
@@ -109,6 +116,10 @@ namespace EntityFrameworkCore.Triggered
                     _triggerSession.RaiseBeforeSaveTriggers(default).GetAwaiter().GetResult();
                     _triggerSession.CaptureDiscoveredChanges();
                     result = await base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+                }
+                catch when (RaiseAfterSavFailedTriggers()) 
+                {
+                    throw; // Should never reach
                 }
                 finally
                 {

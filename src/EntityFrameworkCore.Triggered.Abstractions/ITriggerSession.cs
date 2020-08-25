@@ -27,9 +27,12 @@ namespace EntityFrameworkCore.Triggered
         /// </summary>
         void CaptureDiscoveredChanges();
         /// <summary>
-        /// Invokes AfterSaveTriggers non-recursively. Calling this method expects that either RaiseBeforeSaveTriggers() or DiscoverChanges() has called
+        /// Invokes AfterSaveTriggers non-recursively. Calling this method expects that either RaiseBeforeSaveTriggers() or DiscoverChanges() has been called
         /// </summary>
-        /// <returns></returns>
         Task RaiseAfterSaveTriggers(CancellationToken cancellationToken = default);
+        /// <summary>
+        /// Invokes AfterSaveFailedTriggers non-recursively. Calling this method expects that either RaiseBeforeSaveTriggers() or DiscoverChanges() has been called
+        /// </summary>
+        Task RaiseAfterSaveFailedTriggers(CancellationToken cancellationToken = default);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection.Metadata.Ecma335;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NuGet.Frameworks;
 using Xunit;
 
 namespace EntityFrameworkCore.Triggered.Tests
@@ -309,6 +311,51 @@ namespace EntityFrameworkCore.Triggered.Tests
             await subject.RaiseAfterSaveFailedTriggers(new Exception());
 
             Assert.Equal(1, context.TriggerStub.AfterSaveFailedInvocations.Count);
+        }
+
+        [Fact]
+        public async Task RaiseBeforeSaveTriggers_OnExceptionAndRecall_SkipsPreviousTriggers()
+        {
+            var firstTrigger = new TriggerStub<TestModel> { };
+            var secondTrigger = new TriggerStub<TestModel> { };
+            var lastTrigger = new TriggerStub<TestModel> { };
+
+            secondTrigger.BeforeSaveHandler = (ctx, _) => {
+                if (secondTrigger.BeforeSaveInvocations.Count == 0)
+                {
+                    throw new Exception("oh oh!");
+                }
+
+                return Task.CompletedTask;
+            };
+
+            var serviceProvider = new ServiceCollection()
+                .AddSingleton<IBeforeSaveTrigger<TestModel>>(firstTrigger)
+                .AddSingleton<IBeforeSaveTrigger<TestModel>>(secondTrigger)
+                .AddSingleton<IBeforeSaveTrigger<TestModel>>(lastTrigger)
+                .AddTriggeredDbContext<TestDbContext>(options => {
+                    options.UseInMemoryDatabase("Test");
+                })
+                .BuildServiceProvider();
+
+            var scope = serviceProvider.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<TestDbContext>();
+            var subject = CreateSubject(dbContext);
+
+            dbContext.TestModels.Add(new TestModel { Id = 1 });
+
+            try
+            {
+                await subject.RaiseBeforeSaveTriggers();
+            }
+            catch
+            {
+                await subject.RaiseBeforeSaveTriggers();
+            }
+
+            Assert.Equal(1, firstTrigger.BeforeSaveInvocations.Count);
+            Assert.Equal(1, secondTrigger.BeforeSaveInvocations.Count);
+            Assert.Equal(1, lastTrigger.BeforeSaveInvocations.Count);
         }
     }
 }

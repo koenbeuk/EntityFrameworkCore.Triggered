@@ -11,8 +11,9 @@ namespace EntityFrameworkCore.Triggered.Tests.Stubs
 {
     public class TriggerSessionStub : ITriggerSession
     {
-        public int RaiseAfterSaveTriggersCalls;
         public int RaiseBeforeSaveTriggersCalls;
+        public int RaiseAfterSaveTriggersCalls;
+        public int RaiseAfterSaveFailedTriggersCalls;
         public int CaptureDiscoveredChangesCalls;
         public int DiscoverChangesCalls;
 
@@ -30,15 +31,27 @@ namespace EntityFrameworkCore.Triggered.Tests.Stubs
         {
         }
 
-        public Task RaiseAfterSaveTriggers(CancellationToken cancellationToken = default)
+        public Task RaiseAfterSaveFailedTriggers(Exception exception, CancellationToken cancellationToken = default)
         {
-            RaiseAfterSaveTriggersCalls += 1;
+            RaiseAfterSaveFailedTriggersCalls += 1;
             return Task.CompletedTask;
         }
 
         public Task RaiseBeforeSaveTriggers(CancellationToken cancellationToken = default)
         {
             RaiseBeforeSaveTriggersCalls += 1;
+            return Task.CompletedTask;
+        }
+
+        public Task RaiseAfterSaveTriggers(CancellationToken cancellationToken = default)
+        {
+            RaiseAfterSaveTriggersCalls += 1;
+            return Task.CompletedTask;
+        }
+
+        public Task RaiseAfterSaveFailedTriggers(CancellationToken cancellationToken = default)
+        {
+            RaiseAfterSaveFailedTriggersCalls += 1;
             return Task.CompletedTask;
         }
 

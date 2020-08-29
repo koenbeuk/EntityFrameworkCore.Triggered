@@ -11,6 +11,6 @@ namespace EntityFrameworkCore.Triggered.Internal
     public interface ITriggerTypeDescriptor
     {
         Type TriggerType { get; }
-        Task Invoke(object trigger, object triggerContext, CancellationToken cancellationToken);
+        Task Invoke(object trigger, object triggerContext, Exception? exception, CancellationToken cancellationToken);
     }
 }

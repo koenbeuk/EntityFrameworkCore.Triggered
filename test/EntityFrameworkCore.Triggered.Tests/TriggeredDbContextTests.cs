@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using EntityFrameworkCore.Triggered.Tests.Stubs;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Sqlite.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
@@ -14,7 +17,7 @@ namespace EntityFrameworkCore.Triggered.Tests
 {
     public class TriggeredDbContextTests
     {
-        class TestModel
+        public class TestModel
         {
             public Guid Id { get; set; }
             public string Name { get; set; }
@@ -29,10 +32,12 @@ namespace EntityFrameworkCore.Triggered.Tests
                 _stubService = stubService;
             }
 
-            public TestDbContext(IServiceProvider serviceProvider) : base(serviceProvider)
+            public TestDbContext(IServiceProvider serviceProvider, bool stubService = true) : base(serviceProvider)
             {
-                _stubService = true;
+                _stubService = stubService;
             }
+
+            public SqliteConnection UseSqlLiteConnection;
 
             public TriggerStub<TestModel> TriggerStub { get; } = new TriggerStub<TestModel>();
 
@@ -42,7 +47,14 @@ namespace EntityFrameworkCore.Triggered.Tests
             {
                 base.OnConfiguring(optionsBuilder);
 
-                optionsBuilder.UseInMemoryDatabase("test");
+                if (UseSqlLiteConnection != null)
+                {
+                    optionsBuilder.UseSqlite(UseSqlLiteConnection);
+                }
+                else
+                {
+                    optionsBuilder.UseInMemoryDatabase("test");
+                }
                 optionsBuilder.UseTriggers(triggerOptions => {
                     triggerOptions.AddTrigger(TriggerStub);
                 });
@@ -51,6 +63,13 @@ namespace EntityFrameworkCore.Triggered.Tests
                 {
                     optionsBuilder.ReplaceService<ITriggerService, TriggerServiceStub>();
                 }
+            }
+
+            protected override void OnModelCreating(ModelBuilder modelBuilder)
+            {
+                modelBuilder.Entity<TestModel>().HasKey(x => x.Id);
+
+                base.OnModelCreating(modelBuilder);
             }
         }
 
@@ -200,6 +219,58 @@ namespace EntityFrameworkCore.Triggered.Tests
             await subject.SaveChangesAsync();
 
             Assert.Equal(1, triggerServiceStub.LastSession.CaptureDiscoveredChangesCalls);
+        }
+
+        [Fact]
+        public void SaveChanges_OnDbUpdateException_RaisesAfterSaveFailedTriggers()
+        {
+            var serviceProvider = new ServiceCollection().BuildServiceProvider();
+            using var connection = new SqliteConnection("DataSource=:memory:");
+            connection.Open();
+
+            var prepDbContext = new TestDbContext(false) { UseSqlLiteConnection = connection };
+            prepDbContext.Database.EnsureCreated();
+            var duplicatedId = Guid.NewGuid();
+            prepDbContext.TestModels.Add(new TestModel { Id = duplicatedId });
+            prepDbContext.SaveChanges();
+
+            var subject = new TestDbContext(serviceProvider) { UseSqlLiteConnection = connection };
+            var triggerServiceStub = (TriggerServiceStub)subject.GetService<ITriggerService>();
+
+            // Inserting a model with the same Id should fail in the database
+            subject.TestModels.Add(new TestModel {
+                Id = duplicatedId,
+                Name = "test1"
+            });
+
+            Assert.Throws<DbUpdateException>(() => subject.SaveChanges());
+            Assert.Equal(1, triggerServiceStub.LastSession.RaiseAfterSaveFailedTriggersCalls);
+        }
+
+        [Fact]
+        public async Task SaveChangesAsync_OnDbUpdateException_RaisesAfterSaveFailedTriggers()
+        {
+            var serviceProvider = new ServiceCollection().BuildServiceProvider();
+            using var connection = new SqliteConnection("DataSource=:memory:");
+            connection.Open();
+
+            var prepDbContext = new TestDbContext(false) { UseSqlLiteConnection = connection };
+            prepDbContext.Database.EnsureCreated();
+            var duplicatedId = Guid.NewGuid();
+            prepDbContext.TestModels.Add(new TestModel { Id = duplicatedId });
+            prepDbContext.SaveChanges();
+
+            var subject = new TestDbContext(serviceProvider) { UseSqlLiteConnection = connection };
+            var triggerServiceStub = (TriggerServiceStub)subject.GetService<ITriggerService>();
+
+            // Inserting a model with the same Id should fail in the database
+            subject.TestModels.Add(new TestModel {
+                Id = duplicatedId,
+                Name = "test1"
+            });
+
+            await Assert.ThrowsAsync<DbUpdateException>(async () => await subject.SaveChangesAsync());
+            Assert.Equal(1, triggerServiceStub.LastSession.RaiseAfterSaveFailedTriggersCalls);
         }
     }
 }

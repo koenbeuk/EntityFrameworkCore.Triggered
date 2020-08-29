@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -24,8 +25,12 @@ namespace EntityFrameworkCore.Triggered.Internal
 
         public Type TriggerType => _triggerType;
 
-        public Task Invoke(object trigger, object triggerContext, CancellationToken cancellationToken)
-            => _invocationDelegate(trigger, triggerContext, cancellationToken);
+        public Task Invoke(object trigger, object triggerContext, Exception? exception, CancellationToken cancellationToken)
+        {
+            Debug.Assert(exception == null);
+
+            return _invocationDelegate(trigger, triggerContext, cancellationToken);
+        }
 
     }
 }

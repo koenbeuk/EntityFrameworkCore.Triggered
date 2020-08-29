@@ -37,7 +37,7 @@ namespace EntityFrameworkCore.Triggered
         public void DiscoverChanges() 
             => _tracker.DiscoverChanges().Count();
 
-        public async Task RaiseTriggers(Type openTriggerType, ITriggerContextDiscoveryStrategy triggerContextDiscoveryStrategy, Func<Type, ITriggerTypeDescriptor> triggerTypeDescriptorFactory, CancellationToken cancellationToken)
+        public async Task RaiseTriggers(Type openTriggerType, Exception? exception, ITriggerContextDiscoveryStrategy triggerContextDiscoveryStrategy, Func<Type, ITriggerTypeDescriptor> triggerTypeDescriptorFactory, CancellationToken cancellationToken)
         {
             if (triggerContextDiscoveryStrategy == null)
             {
@@ -82,7 +82,7 @@ namespace EntityFrameworkCore.Triggered
                         _logger.LogInformation("Invoking trigger: {trigger} as {triggerType}", triggerInvocation.triggerDescriptor.Trigger.GetType().Name, triggerInvocation.triggerDescriptor.TypeDescriptor.TriggerType.Name);
                     }
 
-                        await triggerInvocation.triggerDescriptor.Invoke(triggerInvocation.triggerContextDescriptor.GetTriggerContext(), cancellationToken).ConfigureAwait(false);
+                        await triggerInvocation.triggerDescriptor.Invoke(triggerInvocation.triggerContextDescriptor.GetTriggerContext(), exception, cancellationToken).ConfigureAwait(false);
                     }
                 }
 
@@ -118,7 +118,7 @@ namespace EntityFrameworkCore.Triggered
             }
 
             _raiseBeforeSaveTriggersCalled = true;
-            return RaiseTriggers(typeof(IBeforeSaveTrigger<>), strategy, entityType => new BeforeSaveTriggerDescriptor(entityType), cancellationToken);  
+            return RaiseTriggers(typeof(IBeforeSaveTrigger<>), null, strategy, entityType => new BeforeSaveTriggerDescriptor(entityType), cancellationToken);  
         }
 
         public void CaptureDiscoveredChanges()
@@ -133,17 +133,18 @@ namespace EntityFrameworkCore.Triggered
                 _afterSaveTriggerContextDiscoveryStrategy = new NonRecursiveTriggerContextDiscoveryStrategy("AfterSave");
             }
 
-            return RaiseTriggers(typeof(IAfterSaveTrigger<>), _afterSaveTriggerContextDiscoveryStrategy, entityType => new AfterSaveTriggerDescriptor(entityType), cancellationToken);
+            return RaiseTriggers(typeof(IAfterSaveTrigger<>), null, _afterSaveTriggerContextDiscoveryStrategy, entityType => new AfterSaveTriggerDescriptor(entityType), cancellationToken);
         }
 
-        public Task RaiseAfterSaveFailedTriggers(Exception ex, CancellationToken cancellationToken = default)
+        public Task RaiseAfterSaveFailedTriggers(Exception exception, CancellationToken cancellationToken = default)
         {
             if (_afterSaveFailedTriggerContextDiscoveryStrategy == null)
             {
                 _afterSaveFailedTriggerContextDiscoveryStrategy = new NonRecursiveTriggerContextDiscoveryStrategy("AfterSaveFailed");
             }
 
-            return RaiseTriggers(typeof(IAfterSaveTrigger<>), _afterSaveFailedTriggerContextDiscoveryStrategy, entityType => new AfterSaveFailedTriggerDescriptor(entityType), cancellationToken);
+            return RaiseTriggers(typeof(IAfterSaveFailedTrigger<>), exception, _afterSaveFailedTriggerContextDiscoveryStrategy, entityType => new AfterSaveFailedTriggerDescriptor(entityType, exception), cancellationToken);
+
         }
     }
 }

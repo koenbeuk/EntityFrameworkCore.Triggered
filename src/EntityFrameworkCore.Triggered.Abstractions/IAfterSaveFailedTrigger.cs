@@ -10,6 +10,6 @@ namespace EntityFrameworkCore.Triggered
     public interface IAfterSaveFailedTrigger<TEntity>
         where TEntity : class
     {
-        Task AfterSaveFailed(ITriggerContext<TEntity> context, CancellationToken cancellationToken);
+        Task AfterSaveFailed(ITriggerContext<TEntity> context, Exception exception, CancellationToken cancellationToken);
     }
 }

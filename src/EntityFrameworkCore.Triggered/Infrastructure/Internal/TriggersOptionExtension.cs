@@ -164,6 +164,7 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
 
                     var beforeSaveChangeTriggers = TypeHelpers.FindGenericInterfaces(triggerType, typeof(IBeforeSaveTrigger<>));
                     var afterSaveChangeTriggers = TypeHelpers.FindGenericInterfaces(triggerType, typeof(IAfterSaveTrigger<>));
+                    var afterSaveFailedTriggers = TypeHelpers.FindGenericInterfaces(triggerType, typeof(IAfterSaveFailedTrigger<>));
 
                     foreach (var beforeSaveChangeTrigger in beforeSaveChangeTriggers)
                     {
@@ -186,6 +187,18 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
                         else
                         {
                             services.Add(new ServiceDescriptor(afterSaveChangeTrigger, triggerType, lifetime));
+                        }
+                    }
+
+                    foreach (var afterSaveFailedTrigger in afterSaveFailedTriggers)
+                    {
+                        if (triggerInstance != null)
+                        {
+                            services.Add(new ServiceDescriptor(afterSaveFailedTrigger, triggerInstance));
+                        }
+                        else
+                        {
+                            services.Add(new ServiceDescriptor(afterSaveFailedTrigger, triggerType, lifetime));
                         }
                     }
 

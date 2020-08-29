@@ -30,8 +30,8 @@ namespace EntityFrameworkCore.Triggered.Internal
         public object Trigger => _trigger;
         public int Priority => _priority;
 
-        public Task Invoke(object triggerContext, CancellationToken cancellationToken)
-            => _triggerTypeDescriptor.Invoke(_trigger, triggerContext, cancellationToken);
+        public Task Invoke(object triggerContext, Exception? exception, CancellationToken cancellationToken)
+            => _triggerTypeDescriptor.Invoke(_trigger, triggerContext, exception, cancellationToken);
         
     }
 }

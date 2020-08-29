@@ -10,7 +10,7 @@ namespace EntityFrameworkCore.Triggered.Internal
 {
     public sealed class AfterSaveFailedTriggerDescriptor : ITriggerTypeDescriptor
     {
-        readonly Func<object, object, CancellationToken, Task> _invocationDelegate;
+        readonly Func<object, object, Exception?, CancellationToken, Task> _invocationDelegate;
         readonly Type _triggerType;
 
         public AfterSaveFailedTriggerDescriptor(Type entityType, Exception exception)
@@ -19,13 +19,13 @@ namespace EntityFrameworkCore.Triggered.Internal
             var triggerMethod = triggerType.GetMethod(nameof(IAfterSaveFailedTrigger<object>.AfterSaveFailed));
 
             _triggerType = triggerType;
-            _invocationDelegate = TriggerTypeDescriptorHelpers.GetWeakDelegate(triggerType, entityType, triggerMethod);
+            _invocationDelegate = TriggerTypeDescriptorHelpers.GetWeakDelegateWithException(triggerType, entityType, triggerMethod);
         }
 
         public Type TriggerType => _triggerType;
 
-        public Task Invoke(object trigger, object triggerContext, CancellationToken cancellationToken)
-            => _invocationDelegate(trigger, triggerContext, cancellationToken);
+        public Task Invoke(object trigger, object triggerContext, Exception? exception, CancellationToken cancellationToken)
+            => _invocationDelegate(trigger, triggerContext, exception, cancellationToken);
 
     }
 }

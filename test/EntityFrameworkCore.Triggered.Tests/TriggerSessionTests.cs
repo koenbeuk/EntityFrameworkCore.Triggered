@@ -293,5 +293,22 @@ namespace EntityFrameworkCore.Triggered.Tests
 
             Assert.Equal(2, trigger.BeforeSaveInvocations.Count);
         }
+
+        [Fact]
+        public async Task RaiseAfterSaveFailedTriggers_OnException_RaisesSubsequentTriggers()
+        {
+            using var context = new TestDbContext();
+            var subject = CreateSubject(context);
+
+            context.TestModels.Add(new TestModel {
+                Id = 1,
+                Name = "test1"
+            });
+
+            subject.DiscoverChanges();
+            await subject.RaiseAfterSaveFailedTriggers(new Exception());
+
+            Assert.Equal(1, context.TriggerStub.AfterSaveFailedInvocations.Count);
+        }
     }
 }

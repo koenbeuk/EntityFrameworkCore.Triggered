@@ -28,7 +28,7 @@ namespace EntityFrameworkCore.Triggered.Transactions.Tests.Internal
             var triggerStub = new TriggerStub<string>();
             var subject = new BeforeRollbackTriggerDescriptor(entityType);
 
-            await subject.Invoke(triggerStub, new TriggerContextStub<string>(), default);
+            await subject.Invoke(triggerStub, new TriggerContextStub<string>(), null, default);
 
             Assert.Single(triggerStub.BeforeRollbackInvocations);
         }

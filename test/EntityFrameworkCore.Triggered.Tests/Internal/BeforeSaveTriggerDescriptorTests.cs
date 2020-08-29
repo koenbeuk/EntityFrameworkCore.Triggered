@@ -29,7 +29,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
             var triggerStub = new TriggerStub<string>();
             var subject = new BeforeSaveTriggerDescriptor(entityType);
 
-            await subject.Invoke(triggerStub, new TriggerContextStub<string>(), default);
+            await subject.Invoke(triggerStub, new TriggerContextStub<string>(), null, default);
 
             Assert.Single(triggerStub.BeforeSaveInvocations);
         }

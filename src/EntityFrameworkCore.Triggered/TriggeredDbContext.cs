@@ -46,9 +46,9 @@ namespace EntityFrameworkCore.Triggered
 
         public override int SaveChanges(bool acceptAllChangesOnSuccess)
         {
-            bool RaiseAfterSavFailedTriggers()
+            bool RaiseAfterSavFailedTriggers(Exception exception)
             {
-                _triggerSession.RaiseAfterSaveFailedTriggers(default).GetAwaiter().GetResult();
+                _triggerSession.RaiseAfterSaveFailedTriggers(exception, default).GetAwaiter().GetResult();
 
                 return false;
             }
@@ -78,7 +78,7 @@ namespace EntityFrameworkCore.Triggered
                     {
                         result = base.SaveChanges(acceptAllChangesOnSuccess);
                     }
-                    catch when (RaiseAfterSavFailedTriggers())
+                    catch(Exception exception) when (RaiseAfterSavFailedTriggers(exception))
                     {
                         throw; // Should never reach
                     }
@@ -103,9 +103,9 @@ namespace EntityFrameworkCore.Triggered
 
         public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
         {
-            Task RaiseAfterSavFailedTriggers()
+            Task RaiseAfterSavFailedTriggers(Exception exception, CancellationToken cancellationToken)
             {
-                return _triggerSession.RaiseAfterSaveFailedTriggers(default);
+                return _triggerSession.RaiseAfterSaveFailedTriggers(exception, cancellationToken);
             }
 
             bool createdTriggerSession = false;
@@ -133,9 +133,10 @@ namespace EntityFrameworkCore.Triggered
                     {
                         result = await base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
                     }
-                    catch (Exception ex)
+                    catch (Exception exception)
                     {
-
+                        await RaiseAfterSavFailedTriggers(exception, cancellationToken);
+                        throw;
                     }
                 }
                 finally

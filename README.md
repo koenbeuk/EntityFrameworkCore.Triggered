@@ -156,7 +156,7 @@ await context.RaiseAfterCommitTriggers();
 In this example we were not able to inherit from TriggeredDbContext since we want to manually control the TriggerSession
 
 ### Custom trigger types
-By default we offer 2 trigger types: BeforeSaveTrigger and AfterSaveTrigger. These will cover most cases. In addition we offer RaiseBeforeCommitTrigger and RaiseAfterCommitTrigger as an extension to further enhance your control of when triggers should run. We also offer support for custom triggers. Lets say we want to react to rollbacks of transactions. We can do so by creating a new interface: IRollbackTrigger and implementing an extension method for ITriggerSession to invoke triggers of that type. Please take a look at how [Transactional triggers](https://github.com/koenbeuk/EntityFrameworkCore.Triggered/tree/master/src/EntityFrameworkCore.Triggered.Transactions) are implemented as an example.
+By default we offer 3 trigger types: `IBeforeSaveTrigger`, `IAfterSaveTrigger` and `IAfterSaveFailedTrigger`. These will cover most cases. In addition we offer `IRaiseBeforeCommitTrigger` and `IRaiseAfterCommitTrigger` as an extension to further enhance your control of when triggers should run. We also offer support for custom triggers. Lets say we want to react to rollbacks of transactions. We can do so by creating a new interface: IRollbackTrigger and implementing an extension method for ITriggerSession to invoke triggers of that type. Please take a look at how [Transactional triggers](https://github.com/koenbeuk/EntityFrameworkCore.Triggered/tree/master/src/EntityFrameworkCore.Triggered.Transactions) are implemented as an example.
 
 ### When you can't inherit from TriggeredDbContext
 ```csharp

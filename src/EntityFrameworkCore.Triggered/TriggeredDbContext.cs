@@ -51,7 +51,7 @@ namespace EntityFrameworkCore.Triggered
                 return false;
             }
 
-            bool createdTriggerSession = false;
+            var createdTriggerSession = false;
 
             if (_triggerSession == null)
             {
@@ -106,7 +106,7 @@ namespace EntityFrameworkCore.Triggered
                 return _triggerSession.RaiseAfterSaveFailedTriggers(exception, cancellationToken);
             }
 
-            bool createdTriggerSession = false;
+            var createdTriggerSession = false;
 
             if (_triggerSession == null)
             {

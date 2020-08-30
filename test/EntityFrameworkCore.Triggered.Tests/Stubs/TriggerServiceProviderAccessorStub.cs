@@ -8,7 +8,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Stubs
 
         public TriggerServiceProviderAccessorStub(IServiceProvider serviceProvider)
         {
-            this._serviceProvider = serviceProvider;
+            _serviceProvider = serviceProvider;
         }
 
         public IServiceProvider GetTriggerServiceProvider() => _serviceProvider;

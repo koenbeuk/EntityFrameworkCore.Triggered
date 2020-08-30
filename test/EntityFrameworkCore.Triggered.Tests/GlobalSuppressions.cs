@@ -5,4 +5,4 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[assembly: SuppressMessage("Usage", "EF1001:Internal EF Core API usage.", Justification = "False warning", Scope = "namespaceanddescendants", Target = "EntityFrameworkCore.Triggered.Tests")]
+[assembly: SuppressMessage("Usage", "EF1001:Internal EF Core API usage.", Justification = "False warning", Scope = "namespaceanddescendants", Target = "~N:EntityFrameworkCore.Triggered.Tests")]

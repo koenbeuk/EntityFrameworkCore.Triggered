@@ -7,7 +7,7 @@ namespace EntityFrameworkCore.Triggered.Internal
 {
     public sealed class TriggerDiscoveryService : ITriggerDiscoveryService
     {
-        static readonly TriggerDescriptorComparer _triggerDescriptorComparer = new TriggerDescriptorComparer();
+        readonly static TriggerDescriptorComparer _triggerDescriptorComparer = new TriggerDescriptorComparer();
 
         readonly ITriggerServiceProviderAccessor _triggerServiceProviderAccessor;
         readonly ITriggerTypeRegistryService _triggerTypeRegistryService;

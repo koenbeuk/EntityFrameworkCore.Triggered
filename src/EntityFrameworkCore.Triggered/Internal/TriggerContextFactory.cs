@@ -7,7 +7,7 @@ namespace EntityFrameworkCore.Triggered.Internal
     public static class TriggerContextFactory<TEntityType>
         where TEntityType : class
     {
-        static readonly Func<EntityEntry, ChangeType, TriggerContext<TEntityType>> _factoryMethod = CreateFactoryMethod();
+        readonly static Func<EntityEntry, ChangeType, TriggerContext<TEntityType>> _factoryMethod = CreateFactoryMethod();
 
         static Func<EntityEntry, ChangeType, TriggerContext<TEntityType>> CreateFactoryMethod()
         {

@@ -38,12 +38,6 @@ namespace EntityFrameworkCore.Triggered.Tests.Stubs
             return Task.CompletedTask;
         }
 
-        public Task RaiseAfterSaveFailedTriggers(CancellationToken cancellationToken = default)
-        {
-            RaiseAfterSaveFailedTriggersCalls += 1;
-            return Task.CompletedTask;
-        }
-
         public Task RaiseBeforeSaveTriggers(bool skipDetectedChanges = false, CancellationToken cancellationToken = default)
         {
             RaiseBeforeSaveTriggersCalls += 1;

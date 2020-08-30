@@ -69,16 +69,16 @@ namespace EntityFrameworkCore.Triggered
 
                 if (triggerInvocations != null)
                 {
-                    foreach (var triggerInvocation in triggerInvocations.OrderBy(x => x.triggerDescriptor.Priority))
+                    foreach (var (triggerContextDescriptor, triggerDescriptor) in triggerInvocations.OrderBy(x => x.triggerDescriptor.Priority))
                     {
                         cancellationToken.ThrowIfCancellationRequested();
 
                         if (_logger.IsEnabled(LogLevel.Information))
                         {
-                            _logger.LogInformation("Invoking trigger: {trigger} as {triggerType}", triggerInvocation.triggerDescriptor.Trigger.GetType().Name, triggerInvocation.triggerDescriptor.TypeDescriptor.TriggerType.Name);
+                            _logger.LogInformation("Invoking trigger: {trigger} as {triggerType}", triggerDescriptor.Trigger.GetType().Name, triggerDescriptor.TypeDescriptor.TriggerType.Name);
                         }
 
-                        await triggerInvocation.triggerDescriptor.Invoke(triggerInvocation.triggerContextDescriptor.GetTriggerContext(), exception, cancellationToken).ConfigureAwait(false);
+                        await triggerDescriptor.Invoke(triggerContextDescriptor.GetTriggerContext(), exception, cancellationToken).ConfigureAwait(false);
                     }
                 }
 

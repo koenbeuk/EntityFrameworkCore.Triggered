@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EntityFrameworkCore.Triggered.Tests.Stubs
 {
@@ -12,12 +8,9 @@ namespace EntityFrameworkCore.Triggered.Tests.Stubs
 
         public TriggerServiceProviderAccessorStub(IServiceProvider serviceProvider)
         {
-            this._serviceProvider = serviceProvider;
+            _serviceProvider = serviceProvider;
         }
 
-        public IServiceProvider GetTriggerServiceProvider()
-        {
-            return _serviceProvider;
-        }
+        public IServiceProvider GetTriggerServiceProvider() => _serviceProvider;
     }
 }

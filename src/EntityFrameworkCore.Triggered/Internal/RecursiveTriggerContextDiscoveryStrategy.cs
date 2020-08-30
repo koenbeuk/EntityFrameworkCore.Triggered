@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.Design;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
 namespace EntityFrameworkCore.Triggered.Internal
@@ -45,7 +40,7 @@ namespace EntityFrameworkCore.Triggered.Internal
                 }
 
                 var changes = tracker.DiscoverChanges();
-                    
+
                 // In case someone made a call to TriggerSession.DetectChanges, prior to calling RaiseBeforeSaveTriggers, we want to make sure that we include that discovery result in the first iteration
                 if (iteration == 0 && !_skipDetectedChanges)
                 {
@@ -59,7 +54,7 @@ namespace EntityFrameworkCore.Triggered.Internal
                         changes = changes.ToList();
                         _changesDetected(logger, changes.Count(), _name, iteration, maxRecursion, null);
                     }
-                     
+
                     yield return changes;
                 }
                 else

@@ -1,14 +1,10 @@
-﻿using EntityFrameworkCore.Triggered.Internal;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using EntityFrameworkCore.Triggered.Internal;
+using Microsoft.Extensions.Logging;
 
 namespace EntityFrameworkCore.Triggered
 {
@@ -34,7 +30,7 @@ namespace EntityFrameworkCore.Triggered
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public void DiscoverChanges() 
+        public void DiscoverChanges()
             => _tracker.DiscoverChanges().Count();
 
         public async Task RaiseTriggers(Type openTriggerType, Exception? exception, ITriggerContextDiscoveryStrategy triggerContextDiscoveryStrategy, Func<Type, ITriggerTypeDescriptor> triggerTypeDescriptorFactory, CancellationToken cancellationToken)
@@ -73,16 +69,16 @@ namespace EntityFrameworkCore.Triggered
 
                 if (triggerInvocations != null)
                 {
-                    foreach (var triggerInvocation in triggerInvocations.OrderBy(x => x.triggerDescriptor.Priority))
+                    foreach (var (triggerContextDescriptor, triggerDescriptor) in triggerInvocations.OrderBy(x => x.triggerDescriptor.Priority))
                     {
                         cancellationToken.ThrowIfCancellationRequested();
 
-                    if (_logger.IsEnabled(LogLevel.Information))
-                    {
-                        _logger.LogInformation("Invoking trigger: {trigger} as {triggerType}", triggerInvocation.triggerDescriptor.Trigger.GetType().Name, triggerInvocation.triggerDescriptor.TypeDescriptor.TriggerType.Name);
-                    }
+                        if (_logger.IsEnabled(LogLevel.Information))
+                        {
+                            _logger.LogInformation("Invoking trigger: {trigger} as {triggerType}", triggerDescriptor.Trigger.GetType().Name, triggerDescriptor.TypeDescriptor.TriggerType.Name);
+                        }
 
-                        await triggerInvocation.triggerDescriptor.Invoke(triggerInvocation.triggerContextDescriptor.GetTriggerContext(), exception, cancellationToken).ConfigureAwait(false);
+                        await triggerDescriptor.Invoke(triggerContextDescriptor.GetTriggerContext(), exception, cancellationToken).ConfigureAwait(false);
                     }
                 }
 
@@ -118,13 +114,10 @@ namespace EntityFrameworkCore.Triggered
             }
 
             _raiseBeforeSaveTriggersCalled = true;
-            return RaiseTriggers(typeof(IBeforeSaveTrigger<>), null, strategy, entityType => new BeforeSaveTriggerDescriptor(entityType), cancellationToken);  
+            return RaiseTriggers(typeof(IBeforeSaveTrigger<>), null, strategy, entityType => new BeforeSaveTriggerDescriptor(entityType), cancellationToken);
         }
 
-        public void CaptureDiscoveredChanges()
-        {
-            _tracker.CaptureChanges();
-        }
+        public void CaptureDiscoveredChanges() => _tracker.CaptureChanges();
 
         public Task RaiseAfterSaveTriggers(CancellationToken cancellationToken = default)
         {

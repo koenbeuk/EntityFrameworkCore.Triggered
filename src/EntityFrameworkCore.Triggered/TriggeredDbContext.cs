@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -53,7 +51,7 @@ namespace EntityFrameworkCore.Triggered
                 return false;
             }
 
-            bool createdTriggerSession = false;
+            var createdTriggerSession = false;
 
             if (_triggerSession == null)
             {
@@ -78,7 +76,7 @@ namespace EntityFrameworkCore.Triggered
                     {
                         result = base.SaveChanges(acceptAllChangesOnSuccess);
                     }
-                    catch(Exception exception) when (RaiseAfterSavFailedTriggers(exception))
+                    catch (Exception exception) when (RaiseAfterSavFailedTriggers(exception))
                     {
                         throw; // Should never reach
                     }
@@ -108,7 +106,7 @@ namespace EntityFrameworkCore.Triggered
                 return _triggerSession.RaiseAfterSaveFailedTriggers(exception, cancellationToken);
             }
 
-            bool createdTriggerSession = false;
+            var createdTriggerSession = false;
 
             if (_triggerSession == null)
             {

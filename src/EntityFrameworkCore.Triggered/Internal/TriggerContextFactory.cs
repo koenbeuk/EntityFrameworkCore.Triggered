@@ -1,17 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace EntityFrameworkCore.Triggered.Internal
 {
     public static class TriggerContextFactory<TEntityType>
-        where TEntityType: class
+        where TEntityType : class
     {
-        static readonly Func<EntityEntry, ChangeType, TriggerContext<TEntityType>> _factoryMethod = CreateFactoryMethod();
+        readonly static Func<EntityEntry, ChangeType, TriggerContext<TEntityType>> _factoryMethod = CreateFactoryMethod();
 
         static Func<EntityEntry, ChangeType, TriggerContext<TEntityType>> CreateFactoryMethod()
         {

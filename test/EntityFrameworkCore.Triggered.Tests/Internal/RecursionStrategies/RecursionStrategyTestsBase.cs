@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using EntityFrameworkCore.Triggered.Internal;
+﻿using EntityFrameworkCore.Triggered.Internal;
 using EntityFrameworkCore.Triggered.Internal.RecursionStrategy;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
@@ -18,10 +13,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal.RecursionStrategies
         {
             public DbSet<TestModel> TestModels { get; set; }
 
-            protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-            {
-                optionsBuilder.UseInMemoryDatabase("test");
-            }
+            protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.UseInMemoryDatabase("test");
         }
 
         protected abstract IRecursionStrategy CreateSubject();

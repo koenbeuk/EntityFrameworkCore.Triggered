@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using EntityFrameworkCore.Triggered.Infrastructure;
 using EntityFrameworkCore.Triggered.Infrastructure.Internal;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace EntityFrameworkCore.Triggered.Tests.Infrastructure

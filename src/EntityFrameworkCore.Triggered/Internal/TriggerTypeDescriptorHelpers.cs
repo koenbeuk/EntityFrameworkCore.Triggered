@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace EntityFrameworkCore.Triggered.Internal
 {
@@ -36,7 +33,7 @@ namespace EntityFrameworkCore.Triggered.Internal
             where TTriggerType : class
         {
             var invocationDelegate = (Func<TTriggerType, TTriggerContext, CancellationToken, Task>)Delegate.CreateDelegate(typeof(Func<TTriggerType, TTriggerContext, CancellationToken, Task>), method);
-            
+
             Func<object, object, CancellationToken, Task> result = (object trigger, object triggerContext, CancellationToken cancellationToken) => invocationDelegate((TTriggerType)trigger, (TTriggerContext)triggerContext, cancellationToken);
             return result;
         }

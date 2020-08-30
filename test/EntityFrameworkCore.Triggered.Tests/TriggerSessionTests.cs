@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection.Metadata.Ecma335;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using EntityFrameworkCore.Triggered.Tests.Stubs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using NuGet.Frameworks;
 using Xunit;
 
 namespace EntityFrameworkCore.Triggered.Tests
@@ -244,7 +239,7 @@ namespace EntityFrameworkCore.Triggered.Tests
                     options.UseInMemoryDatabase("Test");
                 })
                 .BuildServiceProvider();
-             
+
             var scope = serviceProvider.CreateScope();
             var dbContext = scope.ServiceProvider.GetRequiredService<TestDbContext>();
             var subject = CreateSubject(dbContext);

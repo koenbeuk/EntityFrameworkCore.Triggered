@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using EntityFrameworkCore.Triggered.Infrastructure;
 using EntityFrameworkCore.Triggered.Transactions;
 
@@ -10,7 +6,7 @@ namespace Microsoft.EntityFrameworkCore
 {
     public static class TriggersContextOptionsBuilderExtensions
     {
-        public static TriggersContextOptionsBuilder UseTransactionTriggers(this TriggersContextOptionsBuilder triggersContextOptionsBuilder) 
+        public static TriggersContextOptionsBuilder UseTransactionTriggers(this TriggersContextOptionsBuilder triggersContextOptionsBuilder)
         {
             if (triggersContextOptionsBuilder is null)
             {

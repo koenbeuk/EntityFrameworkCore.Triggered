@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -78,7 +76,7 @@ namespace EntityFrameworkCore.Triggered
                     {
                         result = base.SaveChanges(acceptAllChangesOnSuccess);
                     }
-                    catch(Exception exception) when (RaiseAfterSavFailedTriggers(exception))
+                    catch (Exception exception) when (RaiseAfterSavFailedTriggers(exception))
                     {
                         throw; // Should never reach
                     }

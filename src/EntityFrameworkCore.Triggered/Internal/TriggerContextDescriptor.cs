@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace EntityFrameworkCore.Triggered.Internal
@@ -20,7 +16,7 @@ namespace EntityFrameworkCore.Triggered.Internal
         {
             _entityEntry = entityEntry;
             _changeType = changeType;
-            
+
         }
 
         public ChangeType ChangeType => _changeType;

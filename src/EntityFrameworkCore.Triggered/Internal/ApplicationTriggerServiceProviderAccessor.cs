@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Runtime.Serialization;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -13,7 +10,7 @@ namespace EntityFrameworkCore.Triggered.Internal
     {
         readonly IServiceProvider _rootServiceProvider;
         readonly Func<IServiceProvider, IServiceProvider>? _scopedServiceProviderTransform;
-        
+
         IServiceScope? _serviceScope;
         IServiceProvider? _applicationScopedServiceProvider;
 
@@ -28,7 +25,7 @@ namespace EntityFrameworkCore.Triggered.Internal
             var coreOptionsExtension = dbContextOptions.FindExtension<CoreOptionsExtension>();
 
             _rootServiceProvider = coreOptionsExtension.ApplicationServiceProvider ?? internalServiceProvider;
-            _scopedServiceProviderTransform = scopedServiceProviderTransform;           
+            _scopedServiceProviderTransform = scopedServiceProviderTransform;
         }
 
         public IServiceProvider GetTriggerServiceProvider()
@@ -50,7 +47,7 @@ namespace EntityFrameworkCore.Triggered.Internal
             return _applicationScopedServiceProvider;
         }
 
-        public void Dispose() 
+        public void Dispose()
             => _serviceScope?.Dispose();
 
         public void ResetState()

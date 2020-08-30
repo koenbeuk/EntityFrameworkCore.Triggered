@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace EntityFrameworkCore.Triggered.Internal
@@ -76,9 +70,6 @@ namespace EntityFrameworkCore.Triggered.Internal
             }
         }
 
-        public void SetServiceProvider(IServiceProvider serviceProvider)
-        {
-            _serviceProvider = serviceProvider;
-        }
+        public void SetServiceProvider(IServiceProvider serviceProvider) => _serviceProvider = serviceProvider;
     }
 }

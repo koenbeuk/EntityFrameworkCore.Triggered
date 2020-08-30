@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 
 namespace EntityFrameworkCore.Triggered.Tests.Stubs
 {
@@ -17,15 +12,9 @@ namespace EntityFrameworkCore.Triggered.Tests.Stubs
         public int CaptureDiscoveredChangesCalls;
         public int DiscoverChangesCalls;
 
-        public void CaptureDiscoveredChanges()
-        {
-            CaptureDiscoveredChangesCalls += 1;
-        }
+        public void CaptureDiscoveredChanges() => CaptureDiscoveredChangesCalls += 1;
 
-        public void DiscoverChanges()
-        {
-            DiscoverChangesCalls += 1;
-        }
+        public void DiscoverChanges() => DiscoverChangesCalls += 1;
 
         public void Dispose()
         {

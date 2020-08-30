@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
@@ -29,7 +24,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Infrastructure
                 optionsActionsCalled = true;
                 options.UseInMemoryDatabase("test");
             });
-            
+
             var serviceProvider = subject.BuildServiceProvider();
             var context = serviceProvider.GetRequiredService<TestDbContext>();
 

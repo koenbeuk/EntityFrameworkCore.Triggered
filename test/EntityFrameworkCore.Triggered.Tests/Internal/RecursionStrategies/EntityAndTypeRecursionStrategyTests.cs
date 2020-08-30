@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using EntityFrameworkCore.Triggered.Internal.RecursionStrategy;
-using Xunit;
+﻿using EntityFrameworkCore.Triggered.Internal.RecursionStrategy;
 
 namespace EntityFrameworkCore.Triggered.Tests.Internal.RecursionStrategies
 {

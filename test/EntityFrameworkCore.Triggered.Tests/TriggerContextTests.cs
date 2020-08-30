@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using EntityFrameworkCore.Triggered.Internal;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Xunit;
 
 namespace EntityFrameworkCore.Triggered.Tests.Internal
@@ -17,10 +11,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
         {
             public DbSet<TestModel> TestModels { get; set; }
 
-            protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-            {
-                optionsBuilder.UseInMemoryDatabase("test");
-            }
+            protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.UseInMemoryDatabase("test");
         }
 
         [Fact]
@@ -82,7 +73,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
             sample1.Name = "test2";
 
             dbContext.SaveChanges();
-             
+
             Assert.NotNull(subject.UnmodifiedEntity);
             Assert.Equal("test1", subject.UnmodifiedEntity.Name);
         }

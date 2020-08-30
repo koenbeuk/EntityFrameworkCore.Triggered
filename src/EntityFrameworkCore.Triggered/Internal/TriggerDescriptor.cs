@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -19,7 +14,7 @@ namespace EntityFrameworkCore.Triggered.Internal
         {
             _triggerTypeDescriptor = triggerTypeDescriptor ?? throw new ArgumentNullException(nameof(triggerTypeDescriptor));
             _trigger = trigger ?? throw new ArgumentNullException(nameof(trigger));
-            
+
             if (_trigger is ITriggerPriority triggerPriority)
             {
                 _priority = triggerPriority.Priority;
@@ -32,6 +27,6 @@ namespace EntityFrameworkCore.Triggered.Internal
 
         public Task Invoke(object triggerContext, Exception? exception, CancellationToken cancellationToken)
             => _triggerTypeDescriptor.Invoke(_trigger, triggerContext, exception, cancellationToken);
-        
+
     }
 }

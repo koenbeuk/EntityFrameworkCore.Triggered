@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using EntityFrameworkCore.Triggered.Internal;
 using EntityFrameworkCore.Triggered.Tests.Stubs;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,10 +18,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
                 _serviceProvider = serviceProvider;
             }
 
-            public IServiceProvider GetTriggerServiceProvider()
-            {
-                return _serviceProvider;
-            }
+            public IServiceProvider GetTriggerServiceProvider() => _serviceProvider;
         }
 
         [Fact]
@@ -34,9 +29,9 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
                 .BuildServiceProvider();
 
             var subject = new TriggerDiscoveryService(new TriggerServiceProviderAccessor(serviceProvider), new TriggerTypeRegistryService());
-            
+
             var result = subject.DiscoverTriggers(typeof(IBeforeSaveTrigger<>), typeof(string), type => new BeforeSaveTriggerDescriptor(type));
-            
+
             Assert.Single(result);
         }
 

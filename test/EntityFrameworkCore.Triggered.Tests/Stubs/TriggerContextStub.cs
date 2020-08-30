@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace EntityFrameworkCore.Triggered.Tests.Stubs
+﻿namespace EntityFrameworkCore.Triggered.Tests.Stubs
 {
     public class TriggerContextStub<TEntity> : ITriggerContext<TEntity>
         where TEntity : class

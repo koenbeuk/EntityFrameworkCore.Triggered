@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using EntityFrameworkCore.Triggered.Internal;
-using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace EntityFrameworkCore.Triggered.Tests.Internal
@@ -12,12 +7,12 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
     public class TriggerTypeRegistryTests
     {
         public class BaseType { }
-        public class DerivedType : BaseType {  }
-        public interface IInterfaceType {  }
-        public class BaseTypeWithInterface : IInterfaceType {  }
-        public class DerivedTypeWithInterface : BaseTypeWithInterface, IInterfaceType {  }
+        public class DerivedType : BaseType { }
+        public interface IInterfaceType { }
+        public class BaseTypeWithInterface : IInterfaceType { }
+        public class DerivedTypeWithInterface : BaseTypeWithInterface, IInterfaceType { }
 
-        TriggerTypeRegistry CreateSubject<TType>() 
+        TriggerTypeRegistry CreateSubject<TType>()
             => new TriggerTypeRegistry(typeof(TType), type => new BeforeSaveTriggerDescriptor(type));
 
         [Fact]

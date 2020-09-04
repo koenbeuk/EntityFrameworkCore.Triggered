@@ -32,6 +32,10 @@ namespace EntityFrameworkCore.Triggered.Benchmarks
                     options
                         .UseInMemoryDatabase(nameof(WithDbContextWithTriggers));
                 })
+                .AddDbContext<RamsesApplicationContext>(options => {
+                    options
+                        .UseInMemoryDatabase(nameof(RamsesApplicationContext));
+                })
                 .AddSingleton<IBeforeSaveTrigger<Student>, Triggers.SetStudentRegistrationDateTrigger>()
                 .AddScoped<IBeforeSaveTrigger<Student>, Triggers.SignStudentUpForMandatoryCourses>()
                 .AddTriggers()
@@ -196,6 +200,56 @@ namespace EntityFrameworkCore.Triggered.Benchmarks
             {
                 using var scope = _serviceProvider.CreateScope();
                 using var context = scope.ServiceProvider.GetRequiredService<TriggeredApplicationContext>();
+
+                Validate(context);
+            }
+        }
+
+
+        [Benchmark]
+        public void WithRamsesDbContext()
+        {
+            // setup
+            {
+                using var scope = _serviceProvider.CreateScope();
+                using var context = scope.ServiceProvider.GetRequiredService<RamsesApplicationContext>();
+
+                context.Database.EnsureDeleted();
+
+                context.Courses.Add(new Course { Id = Guid.NewGuid(), DisplayName = "Test", IsMandatory = true });
+                context.SaveChanges();
+            }
+
+            // execute
+            for (var outerBatch = 0; outerBatch < OuterBatches; outerBatch++)
+            {
+                using var scope = _serviceProvider.CreateScope();
+                using var context = scope.ServiceProvider.GetRequiredService<RamsesApplicationContext>();
+
+                for (var innerBatch = 0; innerBatch < InnerBatches; innerBatch++)
+                {
+                    var student = new Student { Id = Guid.NewGuid(), DisplayName = "Test" };
+
+                    context.Add(student);
+
+                    var mandatoryCourses = context.Courses.Where(x => x.IsMandatory).ToList();
+
+                    foreach (var mandatoryCourse in mandatoryCourses)
+                    {
+                        context.StudentCourses.Add(new StudentCourse {
+                            CourseId = mandatoryCourse.Id,
+                            StudentId = student.Id
+                        });
+                    }
+                }
+
+                context.SaveChanges();
+            }
+
+            // validate
+            {
+                using var scope = _serviceProvider.CreateScope();
+                using var context = scope.ServiceProvider.GetRequiredService<RamsesApplicationContext>();
 
                 Validate(context);
             }

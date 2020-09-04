@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
 using EntityFrameworkCore.Triggered.Tests.Stubs;
@@ -351,6 +352,49 @@ namespace EntityFrameworkCore.Triggered.Tests
             Assert.Equal(1, firstTrigger.BeforeSaveInvocations.Count);
             Assert.Equal(1, secondTrigger.BeforeSaveInvocations.Count);
             Assert.Equal(1, lastTrigger.BeforeSaveInvocations.Count);
+        }
+
+        [Fact]
+        public void RaiseAfterSaveTriggers_ModifiedEntity_HasAccessToUnmodifiedEntity()
+        {
+            ITriggerContext<TestModel> _capturedTriggerContext = null;
+
+            var trigger = new TriggerStub<TestModel> {
+                AfterSaveHandler = (context, _) => {
+                    _capturedTriggerContext = context;
+                    return Task.CompletedTask;
+                }
+            };
+
+            var serviceProvider = new ServiceCollection()
+                .AddSingleton<IAfterSaveTrigger<TestModel>>(trigger)
+                .AddTriggeredDbContext<TestDbContext>(options => {
+                    options.UseInMemoryDatabase("Test");
+                })
+                .BuildServiceProvider();
+
+            var scope = serviceProvider.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<TestDbContext>();
+            var subject = CreateSubject(dbContext);
+            var testModel = new TestModel { Id = 1, Name = "test1" };
+
+            dbContext.TestModels.Add(testModel);
+            dbContext.SaveChanges();
+
+            // act
+
+            testModel.Name = "test2";
+            
+            subject.DiscoverChanges();
+            dbContext.SaveChanges();
+            subject.RaiseAfterSaveTriggers().GetAwaiter().GetResult();
+
+            // assert
+
+            Assert.NotNull(_capturedTriggerContext);
+            Assert.Equal(ChangeType.Modified, _capturedTriggerContext.ChangeType);
+            Assert.Equal("test1", _capturedTriggerContext.UnmodifiedEntity.Name);
+            Assert.Equal("test2", _capturedTriggerContext.Entity.Name);
         }
     }
 }

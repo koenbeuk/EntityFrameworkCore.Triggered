@@ -32,6 +32,10 @@ namespace EntityFrameworkCore.Triggered.Benchmarks
                     options
                         .UseInMemoryDatabase(nameof(WithDbContextWithTriggers));
                 })
+                .AddDbContext<RamsesApplicationContext>(options => {
+                    options
+                        .UseInMemoryDatabase(nameof(RamsesApplicationContext));
+                })
                 .AddTriggers()
                 .BuildServiceProvider();
         }
@@ -113,6 +117,13 @@ namespace EntityFrameworkCore.Triggered.Benchmarks
         public void WithTriggeredDbContext()
         {
             Execute<TriggeredApplicationContext>();
+        }
+        
+
+        [Benchmark]
+        public void WithRamsesDbContext()
+        {
+            Execute<RamsesApplicationContext>();
         }
     }
 }

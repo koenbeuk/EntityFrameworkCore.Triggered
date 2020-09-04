@@ -31,7 +31,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
             using var dbContext = new TestDbContext();
             var entityEntry = dbContext.Entry(new TestModel { });
 
-            var result = TriggerContextFactory<object>.Activate(entityEntry, ChangeType.Added);
+            var result = TriggerContextFactory<object>.Activate(entityEntry, entityEntry.OriginalValues, ChangeType.Added);
 
             Assert.NotNull(result);
         }

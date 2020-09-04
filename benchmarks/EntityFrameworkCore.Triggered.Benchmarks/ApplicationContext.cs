@@ -2,19 +2,26 @@
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using Com.Setarit.Ramses;
+using Com.Setarit.Ramses.LifecycleListener;
 using EntityFrameworkCore.Triggers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace EntityFrameworkCore.Triggered.Benchmarks
 {
-    public class Student
+    public class Student : Com.Setarit.Ramses.LifecycleListener.IBeforeAddingListener
     {
         public Guid Id { get; set; }
 
         public string DisplayName { get; set; }
 
         public DateTimeOffset RegistrationDate { get; set; }
+
+        void IBeforeAddingListener.BeforeAdding()
+        {
+            this.RegistrationDate = DateTimeOffset.Now;
+        }
     }
 
     public class Course
@@ -97,6 +104,29 @@ namespace EntityFrameworkCore.Triggered.Benchmarks
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<StudentCourse>().HasKey(x => new { x.StudentId, x.CourseId });
+        }
+
+        public DbSet<Student> Students { get; set; }
+
+        public DbSet<Course> Courses { get; set; }
+
+        public DbSet<StudentCourse> StudentCourses { get; set; }
+    }
+
+    public class RamsesApplicationContext : LifecycleDbContext, IApplicationContextContract
+    {
+        public RamsesApplicationContext(DbContextOptions<RamsesApplicationContext> options) : base(options)
+        {
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<StudentCourse>().HasKey(x => new { x.StudentId, x.CourseId });
+        }
+
+        public override int SaveChanges()
+        {
+            return base.SaveWithLifecycles();
         }
 
         public DbSet<Student> Students { get; set; }

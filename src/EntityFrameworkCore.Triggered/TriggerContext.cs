@@ -10,14 +10,14 @@ namespace EntityFrameworkCore.Triggered
         readonly TEntity? _unmodifiedEntity;
 
 
-        public TriggerContext(EntityEntry entityEntry, ChangeType changeType)
+        public TriggerContext(object entity, PropertyValues? originalValues, ChangeType changeType)
         {
             _type = changeType;
-            _entity = (TEntity)entityEntry.Entity;
+            _entity = (TEntity)entity;
 
-            if (changeType != ChangeType.Added)
+            if (originalValues != null && changeType != ChangeType.Added)
             {
-                _unmodifiedEntity = (TEntity)entityEntry.OriginalValues.ToObject();
+                _unmodifiedEntity = (TEntity)originalValues.ToObject();
             }
         }
 

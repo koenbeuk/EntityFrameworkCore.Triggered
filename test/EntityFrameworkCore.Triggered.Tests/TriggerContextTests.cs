@@ -19,7 +19,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
         {
             using var dbContext = new TestDbContext();
             var sample1 = new TestModel() { Id = 1 };
-            var subject = new TriggerContext<object>(dbContext.Entry(sample1), ChangeType.Added);
+            var subject = new TriggerContext<object>(dbContext.Entry(sample1).Entity, dbContext.Entry(sample1).OriginalValues, ChangeType.Added);
 
             Assert.Null(subject.UnmodifiedEntity);
         }
@@ -29,7 +29,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
         {
             using var dbContext = new TestDbContext();
             var sample1 = new TestModel();
-            var subject = new TriggerContext<object>(dbContext.Entry(sample1), ChangeType.Deleted);
+            var subject = new TriggerContext<object>(dbContext.Entry(sample1).Entity, dbContext.Entry(sample1).OriginalValues, ChangeType.Deleted);
 
             Assert.NotNull(subject.UnmodifiedEntity);
         }
@@ -39,7 +39,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
         {
             using var dbContext = new TestDbContext();
             var sample1 = new TestModel();
-            var subject = new TriggerContext<object>(dbContext.Entry(sample1), ChangeType.Modified);
+            var subject = new TriggerContext<object>(dbContext.Entry(sample1).Entity, dbContext.Entry(sample1).OriginalValues, ChangeType.Modified);
 
             Assert.NotNull(subject.UnmodifiedEntity);
         }
@@ -52,7 +52,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
             dbContext.Add(sample1);
             dbContext.SaveChanges();
 
-            var subject = new TriggerContext<TestModel>(dbContext.Entry(sample1), ChangeType.Modified);
+            var subject = new TriggerContext<TestModel>(dbContext.Entry(sample1).Entity, dbContext.Entry(sample1).OriginalValues, ChangeType.Modified);
             sample1.Name = "test2";
 
             Assert.NotNull(subject.UnmodifiedEntity);
@@ -69,7 +69,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
             dbContext.Add(sample1);
             dbContext.SaveChanges();
 
-            var subject = new TriggerContext<TestModel>(dbContext.Entry(sample1), ChangeType.Modified);
+            var subject = new TriggerContext<TestModel>(dbContext.Entry(sample1).Entity, dbContext.Entry(sample1).OriginalValues, ChangeType.Modified);
             sample1.Name = "test2";
 
             dbContext.SaveChanges();
@@ -83,7 +83,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
         {
             using var dbContext = new TestDbContext();
             var sample1 = new TestModel();
-            var subject = new TriggerContext<object>(dbContext.Entry(sample1), default);
+            var subject = new TriggerContext<object>(dbContext.Entry(sample1).Entity, dbContext.Entry(sample1).OriginalValues, default);
 
             Assert.NotNull(subject.Entity);
         }
@@ -93,7 +93,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
         {
             using var dbContext = new TestDbContext();
             var sample1 = new TestModel();
-            var subject = new TriggerContext<object>(dbContext.Entry(sample1), ChangeType.Modified);
+            var subject = new TriggerContext<object>(dbContext.Entry(sample1).Entity, dbContext.Entry(sample1).OriginalValues, ChangeType.Modified);
 
             Assert.Equal(ChangeType.Modified, subject.ChangeType);
         }

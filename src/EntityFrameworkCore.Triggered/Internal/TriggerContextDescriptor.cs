@@ -7,16 +7,17 @@ namespace EntityFrameworkCore.Triggered.Internal
     public readonly struct TriggerContextDescriptor
     {
         [ThreadStatic]
-        static Dictionary<Type, Func<EntityEntry, ChangeType, object>>? _cachedTriggerContextFactories;
+        static Dictionary<Type, Func<object, PropertyValues?, ChangeType, object>>? _cachedTriggerContextFactories;
 
         readonly EntityEntry _entityEntry;
         readonly ChangeType _changeType;
+        readonly PropertyValues? _originalValues;
 
         public TriggerContextDescriptor(EntityEntry entityEntry, ChangeType changeType)
         {
             _entityEntry = entityEntry;
             _changeType = changeType;
-
+            _originalValues = entityEntry.OriginalValues.Clone();
         }
 
         public ChangeType ChangeType => _changeType;
@@ -26,7 +27,8 @@ namespace EntityFrameworkCore.Triggered.Internal
         public object GetTriggerContext()
         {
             var entityEntry = _entityEntry;
-            var changeType = ChangeType;
+            var changeType = _changeType;
+            var originalValues = _originalValues;
 
             if (entityEntry == null)
             {
@@ -37,19 +39,19 @@ namespace EntityFrameworkCore.Triggered.Internal
 
             if (_cachedTriggerContextFactories == null)
             {
-                _cachedTriggerContextFactories = new Dictionary<Type, Func<EntityEntry, ChangeType, object>>();
+                _cachedTriggerContextFactories = new Dictionary<Type, Func<object, PropertyValues?, ChangeType, object>>();
             }
 
             if (!_cachedTriggerContextFactories.TryGetValue(entityType, out var triggerContextFactory))
             {
-                triggerContextFactory = (Func<EntityEntry, ChangeType, object>)typeof(TriggerContextFactory<>).MakeGenericType(entityType)
+                triggerContextFactory = (Func<object, PropertyValues?, ChangeType, object>)typeof(TriggerContextFactory<>).MakeGenericType(entityType)
                     .GetMethod(nameof(TriggerContextFactory<object>.Activate))
-                    .CreateDelegate(typeof(Func<EntityEntry, ChangeType, object>));
+                    .CreateDelegate(typeof(Func<object, PropertyValues?, ChangeType, object>));
 
                 _cachedTriggerContextFactories.Add(entityType, triggerContextFactory);
             }
 
-            return triggerContextFactory(entityEntry, changeType);
+            return triggerContextFactory(entityEntry.Entity, originalValues, changeType);
         }
     }
 }

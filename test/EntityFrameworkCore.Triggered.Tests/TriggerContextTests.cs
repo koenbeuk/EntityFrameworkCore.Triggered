@@ -69,7 +69,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
             dbContext.Add(sample1);
             dbContext.SaveChanges();
 
-            var subject = new TriggerContext<TestModel>(dbContext.Entry(sample1).Entity, dbContext.Entry(sample1).OriginalValues, ChangeType.Modified);
+            var subject = new TriggerContext<TestModel>(dbContext.Entry(sample1).Entity, dbContext.Entry(sample1).OriginalValues.Clone(), ChangeType.Modified);
             sample1.Name = "test2";
 
             dbContext.SaveChanges();

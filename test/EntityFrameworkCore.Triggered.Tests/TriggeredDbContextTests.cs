@@ -3,8 +3,10 @@ using System.Threading.Tasks;
 using EntityFrameworkCore.Triggered.Tests.Stubs;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Xunit;
 
 namespace EntityFrameworkCore.Triggered.Tests
@@ -21,7 +23,7 @@ namespace EntityFrameworkCore.Triggered.Tests
         {
             readonly bool _stubService;
 
-            public TestDbContext(bool stubService)
+            public TestDbContext(bool stubService = true)
             {
                 _stubService = stubService;
             }
@@ -40,6 +42,10 @@ namespace EntityFrameworkCore.Triggered.Tests
             protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
             {
                 base.OnConfiguring(optionsBuilder);
+
+                optionsBuilder.ConfigureWarnings(warningOptions => {
+                    warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
+                });
 
                 if (UseSqlLiteConnection != null)
                 {
@@ -265,6 +271,24 @@ namespace EntityFrameworkCore.Triggered.Tests
 
             await Assert.ThrowsAsync<DbUpdateException>(async () => await subject.SaveChangesAsync());
             Assert.Equal(1, triggerServiceStub.LastSession.RaiseAfterSaveFailedTriggersCalls);
+        }
+
+        [Fact]
+        public void SetTriggerServiceProvider_CallsCapturedChanges()
+        {
+            var serviceProvider = new ServiceCollection().BuildServiceProvider();
+
+            var subject = new TestDbContext();
+            var triggerServiceStub = (TriggerServiceStub)subject.GetService<ITriggerService>();
+
+            subject.TestModels.Add(new TestModel {
+                Id = Guid.NewGuid(),
+                Name = "test1"
+            });
+
+            subject.SaveChanges();
+
+            Assert.Equal(1, triggerServiceStub.LastSession.CaptureDiscoveredChangesCalls);
         }
     }
 }

@@ -4,6 +4,13 @@ Triggers for EF Core. Respond to changes in your ApplicationDbContext before and
 [![NuGet version (EntityFrameworkCore.Triggered)](https://img.shields.io/nuget/v/EntityFrameworkCore.Triggered.svg?style=flat-square)](https://www.nuget.org/packages/EntityFrameworkCore.Triggered/)
 [![Build status](https://github.com/koenbeuk/EntityFrameworkCore.Triggered/workflows/.NET%20Core/badge.svg)](https://github.com/koenbeuk/EntityFrameworkCore.Triggered/actions?query=workflow%3A%22.NET+Core%22)
 
+## NuGet packages
+- EntityFrameworkCore.Triggered [![NuGet version](https://img.shields.io/nuget/v/EntityFrameworkCore.Triggered.svg?style=flat-square)](https://www.nuget.org/packages/EntityFrameworkCore.Triggered/)
+- EntityFrameworkCore.Triggered.Abstractions [![NuGet version](https://img.shields.io/nuget/v/EntityFrameworkCore.Triggered.Abstractions.svg?style=flat-square)](https://www.nuget.org/packages/EntityFrameworkCore.Triggered.Abstractions/)
+- EntityFrameworkCore.Triggered.Transactions [![NuGet version](https://img.shields.io/nuget/v/EntityFrameworkCore.Triggered.Transactions.svg?style=flat-square)](https://www.nuget.org/packages/EntityFrameworkCore.Triggered.Transactions/)
+- EntityFrameworkCore.Triggered.Transactions.Abstractions [![NuGet version](https://img.shields.io/nuget/v/EntityFrameworkCore.Triggered.Transactions.Abstractions?style=flat-square)](https://www.nuget.org/packages/EntityFrameworkCore.Triggered.Transactions.Abstractions/)
+- EntityFrameworkCore.Triggered.AspNetCore [![NuGet version](https://img.shields.io/nuget/v/EntityFrameworkCore.Triggered.AspNetCore.svg?style=flat-square)](https://www.nuget.org/packages/EntityFrameworkCore.Triggered.AspNetCore/)
+
 ## Getting started
 1. Install the package from [NuGet](https://www.nuget.org/packages/EntityFrameworkCore.Triggered)
 2. Make your DbContext extend from `TriggeredDbContext` (Or read on to learn alternative ways of getting started)

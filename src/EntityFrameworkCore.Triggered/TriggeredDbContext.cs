@@ -8,7 +8,7 @@ namespace EntityFrameworkCore.Triggered
 {
     public abstract class TriggeredDbContext : DbContext
     {
-        readonly IServiceProvider? _triggerServiceProvider;
+        IServiceProvider? _triggerServiceProvider;
         ITriggerSession? _triggerSession;
 
         protected TriggeredDbContext()
@@ -40,6 +40,11 @@ namespace EntityFrameworkCore.Triggered
             }
 
             base.OnConfiguring(optionsBuilder);
+        }
+
+        public void SetTriggerServiceProvider(IServiceProvider? serviceProvider)
+        {
+            _triggerServiceProvider = serviceProvider;
         }
 
         public override int SaveChanges(bool acceptAllChangesOnSuccess)

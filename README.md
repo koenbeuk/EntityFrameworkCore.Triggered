@@ -27,7 +27,7 @@ class BeforeSaveStudentTrigger : IBeforeSaveTrigger<Student>
             context.Entity.RegistrationDate = DateTimeOffset.Today;
         }
         else if (contexType == ChangeType.Modified) {
-            if (context.Entity.Entity.Name != context.UnmodifiedEntity.Name) {
+            if (context.Entity.Entity.Name != context.UnmodifiedEntity.Name) { 
                 context.Entity.PreviousName = context.Entity.UnmodifiedEntity.Name;
             }
         }

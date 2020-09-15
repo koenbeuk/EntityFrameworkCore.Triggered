@@ -14,7 +14,9 @@ namespace EntityFrameworkCore.Triggered.AspNetCore.Tests.Extensions
             public Guid Id { get; set; }
         }
 
+#pragma warning disable CS0618 // Type or member is obsolete
         public class TestDbContext : TriggeredDbContext
+#pragma warning restore CS0618 // Type or member is obsolete
         {
             public TestDbContext(DbContextOptions options) : base(options)
             {

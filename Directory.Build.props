@@ -1,8 +1,10 @@
 <Project>
+
   <PropertyGroup>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <LangVersion>8.0</LangVersion>
     <Nullable>enable</Nullable>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -13,22 +15,11 @@
     <Authors>Koen Bekkenutte</Authors>
     <PackageTags>EntityFramework;EFCore;Triggers;SQLServer;SqlLite;CosmosDb;.NET Core;aspnetcore</PackageTags>
     <PackageProjectUrl>https://github.com/koenbeuk/EntityFrameworkCore.Triggered</PackageProjectUrl>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <SignAssembly>true</SignAssembly>
-    <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
-    <AssemblyOriginatorKeyFile>../../EntityFrameworkCore.Triggered.snk</AssemblyOriginatorKeyFile>
-    <EmbedUntrackedSources>True</EmbedUntrackedSources>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
-    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  <PropertyGroup>
+    <EFCore5PackageVersion>5.0.0-rc.1.20451.13</EFCore5PackageVersion>
+    <EFCore3PackageVersion>3.1.0</EFCore3PackageVersion>
+    <EFCorePackageVersion Condition=" '$(EFCorePackageVersion)'=='' ">$(EFCore5PackageVersion)</EFCorePackageVersion>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-  </ItemGroup>
-
 </Project>

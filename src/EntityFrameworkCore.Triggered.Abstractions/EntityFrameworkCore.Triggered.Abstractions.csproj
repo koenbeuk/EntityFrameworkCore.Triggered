@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>EntityFrameworkCore.Triggered</RootNamespace>
+    <Configurations>Debug;Release;Debug EFCore5</Configurations>
   </PropertyGroup>
 
 </Project>

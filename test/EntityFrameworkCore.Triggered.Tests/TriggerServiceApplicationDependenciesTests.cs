@@ -10,7 +10,9 @@ namespace EntityFrameworkCore.Triggered.Tests
     {
         class TestModel { public int Id { get; set; } }
 
+#pragma warning disable CS0618 // Type or member is obsolete
         class TestDbContext : TriggeredDbContext
+#pragma warning restore CS0618 // Type or member is obsolete
         {
             public TestDbContext(DbContextOptions options)
                 : base(options)

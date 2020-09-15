@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using EntityFrameworkCore.Triggered.Internal;
 using EntityFrameworkCore.Triggered.Internal.RecursionStrategy;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -130,6 +131,11 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
             services.TryAddSingleton<ITriggerTypeRegistryService, TriggerTypeRegistryService>();
             services.TryAddScoped<ITriggerDiscoveryService, TriggerDiscoveryService>();
             services.TryAddScoped<ITriggerService, TriggerService>();
+
+#if EFCORE5
+            services.TryAddScoped<IInterceptor, TriggerSessionSaveChangesInterceptor>();
+#endif
+
 
             services.Configure<TriggerOptions>(triggerServiceOptions => {
                 triggerServiceOptions.MaxRecursion = _maxRecursion;

@@ -7,8 +7,9 @@ namespace EntityFrameworkCore.Triggered.Tests.Infrastructure
 {
     public class ServiceCollectionExtensionsTests
     {
-
+#pragma warning disable CS0618 // Type or member is obsolete
         class TestDbContext : TriggeredDbContext
+#pragma warning restore CS0618 // Type or member is obsolete
         {
             public TestDbContext(DbContextOptions options) : base(options)
             {

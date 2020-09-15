@@ -47,7 +47,10 @@ namespace EntityFrameworkCore.Triggered.Internal
         private void DelistTriggerSession(DbContextEventData eventData)
         {
             Debug.Assert(_triggerSession != null);
+
+#if DEBUG
             Debug.Assert(_capturedDbContext == eventData.Context);
+#endif
 
             _parallelSaveChangesCount -= 1;
             

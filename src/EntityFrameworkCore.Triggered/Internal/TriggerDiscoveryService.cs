@@ -54,7 +54,10 @@ namespace EntityFrameworkCore.Triggered.Internal
                             triggerDescriptors = new List<TriggerDescriptor>(triggers.Count());
                         }
 
-                        triggerDescriptors.Add(new TriggerDescriptor(triggerTypeDescriptor, trigger));
+                        if (trigger != null)
+                        {
+                            triggerDescriptors.Add(new TriggerDescriptor(triggerTypeDescriptor, trigger));
+                        }
                     }
                 }
 

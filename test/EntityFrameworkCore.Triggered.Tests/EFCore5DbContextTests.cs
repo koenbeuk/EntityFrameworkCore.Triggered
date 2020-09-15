@@ -11,7 +11,7 @@ using Xunit;
 
 namespace EntityFrameworkCore.Triggered.Tests
 {
-    public class TriggeredDbContextTests
+    public class EFCore5DbContextTests
     {
         public class TestModel
         {
@@ -20,7 +20,7 @@ namespace EntityFrameworkCore.Triggered.Tests
         }
 
 #pragma warning disable CS0618 // Type or member is obsolete
-        class TestDbContext : TriggeredDbContext
+        class TestDbContext : DbContext
 #pragma warning restore CS0618 // Type or member is obsolete
         {
             readonly bool _stubService;
@@ -29,13 +29,6 @@ namespace EntityFrameworkCore.Triggered.Tests
             {
                 _stubService = stubService;
             }
-
-            public TestDbContext(IServiceProvider serviceProvider, bool stubService = true) : base(serviceProvider)
-            {
-                _stubService = stubService;
-            }
-
-            public SqliteConnection UseSqlLiteConnection;
 
             public TriggerStub<TestModel> TriggerStub { get; } = new TriggerStub<TestModel>();
 
@@ -49,14 +42,7 @@ namespace EntityFrameworkCore.Triggered.Tests
                     warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
                 });
 
-                if (UseSqlLiteConnection != null)
-                {
-                    optionsBuilder.UseSqlite(UseSqlLiteConnection);
-                }
-                else
-                {
-                    optionsBuilder.UseInMemoryDatabase("test");
-                }
+                optionsBuilder.UseInMemoryDatabase("test");
                 optionsBuilder.UseTriggers(triggerOptions => {
                     triggerOptions.AddTrigger(TriggerStub);
                 });
@@ -166,113 +152,6 @@ namespace EntityFrameworkCore.Triggered.Tests
             await subject.SaveChangesAsync();
 
             Assert.Equal(1, subject.TriggerStub.BeforeSaveInvocations.Count);
-        }
-
-        [Fact]
-        public void SaveChanges_CapturedServiceProvider_Forwards()
-        {
-            var serviceProvider = new ServiceCollection().BuildServiceProvider();
-
-            var subject = new TestDbContext(serviceProvider);
-            var triggerServiceStub = (TriggerServiceStub)subject.GetService<ITriggerService>();
-
-            subject.TestModels.Add(new TestModel {
-                Id = Guid.NewGuid(),
-                Name = "test1"
-            });
-
-            subject.SaveChanges();
-
-            Assert.Equal(serviceProvider, triggerServiceStub.ServiceProvider);
-        }
-
-
-        [Fact]
-        public void SaveChanges_CallsCapturedChanges()
-        {
-            var serviceProvider = new ServiceCollection().BuildServiceProvider();
-
-            var subject = new TestDbContext(serviceProvider);
-            var triggerServiceStub = (TriggerServiceStub)subject.GetService<ITriggerService>();
-
-            subject.TestModels.Add(new TestModel {
-                Id = Guid.NewGuid(),
-                Name = "test1"
-            });
-
-            subject.SaveChanges();
-
-            Assert.Equal(1, triggerServiceStub.LastSession.CaptureDiscoveredChangesCalls);
-        }
-
-        [Fact]
-        public async Task SaveChangesAysnc_CallsCapturedChanges()
-        {
-            var serviceProvider = new ServiceCollection().BuildServiceProvider();
-
-            var subject = new TestDbContext(serviceProvider);
-            var triggerServiceStub = (TriggerServiceStub)subject.GetService<ITriggerService>();
-
-            subject.TestModels.Add(new TestModel {
-                Id = Guid.NewGuid(),
-                Name = "test1"
-            });
-
-            await subject.SaveChangesAsync();
-
-            Assert.Equal(1, triggerServiceStub.LastSession.CaptureDiscoveredChangesCalls);
-        }
-
-        [Fact]
-        public void SaveChanges_OnDbUpdateException_RaisesAfterSaveFailedTriggers()
-        {
-            var serviceProvider = new ServiceCollection().BuildServiceProvider();
-            using var connection = new SqliteConnection("DataSource=:memory:");
-            connection.Open();
-
-            var prepDbContext = new TestDbContext(false) { UseSqlLiteConnection = connection };
-            prepDbContext.Database.EnsureCreated();
-            var duplicatedId = Guid.NewGuid();
-            prepDbContext.TestModels.Add(new TestModel { Id = duplicatedId });
-            prepDbContext.SaveChanges();
-
-            var subject = new TestDbContext(serviceProvider) { UseSqlLiteConnection = connection };
-            var triggerServiceStub = (TriggerServiceStub)subject.GetService<ITriggerService>();
-
-            // Inserting a model with the same Id should fail in the database
-            subject.TestModels.Add(new TestModel {
-                Id = duplicatedId,
-                Name = "test1"
-            });
-
-            Assert.Throws<DbUpdateException>(() => subject.SaveChanges());
-            Assert.Equal(1, triggerServiceStub.LastSession.RaiseAfterSaveFailedTriggersCalls);
-        }
-
-        [Fact]
-        public async Task SaveChangesAsync_OnDbUpdateException_RaisesAfterSaveFailedTriggers()
-        {
-            var serviceProvider = new ServiceCollection().BuildServiceProvider();
-            using var connection = new SqliteConnection("DataSource=:memory:");
-            connection.Open();
-
-            var prepDbContext = new TestDbContext(false) { UseSqlLiteConnection = connection };
-            prepDbContext.Database.EnsureCreated();
-            var duplicatedId = Guid.NewGuid();
-            prepDbContext.TestModels.Add(new TestModel { Id = duplicatedId });
-            prepDbContext.SaveChanges();
-
-            var subject = new TestDbContext(serviceProvider) { UseSqlLiteConnection = connection };
-            var triggerServiceStub = (TriggerServiceStub)subject.GetService<ITriggerService>();
-
-            // Inserting a model with the same Id should fail in the database
-            subject.TestModels.Add(new TestModel {
-                Id = duplicatedId,
-                Name = "test1"
-            });
-
-            await Assert.ThrowsAsync<DbUpdateException>(async () => await subject.SaveChangesAsync());
-            Assert.Equal(1, triggerServiceStub.LastSession.RaiseAfterSaveFailedTriggersCalls);
         }
 
         [Fact]

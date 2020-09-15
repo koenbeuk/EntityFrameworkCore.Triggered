@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 namespace EntityFrameworkCore.Triggered.Internal
 {
 #if EFCORE5
+#pragma warning disable CS0618 // Type or member is obsolete (TriggeredDbContext with EFCore5)
     public class TriggerSessionSaveChangesInterceptor : ISaveChangesInterceptor
     {
 #if DEBUG
@@ -59,13 +60,12 @@ namespace EntityFrameworkCore.Triggered.Internal
 
         public InterceptionResult<int> SavingChanges(DbContextEventData eventData, InterceptionResult<int> result)
         {
-#pragma warning disable CS0618 // Type or member is obsolete
             if (!(eventData.Context is TriggeredDbContext))
-#pragma warning restore CS0618 // Type or member is obsolete
             {
                 EnlistTriggerSession(eventData);
 
                 _triggerSession!.RaiseBeforeSaveTriggers().GetAwaiter().GetResult();
+                _triggerSession.CaptureDiscoveredChanges();
 
                 return result;
             }
@@ -75,13 +75,12 @@ namespace EntityFrameworkCore.Triggered.Internal
 
         public async ValueTask<InterceptionResult<int>> SavingChangesAsync(DbContextEventData eventData, InterceptionResult<int> result, CancellationToken cancellationToken = default)
         {
-#pragma warning disable CS0618 // Type or member is obsolete
             if (!(eventData.Context is TriggeredDbContext))
-#pragma warning restore CS0618 // Type or member is obsolete
             {
                 EnlistTriggerSession(eventData);
 
                 await _triggerSession!.RaiseBeforeSaveTriggers(cancellationToken).ConfigureAwait(false);
+                _triggerSession.CaptureDiscoveredChanges();
             }
 
             return result;
@@ -89,9 +88,7 @@ namespace EntityFrameworkCore.Triggered.Internal
 
         public int SavedChanges(SaveChangesCompletedEventData eventData, int result)
         {
-#pragma warning disable CS0618 // Type or member is obsolete
             if (!(eventData.Context is TriggeredDbContext))
-#pragma warning restore CS0618 // Type or member is obsolete
             {
                 Debug.Assert(_triggerSession != null);
 
@@ -105,9 +102,7 @@ namespace EntityFrameworkCore.Triggered.Internal
 
         public async ValueTask<int> SavedChangesAsync(SaveChangesCompletedEventData eventData, int result, CancellationToken cancellationToken = default)
         {
-#pragma warning disable CS0618 // Type or member is obsolete
             if (!(eventData.Context is TriggeredDbContext))
-#pragma warning restore CS0618 // Type or member is obsolete
             {
                 EnlistTriggerSession(eventData);
 
@@ -121,9 +116,7 @@ namespace EntityFrameworkCore.Triggered.Internal
 
         public void SaveChangesFailed(DbContextErrorEventData eventData)
         {
-#pragma warning disable CS0618 // Type or member is obsolete
             if (!(eventData.Context is TriggeredDbContext))
-#pragma warning restore CS0618 // Type or member is obsolete
             {
                 EnlistTriggerSession(eventData);
 
@@ -135,9 +128,7 @@ namespace EntityFrameworkCore.Triggered.Internal
 
         public async Task SaveChangesFailedAsync(DbContextErrorEventData eventData, CancellationToken cancellationToken = default)
         {
-#pragma warning disable CS0618 // Type or member is obsolete
             if (!(eventData.Context is TriggeredDbContext))
-#pragma warning restore CS0618 // Type or member is obsolete
             {
                 EnlistTriggerSession(eventData);
 
@@ -147,5 +138,6 @@ namespace EntityFrameworkCore.Triggered.Internal
             }
         }
     }
+#pragma warning restore CS0618 // Type or member is obsolete
 #endif
 }

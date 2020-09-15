@@ -8,7 +8,7 @@ namespace EntityFrameworkCore.Triggered
 {
 
 #if EFCORE5
-    [Obsolete("With the release of EntityFrameworkCore 5 and SaveChangesInterceptor, we no longer need to derive our DbContext from TriggeredDbContext")]
+    //[Obsolete("With the release of EntityFrameworkCore 5 and SaveChangesInterceptor, we no longer need to derive our DbContext from TriggeredDbContext")]
 #endif
     public abstract class TriggeredDbContext : DbContext
     {

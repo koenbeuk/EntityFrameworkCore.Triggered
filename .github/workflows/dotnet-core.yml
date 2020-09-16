@@ -40,7 +40,7 @@ jobs:
       - name: Build
         run: dotnet build --configuration Release --no-restore EntityFrameworkCore.Triggered.sln
       - name: Test
-        run: dotnet test --no-build --verbosity normal EntityFrameworkCore.Triggered.sln
+        run: dotnet test --no-restore --verbosity normal EntityFrameworkCore.Triggered.sln
       - name: Pack
         if: matrix.os == 'ubuntu-latest'
         run: | 

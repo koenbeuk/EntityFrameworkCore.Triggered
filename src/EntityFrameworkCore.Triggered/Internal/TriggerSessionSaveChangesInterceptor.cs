@@ -67,8 +67,19 @@ namespace EntityFrameworkCore.Triggered.Internal
             {
                 EnlistTriggerSession(eventData);
 
-                _triggerSession!.RaiseBeforeSaveTriggers().GetAwaiter().GetResult();
-                _triggerSession.CaptureDiscoveredChanges();
+                var defaultAutoDetectChangesEnabled = eventData.Context.ChangeTracker.AutoDetectChangesEnabled;
+
+                try
+                {
+                    eventData.Context.ChangeTracker.AutoDetectChangesEnabled = false;
+
+                    _triggerSession!.RaiseBeforeSaveTriggers().GetAwaiter().GetResult();
+                    _triggerSession.CaptureDiscoveredChanges();
+                }
+                finally
+                {
+                    eventData.Context.ChangeTracker.AutoDetectChangesEnabled = defaultAutoDetectChangesEnabled;
+                }
 
                 return result;
             }
@@ -82,8 +93,17 @@ namespace EntityFrameworkCore.Triggered.Internal
             {
                 EnlistTriggerSession(eventData);
 
-                await _triggerSession!.RaiseBeforeSaveTriggers(cancellationToken).ConfigureAwait(false);
-                _triggerSession.CaptureDiscoveredChanges();
+                var defaultAutoDetectChangesEnabled = eventData.Context.ChangeTracker.AutoDetectChangesEnabled;
+
+                try
+                {
+                    await _triggerSession!.RaiseBeforeSaveTriggers(cancellationToken).ConfigureAwait(false);
+                    _triggerSession.CaptureDiscoveredChanges();
+                }
+                finally
+                {
+                    eventData.Context.ChangeTracker.AutoDetectChangesEnabled = defaultAutoDetectChangesEnabled;
+                }
             }
 
             return result;

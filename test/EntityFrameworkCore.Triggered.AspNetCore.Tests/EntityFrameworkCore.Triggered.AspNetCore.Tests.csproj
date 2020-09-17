@@ -4,11 +4,17 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <IsPackable>false</IsPackable>
     <Nullable>disable</Nullable>
-    <Configurations>Debug;Release;Debug EFCore5</Configurations>
   </PropertyGroup>
 
+  <ItemGroup Condition=" '$(EFCoreTriggeredVersion)' == '1' ">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="$(EFCore3PackageVersion)" />
+  </ItemGroup>
+
+   <ItemGroup Condition=" '$(EFCoreTriggeredVersion)' == '2' ">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="$(EFCore5PackageVersion)" />
+  </ItemGroup>
+
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="$(EFCorePackageVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
     <PackageReference Include="xunit" Version="2.4.0" />

@@ -132,7 +132,7 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
             services.TryAddScoped<ITriggerDiscoveryService, TriggerDiscoveryService>();
             services.TryAddScoped<ITriggerService, TriggerService>();
 
-#if EFCORE5
+#if EFCORETRIGGERED2
             services.TryAddScoped<IInterceptor, TriggerSessionSaveChangesInterceptor>();
 #endif
 

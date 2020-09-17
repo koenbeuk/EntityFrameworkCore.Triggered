@@ -6,16 +6,10 @@
     <Nullable>disable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup Condition=" '$(EFCoreTriggeredVersion)' == '1' ">
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="$(EFCore3PackageVersion)" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="$(EFCore3PackageVersion)" />
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="$(EFCorePackageVersion)" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="$(EFCorePackageVersion)" />
   </ItemGroup>
-
-   <ItemGroup Condition=" '$(EFCoreTriggeredVersion)' == '2' ">
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="$(EFCore5PackageVersion)" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="$(EFCore5PackageVersion)" />
-  </ItemGroup>
-  
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />

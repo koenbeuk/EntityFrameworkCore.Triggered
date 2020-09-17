@@ -16,9 +16,21 @@
     <PackageProjectUrl>https://github.com/koenbeuk/EntityFrameworkCore.Triggered</PackageProjectUrl>
   </PropertyGroup>
 
+ 
   <PropertyGroup>
-    <EFCoreTriggeredVersion Condition=" '$(EFCoreTriggeredVersion)'=='' ">2</EFCoreTriggeredVersion>
-    <EFCore5PackageVersion>5.0.0-rc.1.20451.13</EFCore5PackageVersion>
-    <EFCore3PackageVersion>3.1.0</EFCore3PackageVersion>
+    <EFCoreTriggeredVersion>2</EFCoreTriggeredVersion>
+    <EFCorePackageVersion>5.0.0-rc.1.20451.13</EFCorePackageVersion>
+  </PropertyGroup> 
+
+  <PropertyGroup Condition=" '$(Configuration)' == 'DebugV1' Or '$(Configuration)' == 'ReleaseV1' ">
+    <EFCoreTriggeredVersion>1</EFCoreTriggeredVersion>
+    <EFCorePackageVersion>3.1.0</EFCorePackageVersion>
   </PropertyGroup>
+  
+  <Target Name="Debug">  
+    <Message Importance="High" Text="Configuration: $(Configuration)" />
+    <Message Importance="High" Text="EFCoreTriggeredVersion: $(EFCoreTriggeredVersion)" />
+    <Message Importance="High" Text="EFCorePackageVersion: $(EFCorePackageVersion)" />
+  </Target>
+
 </Project>

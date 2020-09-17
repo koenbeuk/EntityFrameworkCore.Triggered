@@ -6,12 +6,8 @@
     <Nullable>disable</Nullable>
   </PropertyGroup>
   
-  <ItemGroup Condition=" '$(EFCoreTriggeredVersion)' == '1' ">
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="$(EFCore3PackageVersion)" />
-  </ItemGroup>
-
-   <ItemGroup Condition=" '$(EFCoreTriggeredVersion)' == '2' ">
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="$(EFCore5PackageVersion)" />
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="$(EFCorePackageVersion)" />
   </ItemGroup>
 
   <ItemGroup>

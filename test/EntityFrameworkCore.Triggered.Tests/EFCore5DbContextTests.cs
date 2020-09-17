@@ -11,6 +11,7 @@ using Xunit;
 
 namespace EntityFrameworkCore.Triggered.Tests
 {
+#if EFCORETRIGGERED2
     public class EFCore5DbContextTests
     {
         public class TestModel
@@ -172,4 +173,5 @@ namespace EntityFrameworkCore.Triggered.Tests
             Assert.Equal(1, triggerServiceStub.LastSession.CaptureDiscoveredChangesCalls);
         }
     }
+#endif
 }

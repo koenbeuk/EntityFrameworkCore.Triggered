@@ -28,6 +28,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
         dotnet: [3.1.x, 5.0.100-rc.1.20452.10]
+        version: [1, 2]
     runs-on:  ${{ matrix.os }}
 
     steps:
@@ -37,15 +38,15 @@ jobs:
         with:
           dotnet-version: ${{ matrix.dotnet }}
       - name: Install dependencies
-        run: dotnet restore EntityFrameworkCore.Triggered.sln
+        run: dotnet restore -p:EFCoreTriggeredVersion=${{ matrix.version }} EntityFrameworkCore.Triggered.sln
       - name: Build
-        run: dotnet build --configuration Release --no-restore EntityFrameworkCore.Triggered.sln
+        run: dotnet build --configuration Release --no-restore -p:EFCoreTriggeredVersion=${{ matrix.version }} EntityFrameworkCore.Triggered.sln
       - name: Test
-        run: dotnet test --configuration Release --no-build --verbosity normal EntityFrameworkCore.Triggered.sln
+        run: dotnet test --configuration Release --verbosity normal -p:EFCoreTriggeredVersion=${{ matrix.version }} EntityFrameworkCore.Triggered.sln
       - name: Pack
         if: matrix.os == 'ubuntu-latest'
         run: | 
-          dotnet pack -v normal -c Release --include-symbols --include-source -p:PackageVersion=$GITHUB_RUN_ID -o nupkg EntityFrameworkCore.Triggered.sln
+          dotnet pack -v normal -c Release --include-symbols --include-source -p:PackageVersion=$GITHUB_RUN_ID -p:EFCoreTriggeredVersion=${{ matrix.version }} -o nupkg EntityFrameworkCore.Triggered.sln
       - name: Upload Artifact
         if: matrix.os == 'ubuntu-latest'
         uses: actions/upload-artifact@v2

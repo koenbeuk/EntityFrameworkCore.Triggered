@@ -35,6 +35,7 @@ namespace EntityFrameworkCore.Triggered.AspNetCore.Tests.Extensions
                 .AddSingleton<IHttpContextAccessor, Stubs.HttpContextAccessorStub>()
                 .AddAspNetCoreTriggeredDbContext<TestDbContext>(options => {
                     options.UseInMemoryDatabase("Test");
+                    options.EnableServiceProviderCaching(false);
                 })
                 .AddTransient<IBeforeSaveTrigger<TestModel>>(serviceProvider => {
                     capturedServiceProvider = serviceProvider;

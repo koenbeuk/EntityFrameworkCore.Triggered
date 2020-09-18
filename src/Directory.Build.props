@@ -1,16 +1,14 @@
 <Project>
   <Import Project="..\Directory.Build.props" />
-
-  <PropertyGroup>
-    <TargetFrameworks>netstandard2.1;netstandard2.0</TargetFrameworks>
-  </PropertyGroup>
   
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
-    <DefineConstants>EFCORE3_1</DefineConstants>
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <DefineConstants>EFCORETRIGGERED2</DefineConstants>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard2.1' ">
-    <DefineConstants>EFCORE5</DefineConstants>
+  <PropertyGroup Condition=" '$(EFCoreTriggeredVersion)' == '1' ">
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <DefineConstants>EFCORETRIGGERED1</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup>

@@ -11,6 +11,7 @@ using Xunit;
 
 namespace EntityFrameworkCore.Triggered.Tests
 {
+#if EFCORETRIGGERED2
     public class EFCore5DbContextTests
     {
         public class TestModel
@@ -38,11 +39,8 @@ namespace EntityFrameworkCore.Triggered.Tests
             {
                 base.OnConfiguring(optionsBuilder);
 
-                optionsBuilder.ConfigureWarnings(warningOptions => {
-                    warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
-                });
-
                 optionsBuilder.UseInMemoryDatabase("test");
+                optionsBuilder.EnableServiceProviderCaching(false);
                 optionsBuilder.UseTriggers(triggerOptions => {
                     triggerOptions.AddTrigger(TriggerStub);
                 });
@@ -172,4 +170,5 @@ namespace EntityFrameworkCore.Triggered.Tests
             Assert.Equal(1, triggerServiceStub.LastSession.CaptureDiscoveredChangesCalls);
         }
     }
+#endif
 }

@@ -1,9 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <Configurations>Debug;Release;Debug EFCore5</Configurations>
-  </PropertyGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\EntityFrameworkCore.Triggered.Transactions.Abstractions\EntityFrameworkCore.Triggered.Transactions.Abstractions.csproj" />
     <ProjectReference Include="..\EntityFrameworkCore.Triggered\EntityFrameworkCore.Triggered.csproj" />

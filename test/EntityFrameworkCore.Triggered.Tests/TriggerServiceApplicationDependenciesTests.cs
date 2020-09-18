@@ -29,8 +29,8 @@ namespace EntityFrameworkCore.Triggered.Tests
             var applicationServiceProvider = new ServiceCollection()
                 .AddDbContext<TestDbContext>(options => {
                     options.UseInMemoryDatabase("Test");
-                    options.UseTriggers(triggerOptions => {
-                    });
+                    options.UseTriggers();
+                    options.EnableServiceProviderCaching(false);
                 })
                 .AddScoped<IBeforeSaveTrigger<TestModel>, Stubs.TriggerStub<TestModel>>()
                 .BuildServiceProvider();
@@ -53,6 +53,7 @@ namespace EntityFrameworkCore.Triggered.Tests
                 .AddDbContextPool<TestDbContext>(options => {
                     options.UseInMemoryDatabase("Test");
                     options.UseTriggers();
+                    options.EnableServiceProviderCaching(false);
                 })
                 .AddScoped<IBeforeSaveTrigger<TestModel>, TriggerStub<TestModel>>()
                 .BuildServiceProvider();
@@ -80,6 +81,7 @@ namespace EntityFrameworkCore.Triggered.Tests
                     options.UseTriggers(triggerOptions => {
                         triggerOptions.UseApplicationScopedServiceProviderAccessor(_ => scopedServiceProvider);
                     });
+                    options.EnableServiceProviderCaching(false);
                 })
                 .AddScoped<IBeforeSaveTrigger<TestModel>, Stubs.TriggerStub<TestModel>>()
                 .BuildServiceProvider();
@@ -108,6 +110,7 @@ namespace EntityFrameworkCore.Triggered.Tests
                     options.UseTriggers(triggerOptions => {
                         triggerOptions.UseApplicationScopedServiceProviderAccessor(_ => scopedServiceProvider);
                     });
+                    options.EnableServiceProviderCaching(false);
                 })
                 .AddScoped<IBeforeSaveTrigger<TestModel>, TriggerStub<TestModel>>()
                 .BuildServiceProvider();
@@ -135,6 +138,7 @@ namespace EntityFrameworkCore.Triggered.Tests
                     options.UseTriggers(triggerOptions => {
                         triggerOptions.UseApplicationScopedServiceProviderAccessor(_ => scopedServiceProvider);
                     });
+                    options.EnableServiceProviderCaching(false);
                 })
                 .AddScoped<IBeforeSaveTrigger<TestModel>, TriggerStub<TestModel>>()
                 .BuildServiceProvider();

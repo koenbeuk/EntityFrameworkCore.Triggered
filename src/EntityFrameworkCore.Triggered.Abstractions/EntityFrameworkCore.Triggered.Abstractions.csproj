@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <RootNamespace>EntityFrameworkCore.Triggered</RootNamespace>
-    <Configurations>Debug;Release;Debug EFCore5</Configurations>
   </PropertyGroup>
 
 </Project>

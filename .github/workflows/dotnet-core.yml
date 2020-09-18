@@ -23,6 +23,35 @@ env:
   NUGET_KEY: ${{ secrets.NUGET_KEY }}
   
 jobs:
+  build-v1:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on:  ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 3.1.x
+      - name: Install dependencies
+        run: dotnet restore EntityFrameworkCore.Triggered.sln -p:Configuration=ReleaseV1
+      - name: Build
+        run: dotnet build --configuration ReleaseV1 --no-restore EntityFrameworkCore.Triggered.sln
+      - name: Test
+        run: dotnet test --configuration ReleaseV1 --verbosity normal EntityFrameworkCore.Triggered.sln
+      - name: Pack
+        if: matrix.os == 'ubuntu-latest'
+        run: | 
+          dotnet pack -v normal -c ReleaseV1 --include-symbols --include-source -p:PackageVersion=$GITHUB_RUN_ID -o nupkg/v1 EntityFrameworkCore.Triggered.sln
+      - name: Upload Artifact
+        if: matrix.os == 'ubuntu-latest'
+        uses: actions/upload-artifact@v2
+        with:
+          name: nupkg
+          path: ./nupkg/**/*.nupkg
+  
   build:
     strategy:
       matrix:
@@ -36,26 +65,27 @@ jobs:
         with:
           dotnet-version: 3.1.x
       - name: Install dependencies
-        run: dotnet restore EntityFrameworkCore.Triggered.sln
+        run: dotnet restore EntityFrameworkCore.Triggered.sln -p:Configuration=Release
       - name: Build
         run: dotnet build --configuration Release --no-restore EntityFrameworkCore.Triggered.sln
       - name: Test
-        run: dotnet test --configuration Release --no-build --verbosity normal EntityFrameworkCore.Triggered.sln
+        run: dotnet test --configuration Release --verbosity normal EntityFrameworkCore.Triggered.sln
       - name: Pack
         if: matrix.os == 'ubuntu-latest'
         run: | 
-          dotnet pack -v normal -c Release --include-symbols --include-source -p:PackageVersion=$GITHUB_RUN_ID -o nupkg EntityFrameworkCore.Triggered.sln
+          dotnet pack -v normal -c Release --include-symbols --include-source -p:PackageVersion=2.0.0-pre-$GITHUB_RUN_ID -o nupkg/v2 EntityFrameworkCore.Triggered.sln
       - name: Upload Artifact
         if: matrix.os == 'ubuntu-latest'
         uses: actions/upload-artifact@v2
         with:
           name: nupkg
-          path: ./nupkg/*.nupkg
+          path: ./nupkg/**/*.nupkg
   
   build-samples:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
+        dotnet: [3.1.x, 5.0.100-rc.1.20452.10]
     runs-on:  ${{ matrix.os }}
     
     steps:
@@ -63,14 +93,14 @@ jobs:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 3.1.x
+          dotnet-version: ${{ matrix.dotnet }}
       - name: Install dependencies
         run: dotnet restore EntityFrameworkCore.Triggered.Samples.sln
       - name: Build
         run: dotnet build --configuration Release --no-restore  EntityFrameworkCore.Triggered.Samples.sln
 
   deploy:
-    needs: build
+    needs: [build, build-v1]
     if: github.event_name == 'release'
     runs-on: ubuntu-latest
     steps:
@@ -84,6 +114,7 @@ jobs:
           arrTag=(${GITHUB_REF//\// })
           VERSION="${arrTag[2]}"
           echo Version: $VERSION
+          CONFIGURATION=$([ "${VERSION:0:2}" == "v1" ] && echo "ReleaseV1" || echo "Release")
           VERSION="${VERSION//v}"
           echo Clean Version: $VERSION
           dotnet pack -v normal -c Release --include-symbols --include-source -p:PackageVersion=$VERSION -o nupkg EntityFrameworkCore.Triggered.sln

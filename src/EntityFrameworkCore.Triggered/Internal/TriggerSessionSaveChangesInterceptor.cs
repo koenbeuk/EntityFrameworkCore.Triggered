@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace EntityFrameworkCore.Triggered.Internal
 {
-#if EFCORE5
+#if EFCORETRIGGERED2
 #pragma warning disable CS0618 // Type or member is obsolete (TriggeredDbContext with EFCore5)
     public class TriggerSessionSaveChangesInterceptor : ISaveChangesInterceptor
     {

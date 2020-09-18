@@ -36,6 +36,7 @@ namespace EntityFrameworkCore.Triggered.AspNetCore.Tests.Extensions
                     options.UseInMemoryDatabase("UseAspNetCoreIntegration_RegistersHttpContextServiceProviderAccessor");
                     options.UseTriggers(triggerOptions => {
                         triggerOptions.UseAspNetCoreIntegration();
+                        options.EnableServiceProviderCaching(false);
                     });
                 })
                 .AddTransient<IBeforeSaveTrigger<TestModel>>(serviceProvider => {
@@ -67,6 +68,7 @@ namespace EntityFrameworkCore.Triggered.AspNetCore.Tests.Extensions
                     options.UseTriggers(triggerOptions => {
                         triggerOptions.UseAspNetCoreIntegration();
                     });
+                    options.EnableServiceProviderCaching(false);
                 })
                 .AddTransient<IBeforeSaveTrigger<TestModel>>(serviceProvider => {
                     capturedServiceProvider = serviceProvider;

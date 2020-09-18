@@ -24,6 +24,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Infrastructure
             subject.AddTriggeredDbContext<TestDbContext>(options => {
                 optionsActionsCalled = true;
                 options.UseInMemoryDatabase("test");
+                options.EnableServiceProviderCaching(false);
             });
 
             var serviceProvider = subject.BuildServiceProvider();
@@ -41,6 +42,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Infrastructure
             subject.AddTriggeredDbContext<TestDbContext>(options => {
                 optionsActionsCalled = true;
                 options.UseInMemoryDatabase("test");
+                options.EnableServiceProviderCaching(false);
             });
 
             var serviceProvider = subject.BuildServiceProvider();

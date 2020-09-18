@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using EntityFrameworkCore.Triggered.Tests.Stubs;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
@@ -238,6 +239,7 @@ namespace EntityFrameworkCore.Triggered.Tests
                 .AddSingleton<IBeforeSaveTrigger<TestModel>>(earlyTrigger)
                 .AddTriggeredDbContext<TestDbContext>(options => {
                     options.UseInMemoryDatabase("Test");
+                    options.EnableServiceProviderCaching(false);
                 })
                 .BuildServiceProvider();
 
@@ -278,6 +280,7 @@ namespace EntityFrameworkCore.Triggered.Tests
                 .AddSingleton<IBeforeSaveTrigger<TestModel>>(trigger)
                 .AddTriggeredDbContext<TestDbContext>(options => {
                     options.UseInMemoryDatabase("Test");
+                    options.EnableServiceProviderCaching(false);
                 })
                 .BuildServiceProvider();
 
@@ -331,6 +334,7 @@ namespace EntityFrameworkCore.Triggered.Tests
                 .AddSingleton<IBeforeSaveTrigger<TestModel>>(lastTrigger)
                 .AddTriggeredDbContext<TestDbContext>(options => {
                     options.UseInMemoryDatabase("Test");
+                    options.EnableServiceProviderCaching(false);
                 })
                 .BuildServiceProvider();
 
@@ -370,6 +374,7 @@ namespace EntityFrameworkCore.Triggered.Tests
                 .AddSingleton<IAfterSaveTrigger<TestModel>>(trigger)
                 .AddTriggeredDbContext<TestDbContext>(options => {
                     options.UseInMemoryDatabase("Test");
+                    options.EnableServiceProviderCaching(false);
                 })
                 .BuildServiceProvider();
 

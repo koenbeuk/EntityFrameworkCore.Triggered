@@ -25,6 +25,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
                 base.OnConfiguring(optionsBuilder);
 
                 optionsBuilder.UseInMemoryDatabase("test");
+                optionsBuilder.EnableServiceProviderCaching(false);
                 optionsBuilder.UseTriggers(triggerOptions => {
                     triggerOptions.AddTrigger<TriggerStub<object>>();
                 });
@@ -54,6 +55,8 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
                 .AddDbContext<TestDbContext>(options => {
                     options.UseInMemoryDatabase("Test")
                            .UseTriggers();
+                    
+                    options.EnableServiceProviderCaching(false);
                 })
                 .AddScoped<object>()
                 .BuildServiceProvider();

@@ -13,7 +13,11 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal.RecursionStrategies
         {
             public DbSet<TestModel> TestModels { get; set; }
 
-            protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.UseInMemoryDatabase("test");
+            protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+            {
+                optionsBuilder.UseInMemoryDatabase("test");
+                optionsBuilder.EnableServiceProviderCaching(false);
+            }
         }
 
         protected abstract IRecursionStrategy CreateSubject();

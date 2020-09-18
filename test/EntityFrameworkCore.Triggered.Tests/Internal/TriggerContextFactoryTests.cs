@@ -22,6 +22,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
                 base.OnConfiguring(optionsBuilder);
 
                 optionsBuilder.UseInMemoryDatabase(nameof(TriggerContextFactoryTests));
+                optionsBuilder.EnableServiceProviderCaching(false);
             }
         }
 

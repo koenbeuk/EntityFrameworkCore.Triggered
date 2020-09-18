@@ -36,7 +36,7 @@ jobs:
         with:
           dotnet-version: 3.1.x
       - name: Install dependencies
-        run: dotnet restore EntityFrameworkCore.Triggered.sln -p:Configuration=DebugV1
+        run: dotnet restore EntityFrameworkCore.Triggered.sln -p:Configuration=ReleaseV1
       - name: Build
         run: dotnet build --configuration ReleaseV1 --no-restore EntityFrameworkCore.Triggered.sln
       - name: Test
@@ -65,7 +65,7 @@ jobs:
         with:
           dotnet-version: 5.0.100-rc.1.20452.10
       - name: Install dependencies
-        run: dotnet restore EntityFrameworkCore.Triggered.sln
+        run: dotnet restore EntityFrameworkCore.Triggered.sln -p:Configuration=Release
       - name: Build
         run: dotnet build --configuration Release --no-restore EntityFrameworkCore.Triggered.sln
       - name: Test

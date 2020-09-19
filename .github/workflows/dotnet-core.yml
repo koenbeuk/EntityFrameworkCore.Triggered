@@ -117,16 +117,16 @@ jobs:
           CONFIGURATION=$([ "${VERSION:0:2}" == "v1" ] && echo "ReleaseV1" || echo "Release")
           VERSION="${VERSION//v}"
           echo Clean Version: $VERSION
-          dotnet pack -v normal -c Release --include-symbols --include-source -p:PackageVersion=$VERSION -o nupkg EntityFrameworkCore.Triggered.sln
+          dotnet pack -v normal -c $CONFIGURATION --include-symbols --include-source -p:PackageVersion=$VERSION -o nupkg EntityFrameworkCore.Triggered.sln
       - name: Push to GitHub Feed
         run: |
           for f in ./nupkg/*.nupkg
           do
             curl -vX PUT -u "$GITHUB_USER:$GITHUB_TOKEN" -F package=@$f $GITHUB_FEED
           done
-      - name: Push to NuGet Feed
-        run: |
-          for f in ./nupkg/*.nupkg
-          do
-            dotnet nuget push $f --source $NUGET_FEED --skip-duplicate --api-key $NUGET_KEY
-          done
+      # - name: Push to NuGet Feed
+      #   run: |
+      #     for f in ./nupkg/*.nupkg
+      #     do
+      #       dotnet nuget push $f --source $NUGET_FEED --skip-duplicate --api-key $NUGET_KEY
+      #     done

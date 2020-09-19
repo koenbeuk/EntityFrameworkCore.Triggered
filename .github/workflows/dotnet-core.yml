@@ -117,6 +117,7 @@ jobs:
           CONFIGURATION=$([ "${VERSION:0:2}" == "v1" ] && echo "ReleaseV1" || echo "Release")
           VERSION="${VERSION//v}"
           echo Clean Version: $VERSION
+          echo Configuration: $CONFIGURATION
           dotnet pack -v normal -c $CONFIGURATION --include-symbols --include-source -p:PackageVersion=$VERSION -o nupkg EntityFrameworkCore.Triggered.sln
       - name: Push to GitHub Feed
         run: |

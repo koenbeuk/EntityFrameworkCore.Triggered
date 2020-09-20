@@ -119,7 +119,7 @@ optionsBuilder.UseTriggers(triggerOptions => {
 
 Currently there are 2 types of recursion strategies out of the box, with the support to providing your own:  `NoRecursion` and `EntityAndTypeRecursion` (default). The former simply disables recursion whereas the latter recursively detects changes and raises triggers for those changes for as long as the combination of the Entity and the change type is uniuqe. `EntityAndTypeRecursion` is the recommended and default recursion strategy.
 
-### Inheritence
+### Inheritance
 Triggers support inheritence and sort execution of these triggers based on least concrete to most concrete. Given the following example:
 ```csharp
 interface IAnimal { }

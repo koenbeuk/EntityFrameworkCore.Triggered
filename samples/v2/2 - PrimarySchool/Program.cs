@@ -16,7 +16,7 @@ namespace PrimarySchool
             var serviceProvider = new ServiceCollection()
                 .AddTriggeredDbContext<ApplicationContext>(options => {
                    options
-                      .UseSqlite("Data source=test.db");
+                      .UseInMemoryDatabase("PrimarySchool");
                })
                .AddScoped<IBeforeSaveTrigger<Student>, Triggers.StudentSignupToMandatoryCourses>()
                .BuildServiceProvider();
@@ -24,9 +24,6 @@ namespace PrimarySchool
             serviceScope = serviceProvider.CreateScope();
 
             var applicationContext = serviceScope.ServiceProvider.GetRequiredService<ApplicationContext>();
-
-            applicationContext.Database.EnsureDeleted();
-            applicationContext.Database.EnsureCreated();
 
             applicationContext.Courses.Add(new Course {
                 Id = 1,

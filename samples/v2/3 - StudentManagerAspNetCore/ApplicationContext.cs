@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 namespace StudentManager
 {
 
-    public class ApplicationContext : TriggeredDbContext
+    public class ApplicationContext : DbContext
     {
         public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
         {

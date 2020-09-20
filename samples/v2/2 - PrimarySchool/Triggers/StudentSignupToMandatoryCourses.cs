@@ -17,7 +17,7 @@ namespace PrimarySchool.Triggers
             _applicationContext = applicationContext;
         }
 
-        public Task BeforeSave(ITriggerContext<Student> context, CancellationToken cancellationToken)
+        public async Task BeforeSave(ITriggerContext<Student> context, CancellationToken cancellationToken)
         {
             var mandatoryCourses = _applicationContext.Courses
                 .Where(x => x.IsMandatory)
@@ -32,7 +32,7 @@ namespace PrimarySchool.Triggers
                 }
             }
 
-            return Task.CompletedTask;
+            await _applicationContext.SaveChangesAsync(cancellationToken);
         }
     }
 }

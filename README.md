@@ -17,6 +17,9 @@ Triggers for EF Core. Respond to changes in your ApplicationDbContext before and
 3. Implement Triggers by implementing `IBeforeSaveTrigger<TEntity>` and `IAfterSaveTrigger<TEntity>`
 4. View our [samples](https://github.com/koenbeuk/EntityFrameworkCore.Triggered/tree/master/samples)
 
+
+> With the upcoming release of EFCore 5.0 and its ability to [intercept SaveChanges](https://docs.microsoft.com/en-us/ef/core/what-is-new/ef-core-5.0/whatsnew#savechanges-interception-and-events), we no longer need to extend from `TriggeredDbContext`. This will be the default behavior going forward and is represented in v2 of this project (currently available as a beta release).
+
 ### Most basic example (without DI)
 ```csharp
 class BeforeSaveStudentTrigger : IBeforeSaveTrigger<Student>

@@ -120,7 +120,7 @@ optionsBuilder.UseTriggers(triggerOptions => {
 Currently there are 2 types of recursion strategies out of the box, with the support to providing your own:  `NoRecursion` and `EntityAndTypeRecursion` (default). The former simply disables recursion whereas the latter recursively detects changes and raises triggers for those changes for as long as the combination of the Entity and the change type is uniuqe. `EntityAndTypeRecursion` is the recommended and default recursion strategy.
 
 ### Inheritance
-Triggers support inheritence and sort execution of these triggers based on least concrete to most concrete. Given the following example:
+Triggers support inheritance and sort execution of these triggers based on least concrete to most concrete. Given the following example:
 ```csharp
 interface IAnimal { }
 class Animal : IAnimal { }
@@ -131,7 +131,8 @@ class Cat : Animal, ICat { }
 Triggers will be executed in that order: First those for `IAnimal`, then those for `Animal`, then those for `ICat` and finally `Cat` itself. If multiple triggers are registered for the same type then they will execute in order or registration with the DI container.
 
 ### Priorities
-In addition to inheritence and the order in which triggers are registered, a trigger can also implement the `ITriggerPriority` interface. This allows a trigger to configure a custom priority (default: 0). Triggers will then be executed in order of their priority (lower goes first). This means that a trigger for Cat can execute before a trigger for Animal, for as long as its priority is set to run earlier. A convenient set of priorities are exposed in the `CommonTriggerPriority` class
+In addition to inheritance
+and the order in which triggers are registered, a trigger can also implement the `ITriggerPriority` interface. This allows a trigger to configure a custom priority (default: 0). Triggers will then be executed in order of their priority (lower goes first). This means that a trigger for Cat can execute before a trigger for Animal, for as long as its priority is set to run earlier. A convenient set of priorities are exposed in the `CommonTriggerPriority` class
 
 ### Dependency injection
 EntityFrameworkCore.Triggered integrates itself with EntityFrameworkCore as an extension and therefore uses EntityFrameworkCore's internal ServiceCollection to register and resolve internal dependencies. Triggers are then registered with either the same ServiceCollection or one controlled by the application. when the application does not use dependency injection, the default service provider will be EF cores internal service provider. When the context gets resolved through dependency injection, the default service provider wll be a new scope from the application service provider.

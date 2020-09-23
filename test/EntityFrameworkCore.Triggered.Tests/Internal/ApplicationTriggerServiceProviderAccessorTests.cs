@@ -91,6 +91,20 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
             var triggerServiceProvider = subject.GetTriggerServiceProvider();
 
             Assert.Equal(applicationServiceProvider, triggerServiceProvider);
+        }
+
+        [Fact]
+        public void GetTriggerServiceProvider_WithExplicitlySetServiceProvider_ReturnsSetServiceProvider()
+        {
+            var internalServiceProviderStub = new ServiceCollection().BuildServiceProvider();
+            var applicationServiceProviderStub = new ServiceCollection().BuildServiceProvider();
+
+            var subject = new ApplicationTriggerServiceProviderAccessor(internalServiceProviderStub, null);
+            subject.SetTriggerServiceProvider(applicationServiceProviderStub);
+            
+            var triggerServiceProvider = subject.GetTriggerServiceProvider();
+
+            Assert.Equal(applicationServiceProviderStub, triggerServiceProvider);
 
         }
     }

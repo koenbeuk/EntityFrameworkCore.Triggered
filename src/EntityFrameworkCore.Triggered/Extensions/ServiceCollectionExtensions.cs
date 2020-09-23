@@ -40,5 +40,17 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return serviceCollection;
         }
+
+        public static IServiceCollection AddTriggeredDbContextPool<TContext>(this IServiceCollection serviceCollection, Action<DbContextOptionsBuilder>? optionsAction = null, int poolSize = 128) where TContext : DbContext
+        {
+
+            serviceCollection.AddDbContextPool<TContext>(options => {
+                optionsAction?.Invoke(options);
+                options.UseTriggers();
+            }, poolSize);
+
+
+            return serviceCollection;
+        }
     }
 }

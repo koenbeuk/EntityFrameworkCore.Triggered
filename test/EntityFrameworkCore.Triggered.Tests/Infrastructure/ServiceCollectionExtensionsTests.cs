@@ -79,5 +79,29 @@ namespace EntityFrameworkCore.Triggered.Tests.Infrastructure
             Assert.NotNull(triggerStub);
             Assert.Equal(1, triggerStub.BeforeSaveInvocations.Count);
         }
+
+
+        [Fact]
+        public void AddTriggeredDbContextPool_ReusesScopedServiceProvider()
+        {
+            var subject = new ServiceCollection();
+            subject.AddTriggeredDbContextPool<TestDbContext>(options => {
+                options.UseInMemoryDatabase("test");
+                options.EnableServiceProviderCaching(false);
+            }).AddScoped<IBeforeSaveTrigger<TestModel>, TriggerStub<TestModel>>();
+
+            var serviceProvider = subject.BuildServiceProvider();
+
+            using var scope = serviceProvider.CreateScope();
+
+            var context = scope.ServiceProvider.GetRequiredService<TestDbContext>();
+            context.TestModels.Add(new TestModel());
+
+            context.SaveChanges();
+
+            var triggerStub = scope.ServiceProvider.GetRequiredService<IBeforeSaveTrigger<TestModel>>() as TriggerStub<TestModel>;
+            Assert.NotNull(triggerStub);
+            Assert.Equal(1, triggerStub.BeforeSaveInvocations.Count);
+        }
     }
 }

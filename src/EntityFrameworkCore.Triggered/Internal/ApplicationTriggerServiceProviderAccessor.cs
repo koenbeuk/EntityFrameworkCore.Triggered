@@ -28,6 +28,16 @@ namespace EntityFrameworkCore.Triggered.Internal
             _scopedServiceProviderTransform = scopedServiceProviderTransform;
         }
 
+        public void SetTriggerServiceProvider(IServiceProvider serviceProvider)
+        {
+            if (_applicationScopedServiceProvider != null)
+            {
+                throw new InvalidOperationException("Can only set applicationScopedServiceProvider once");
+            }
+
+            _applicationScopedServiceProvider = serviceProvider;
+        }
+
         public IServiceProvider GetTriggerServiceProvider()
         {
             if (_applicationScopedServiceProvider == null)

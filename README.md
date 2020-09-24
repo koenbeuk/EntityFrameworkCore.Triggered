@@ -100,7 +100,7 @@ public class Startup
     {
         services.AddSingleton<EmailService>();
         services
-            .AddDbContext<ApplicationContext>()
+            .AddTriggeredDbContext<ApplicationContext>()
             .AddScoped<IBeforeSaveTrigger<Course>, BeforeSaveStudentTrigger>()
     }
 

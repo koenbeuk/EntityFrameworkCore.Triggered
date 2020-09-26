@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace EntityFrameworkCore.Triggered.Internal
 {
@@ -10,11 +12,11 @@ namespace EntityFrameworkCore.Triggered.Internal
     {
         readonly IServiceProvider _rootServiceProvider;
         readonly Func<IServiceProvider, IServiceProvider>? _scopedServiceProviderTransform;
-
+        readonly ILogger? _logger;
         IServiceScope? _serviceScope;
         IServiceProvider? _applicationScopedServiceProvider;
 
-        public ApplicationTriggerServiceProviderAccessor(IServiceProvider internalServiceProvider, Func<IServiceProvider, IServiceProvider>? scopedServiceProviderTransform)
+        public ApplicationTriggerServiceProviderAccessor(IServiceProvider internalServiceProvider, Func<IServiceProvider, IServiceProvider>? scopedServiceProviderTransform, ILogger? logger)
         {
             if (internalServiceProvider is null)
             {
@@ -26,6 +28,7 @@ namespace EntityFrameworkCore.Triggered.Internal
 
             _rootServiceProvider = coreOptionsExtension.ApplicationServiceProvider ?? internalServiceProvider;
             _scopedServiceProviderTransform = scopedServiceProviderTransform;
+            _logger = logger;
         }
 
         public void SetTriggerServiceProvider(IServiceProvider serviceProvider)
@@ -44,6 +47,11 @@ namespace EntityFrameworkCore.Triggered.Internal
             {
                 if (_scopedServiceProviderTransform == null)
                 {
+                    if (_logger != null && _logger.IsEnabled(LogLevel.Warning))
+                    {
+                        _logger.LogWarning("No ServiceProvider is provided to resolve triggers from.");
+                    }
+
                     _serviceScope = _rootServiceProvider.CreateScope();
                     _applicationScopedServiceProvider = _serviceScope.ServiceProvider;
                 }
@@ -51,7 +59,6 @@ namespace EntityFrameworkCore.Triggered.Internal
                 {
                     _applicationScopedServiceProvider = _scopedServiceProviderTransform(_rootServiceProvider);
                 }
-
             }
 
             return _applicationScopedServiceProvider;

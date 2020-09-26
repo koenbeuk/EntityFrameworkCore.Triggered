@@ -17,69 +17,43 @@ Triggers for EF Core. Respond to changes in your ApplicationDbContext before and
 3. Implement Triggers by implementing `IBeforeSaveTrigger<TEntity>` and `IAfterSaveTrigger<TEntity>`
 4. View our [samples](https://github.com/koenbeuk/EntityFrameworkCore.Triggered/tree/master/samples)
 
-
 > With the upcoming release of EFCore 5.0 and its ability to [intercept SaveChanges](https://docs.microsoft.com/en-us/ef/core/what-is-new/ef-core-5.0/whatsnew#savechanges-interception-and-events), we no longer need to extend from `TriggeredDbContext`. This will be the default behavior going forward and is represented in v2 of this project (currently available as a beta release).
 
-### Most basic example (without DI)
+### Example
 ```csharp
-class BeforeSaveStudentTrigger : IBeforeSaveTrigger<Student>
-{
-    public Task BeforeSave(ITriggerContext<Student> context, CancellationToken cancellationToken)
-    {
-        if (context.Type == ChangeType.Added){
-            context.Entity.RegistrationDate = DateTimeOffset.Today;
-        }
-        else if (contexType == ChangeType.Modified) {
-            if (context.Entity.Entity.Name != context.UnmodifiedEntity.Name) { 
-                context.Entity.PreviousName = context.Entity.UnmodifiedEntity.Name;
-            }
-        }
+class StudentSignupTrigger  : IBeforeSaveTrigger<Student>, IAfterSaveTrigger<Student> {
+    readonly ApplicationDbContext _applicationDbContext;
+    
+    public class StudentTrigger(ApplicationDbContext applicationDbContext) {
+        _applicationDbContext = applicationDbContext;
+    }
+
+    public Task BeforeSave(ITriggerContext<Student> context, CancellationToken cancellationToken) {   
+        if (context.ChangeType == ChangeType.Added){
+            _applicationDbContext.Emails.Add(new Email {
+                Student = context.Entity, 
+                Title = "Welcome!";,
+                Body = "...."
+            });
+        } 
 
         return Task.CompletedTask;
     }
 }
 
-public class Student {
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public string PreviousName { get; set; }
-    public DateTimeOffset RegistrationDate { get; set; }
-}
-
-public class ApplicationDbContext : TriggeredDbContext {
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder
-            .UseTriggers(triggerOptions => {
-                triggerOptions.AddTrigger<BeforeSaveStudentTrigger>();  
-            });
-
-        base.OnConfiguring(optionsBuilder);
-    }
-
-	public DbSet<Student> Students { get; set; }
-}
-```
-
-### ASP.NET Core (and DI)
-```csharp
-class StudentTrigger  : IBeforeSaveTrigger<Student>, IAfterSaveTrigger<Student>
-{
+class SendEmailTrigger : IAfterSaveTrigger<Email> {
     readonly IEmailService _emailService;
-    public StudentTrigger (IEmailService emailservice) {
+    public StudentTrigger (ApplicationDbContext applicationDbContext, IEmailService emailservice) {
+        _applicationDbContext = applicationDbContext;
         _emailService = emailService;
     }
 
-    public Task BeforeSave(ITriggerContext<Student> context, CancellationToken cancellationToken)
-    {
-        if (_emailService.IsValidEmailAddress(contex.Entity.Email)) { throw new InvalidArgumentException("User email is invalid"); }
-        return Task.CompletedTask;
-    }
+    public async Task AfterSave(ITriggerContext<Student> context, CancellationToken cancellationToken) {
+        if (context.Entity.SentDate == null && context.ChangeType != ChangeType.Deleted) {
+            await _emailService.Send(context.Enity);
+            context.Entity.SentDate = DateTime.Now;
 
-    public async Task AfterSave(ITriggerContext<Student> context, CancellationToken cancellationToken)
-    {
-        if (context.Type == ChangeType.Added) {
-            await _emailService.Send(context.Enity.Email, "Welcome!");
+            await _applicationContext.SaveChangesAsync();
         }
     }
 }
@@ -87,11 +61,18 @@ class StudentTrigger  : IBeforeSaveTrigger<Student>, IAfterSaveTrigger<Student>
 public class Student {
     public int Id { get; set; }
     public string Name { get; set; }
-    public string Email { get; set;}
+    public string EmailAddress { get; set;}
+}
+
+public class Email { 
+    public int Id { get; set; }  
+    public Student Student { get; set; } 
+    public DateTime? SentDate { get; set; }
 }
 
 public class ApplicationDbContext : TriggeredDbContext {
 	public DbSet<Student> Students { get; set; }
+    public DbSet<Email> Emails { get; set; }
 }
 
 public class Startup
@@ -216,6 +197,47 @@ public class ApplicationDbContext : TriggeredDbContext {
 
         return result;
     }
+}
+```
+
+### When you  don't want to use dependeny injection
+```csharp
+class BeforeSaveStudentTrigger : IBeforeSaveTrigger<Student>
+{
+    public Task BeforeSave(ITriggerContext<Student> context, CancellationToken cancellationToken)
+    {
+        if (context.Type == ChangeType.Added){
+            context.Entity.RegistrationDate = DateTimeOffset.Today;
+        }
+        else if (contexType == ChangeType.Modified) {
+            if (context.Entity.Entity.Name != context.UnmodifiedEntity.Name) { 
+                context.Entity.PreviousName = context.Entity.UnmodifiedEntity.Name;
+            }
+        }
+
+        return Task.CompletedTask;
+    }
+}
+
+public class Student {
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public string PreviousName { get; set; }
+    public DateTimeOffset RegistrationDate { get; set; }
+}
+
+public class ApplicationDbContext : TriggeredDbContext {
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder
+            .UseTriggers(triggerOptions => {
+                triggerOptions.AddTrigger<BeforeSaveStudentTrigger>();  
+            });
+
+        base.OnConfiguring(optionsBuilder);
+    }
+
+	public DbSet<Student> Students { get; set; }
 }
 ```
 

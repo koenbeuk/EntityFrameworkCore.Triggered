@@ -2,7 +2,10 @@
 using EntityFrameworkCore.Triggered.Tests.Stubs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.InMemory.Internal;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
 namespace EntityFrameworkCore.Triggered.Tests.Internal
@@ -38,7 +41,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
         {
             var dbContext = new TestDbContext();
 
-            var subject = new ApplicationTriggerServiceProviderAccessor(dbContext.GetInfrastructure(), null);
+            var subject = dbContext.GetInfrastructure().GetRequiredService<ApplicationTriggerServiceProviderAccessor>();
             var scopedObject1 = subject.GetTriggerServiceProvider().GetService<IBeforeSaveTrigger<object>>();
             Assert.NotNull(scopedObject1);
 
@@ -63,7 +66,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
 
             var dbContext = applicationServiceProvider.GetRequiredService<TestDbContext>();
 
-            var subject = new ApplicationTriggerServiceProviderAccessor(dbContext.GetInfrastructure(), null);
+            var subject = new ApplicationTriggerServiceProviderAccessor(dbContext.GetInfrastructure(), null, new NullLogger<ApplicationTriggerServiceProviderAccessor>());
             var triggerServiceProvider = subject.GetTriggerServiceProvider();
 
             var scopedObject = triggerServiceProvider.GetService<object>();
@@ -87,7 +90,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
 
             var dbContext = applicationServiceProvider.GetRequiredService<TestDbContext>();
 
-            var subject = new ApplicationTriggerServiceProviderAccessor(dbContext.GetInfrastructure(), _ => applicationServiceProvider);
+            var subject = new ApplicationTriggerServiceProviderAccessor(dbContext.GetInfrastructure(), _ => applicationServiceProvider, new NullLogger<ApplicationTriggerServiceProviderAccessor>());
             var triggerServiceProvider = subject.GetTriggerServiceProvider();
 
             Assert.Equal(applicationServiceProvider, triggerServiceProvider);
@@ -112,7 +115,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
             var triggerServiceProvider = subject.GetTriggerServiceProvider();
 
             Assert.Equal(applicationServiceProvider, triggerServiceProvider);
-
         }
+
     }
 }

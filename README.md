@@ -71,7 +71,7 @@ public class Email {
 }
 
 public class ApplicationDbContext : TriggeredDbContext {
-	public DbSet<Student> Students { get; set; }
+    public DbSet<Student> Students { get; set; }
     public DbSet<Email> Emails { get; set; }
 }
 

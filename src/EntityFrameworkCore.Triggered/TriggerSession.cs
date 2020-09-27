@@ -15,6 +15,7 @@ namespace EntityFrameworkCore.Triggered
         static ITriggerContextDiscoveryStrategy? _afterSaveTriggerContextDiscoveryStrategy;
         static ITriggerContextDiscoveryStrategy? _afterSaveFailedTriggerContextDiscoveryStrategy;
 
+        readonly ITriggerService _triggerService;
         readonly TriggerOptions _options;
         readonly ITriggerDiscoveryService _triggerDiscoveryService;
         readonly TriggerContextTracker _tracker;
@@ -22,8 +23,9 @@ namespace EntityFrameworkCore.Triggered
 
         bool _raiseBeforeSaveTriggersCalled;
 
-        public TriggerSession(TriggerOptions options, ITriggerDiscoveryService triggerDiscoveryService, TriggerContextTracker tracker, ILogger<TriggerSession> logger)
+        public TriggerSession(ITriggerService triggerService, TriggerOptions options, ITriggerDiscoveryService triggerDiscoveryService, TriggerContextTracker tracker, ILogger<TriggerSession> logger)
         {
+            _triggerService = triggerService ?? throw new ArgumentNullException(nameof(triggerService));
             _options = options ?? throw new ArgumentNullException(nameof(options));
             _triggerDiscoveryService = triggerDiscoveryService ?? throw new ArgumentNullException(nameof(ITriggerDiscoveryService));
             _tracker = tracker ?? throw new ArgumentNullException(nameof(tracker));
@@ -138,6 +140,14 @@ namespace EntityFrameworkCore.Triggered
 
             return RaiseTriggers(typeof(IAfterSaveFailedTrigger<>), exception, _afterSaveFailedTriggerContextDiscoveryStrategy, entityType => new AfterSaveFailedTriggerDescriptor(entityType, exception), cancellationToken);
 
+        }
+
+        public void Dispose()
+        {
+            if (_triggerService.Current == this)
+            {
+                _triggerService.Current = null;
+            }
         }
     }
 }

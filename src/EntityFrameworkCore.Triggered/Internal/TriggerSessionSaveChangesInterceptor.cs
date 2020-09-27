@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -38,7 +39,15 @@ namespace EntityFrameworkCore.Triggered.Internal
             if (_triggerSession == null)
             {
                 var triggerService = eventData.Context.GetService<ITriggerService>() ?? throw new InvalidOperationException("Triggers are not configured");
-                _triggerSession = triggerService.CreateSession(eventData.Context);
+
+                if (triggerService.Current != null)
+                {
+                    _triggerSession = triggerService.Current;
+                }
+                else
+                {
+                    _triggerSession = triggerService.CreateSession(eventData.Context);
+                }
             }
 
             _parallelSaveChangesCount += 1;
@@ -56,6 +65,7 @@ namespace EntityFrameworkCore.Triggered.Internal
             
             if (_parallelSaveChangesCount == 0)
             {
+                _triggerSession.Dispose();
                 _triggerSession = null;
             }
         }
@@ -91,7 +101,7 @@ namespace EntityFrameworkCore.Triggered.Internal
         {
             if (!(eventData.Context is TriggeredDbContext))
             {
-                EnlistTriggerSession(eventData);
+            EnlistTriggerSession(eventData);
 
                 var defaultAutoDetectChangesEnabled = eventData.Context.ChangeTracker.AutoDetectChangesEnabled;
 

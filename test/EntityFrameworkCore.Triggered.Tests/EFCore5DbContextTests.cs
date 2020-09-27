@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using EntityFrameworkCore.Triggered.Tests.Stubs;
+using EntityFrameworkCore.Triggered.Extensions;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
@@ -63,7 +64,7 @@ namespace EntityFrameworkCore.Triggered.Tests
             => new TestDbContext(stubService);
 
         [Fact]
-        public void SaveChanges_CreatesChangeHandlerSession()
+        public void SaveChanges_CreatesTriggerrSession()
         {
             var subject = CreateSubject();
             var triggerServiceStub = (TriggerServiceStub)subject.GetService<ITriggerService>();
@@ -73,7 +74,7 @@ namespace EntityFrameworkCore.Triggered.Tests
         }
 
         [Fact]
-        public void SaveChangesWithAccept_CreatesChangeHandlerSession()
+        public void SaveChangesWithAccept_CreatesTriggerSession()
         {
             var subject = CreateSubject();
             var triggerServiceStub = (TriggerServiceStub)subject.GetService<ITriggerService>();
@@ -83,12 +84,30 @@ namespace EntityFrameworkCore.Triggered.Tests
         }
 
         [Fact]
-        public async Task SaveChangesAsync_CreatesChangeHandlerSession()
+        public async Task SaveChangesAsync_CreatesTriggerSession()
         {
             var subject = CreateSubject();
             var triggerServiceStub = (TriggerServiceStub)subject.GetService<ITriggerService>();
 
             await subject.SaveChangesAsync();
+            Assert.Equal(1, triggerServiceStub.CreateSessionCalls);
+        }
+
+        [Fact]
+        public void SaveChanges_ExplicitTriggerSession_ReturnsActiveTriggerSession()
+        {
+            var subject = CreateSubject(true);
+            var triggerServiceStub = (TriggerServiceStub)subject.GetService<ITriggerService>();
+
+            using var triggerSession = subject.CreateTriggerSession();
+
+            subject.TestModels.Add(new TestModel {
+                Id = Guid.NewGuid(),
+                Name = "test1"
+            });
+
+            subject.SaveChanges();
+
             Assert.Equal(1, triggerServiceStub.CreateSessionCalls);
         }
 

@@ -65,8 +65,16 @@ namespace EntityFrameworkCore.Triggered
             if (_triggerSession == null)
             {
                 var triggerService = this.GetService<ITriggerService>() ?? throw new InvalidOperationException("Triggers are not configured");
-                _triggerSession = triggerService.CreateSession(this, _triggerServiceProvider);
-                createdTriggerSession = true;
+
+                if (triggerService.Current != null)
+                {
+                    _triggerSession = triggerService.Current;
+                }
+                else 
+                { 
+                    _triggerSession = triggerService.CreateSession(this, _triggerServiceProvider);
+                    createdTriggerSession = true;
+                }
             }
 
             try
@@ -120,8 +128,16 @@ namespace EntityFrameworkCore.Triggered
             if (_triggerSession == null)
             {
                 var triggerService = this.GetService<ITriggerService>() ?? throw new InvalidOperationException("Triggers are not configured");
-                _triggerSession = triggerService.CreateSession(this);
-                createdTriggerSession = true;
+
+                if (triggerService.Current != null)
+                {
+                    _triggerSession = triggerService.Current;
+                }
+                else
+                {
+                    _triggerSession = triggerService.CreateSession(this, _triggerServiceProvider);
+                    createdTriggerSession = true;
+                }
             }
             try
             {

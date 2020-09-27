@@ -1,18 +1,23 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using EntityFrameworkCore.Triggered.Internal;
 using EntityFrameworkCore.Triggered.Internal.RecursionStrategy;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace EntityFrameworkCore.Triggered
 {
-    public class TriggerService : ITriggerService
+    public class TriggerService : ITriggerService, IResettableService
     {
         readonly ITriggerDiscoveryService _triggerDiscoveryService;
         readonly IRecursionStrategy _recursionStrategy;
         readonly ILoggerFactory _loggerFactory;
         readonly TriggerOptions _options;
+
+        ITriggerSession? _currentTriggerSession;
 
         public TriggerService(ITriggerDiscoveryService triggerDiscoveryService, IRecursionStrategy recursionStrategy, ILoggerFactory loggerFactory, IOptionsSnapshot<TriggerOptions> triggerOptionsSnapshot)
         {
@@ -20,6 +25,12 @@ namespace EntityFrameworkCore.Triggered
             _recursionStrategy = recursionStrategy ?? throw new ArgumentNullException(nameof(recursionStrategy));
             _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
             _options = triggerOptionsSnapshot.Value;
+        }
+
+        public ITriggerSession? Current
+        {
+            get => _currentTriggerSession;
+            set => _currentTriggerSession = value;
         }
 
         public ITriggerSession CreateSession(DbContext context, IServiceProvider? serviceProvider)
@@ -36,7 +47,19 @@ namespace EntityFrameworkCore.Triggered
                 _triggerDiscoveryService.SetServiceProvider(serviceProvider);
             }
 
-            return new TriggerSession(_options, _triggerDiscoveryService, triggerContextTracker, _loggerFactory.CreateLogger<TriggerSession>());
+            var triggerSession = new TriggerSession(this, _options, _triggerDiscoveryService, triggerContextTracker, _loggerFactory.CreateLogger<TriggerSession>());
+
+            _currentTriggerSession = triggerSession;
+
+            return triggerSession;
+        }
+
+        public void ResetState() => _currentTriggerSession?.Dispose();
+        public Task ResetStateAsync(CancellationToken cancellationToken = default)
+        {
+            _currentTriggerSession?.Dispose();
+
+            return Task.CompletedTask;
         }
     }
 }

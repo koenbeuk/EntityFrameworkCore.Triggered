@@ -31,12 +31,9 @@ namespace StudentManager
             services.AddSingleton<EmailService>();
 
             services
-                .AddDbContextPool<ApplicationContext>(options => {
+                .AddTriggeredDbContextPool<ApplicationContext>(options => {
                     options
-                        .UseSqlite("Data source=test.db")
-                        .UseTriggers(triggerOptions => {
-                            triggerOptions.UseAspNetCoreIntegration();
-                        });
+                        .UseSqlite("Data source=test.db");
                 })
                 .AddHttpContextAccessor()
                 .AddScoped<IBeforeSaveTrigger<Traits.ISoftDelete>, Triggers.Traits.SoftDelete.EnsureSoftDelete>()

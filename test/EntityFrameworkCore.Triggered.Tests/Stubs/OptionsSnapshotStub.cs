@@ -8,7 +8,7 @@ using Microsoft.Extensions.Options;
 namespace EntityFrameworkCore.Triggered.Tests.Stubs
 {
     public class OptionsSnapshotStub<TOptions> : IOptionsSnapshot<TOptions>
-        where TOptions : class
+        where TOptions : class, new()
     {
         public TOptions Value => Activator.CreateInstance<TOptions>();
 

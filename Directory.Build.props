@@ -15,11 +15,10 @@
     <PackageTags>EntityFramework;EFCore;Triggers;SQLServer;SqlLite;CosmosDb;.NET Core;aspnetcore</PackageTags>
     <PackageProjectUrl>https://github.com/koenbeuk/EntityFrameworkCore.Triggered</PackageProjectUrl>
   </PropertyGroup>
-
  
   <PropertyGroup>
     <EFCoreTriggeredVersion>2</EFCoreTriggeredVersion>
-    <EFCorePackageVersion>5.0.0-rc.1.20451.13</EFCorePackageVersion>
+    <EFCorePackageVersion>5.0.0-rc.2.20475.6</EFCorePackageVersion>
   </PropertyGroup> 
 
   <PropertyGroup Condition=" '$(Configuration)' == 'DebugV1' Or '$(Configuration)' == 'ReleaseV1' ">

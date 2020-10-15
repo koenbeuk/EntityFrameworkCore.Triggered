@@ -11,8 +11,6 @@ namespace PrimarySchool
     {
         static void Main(string[] args)
         {
-            IServiceScope serviceScope = null;
-
             var serviceProvider = new ServiceCollection()
                 .AddTriggeredDbContext<ApplicationContext>(options => {
                    options
@@ -21,8 +19,7 @@ namespace PrimarySchool
                .AddScoped<IBeforeSaveTrigger<Student>, Triggers.StudentSignupToMandatoryCourses>()
                .BuildServiceProvider();
 
-            serviceScope = serviceProvider.CreateScope();
-
+            var serviceScope = serviceProvider.CreateScope();
             var applicationContext = serviceScope.ServiceProvider.GetRequiredService<ApplicationContext>();
 
             applicationContext.Courses.Add(new Course {

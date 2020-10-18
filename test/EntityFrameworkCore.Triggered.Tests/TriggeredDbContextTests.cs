@@ -292,5 +292,42 @@ namespace EntityFrameworkCore.Triggered.Tests
 
             Assert.Equal(1, triggerServiceStub.LastSession.CaptureDiscoveredChangesCalls);
         }
+
+
+        [Fact]
+        public void SaveChanges_DisposesTriggerSession()
+        {
+            var serviceProvider = new ServiceCollection().BuildServiceProvider();
+
+            var subject = new TestDbContext(serviceProvider);
+            var triggerServiceStub = (TriggerServiceStub)subject.GetService<ITriggerService>();
+                    
+            subject.TestModels.Add(new TestModel {
+                Id = Guid.NewGuid(),
+                Name = "test1"
+            });
+
+            subject.SaveChanges();
+
+            Assert.Equal(1, triggerServiceStub.LastSession.DisposeCalls);
+        }
+
+        [Fact]
+        public async Task SaveChangesAsync_DisposesTriggerSession()
+        {
+            var serviceProvider = new ServiceCollection().BuildServiceProvider();
+
+            var subject = new TestDbContext(serviceProvider);
+            var triggerServiceStub = (TriggerServiceStub)subject.GetService<ITriggerService>();
+
+            subject.TestModels.Add(new TestModel {
+                Id = Guid.NewGuid(),
+                Name = "test1"
+            });
+
+            await subject.SaveChangesAsync();
+
+            Assert.Equal(1, triggerServiceStub.LastSession.DisposeCalls);
+        }
     }
 }

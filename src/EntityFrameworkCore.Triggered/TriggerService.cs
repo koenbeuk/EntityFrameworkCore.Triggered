@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using EntityFrameworkCore.Triggered.Internal;
 using EntityFrameworkCore.Triggered.Internal.RecursionStrategy;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -54,10 +55,18 @@ namespace EntityFrameworkCore.Triggered
             return triggerSession;
         }
 
-        public void ResetState() => _currentTriggerSession?.Dispose();
+        public void ResetState()
+        {
+            if (_currentTriggerSession != null)
+            {
+                _currentTriggerSession.Dispose();
+                _currentTriggerSession = null;
+            }
+        }
+
         public Task ResetStateAsync(CancellationToken cancellationToken = default)
         {
-            _currentTriggerSession?.Dispose();
+            ResetState();
 
             return Task.CompletedTask;
         }

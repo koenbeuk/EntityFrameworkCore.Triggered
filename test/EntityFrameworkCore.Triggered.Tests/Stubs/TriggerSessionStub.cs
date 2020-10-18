@@ -11,6 +11,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Stubs
         public int RaiseAfterSaveFailedTriggersCalls;
         public int CaptureDiscoveredChangesCalls;
         public int DiscoverChangesCalls;
+        public int DisposeCalls;
 
         public void CaptureDiscoveredChanges() => CaptureDiscoveredChangesCalls += 1;
 
@@ -18,6 +19,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Stubs
 
         public void Dispose()
         {
+            DisposeCalls += 1;
         }
 
         public Task RaiseAfterSaveFailedTriggers(Exception exception, CancellationToken cancellationToken = default)

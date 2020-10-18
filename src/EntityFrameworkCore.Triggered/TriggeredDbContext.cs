@@ -111,6 +111,7 @@ namespace EntityFrameworkCore.Triggered
             {
                 if (createdTriggerSession)
                 {
+                    _triggerSession.Dispose();
                     _triggerSession = null;
                 }
             }
@@ -175,6 +176,7 @@ namespace EntityFrameworkCore.Triggered
             {
                 if (createdTriggerSession)
                 {
+                    _triggerSession.Dispose();
                     _triggerSession = null;
                 }
             }

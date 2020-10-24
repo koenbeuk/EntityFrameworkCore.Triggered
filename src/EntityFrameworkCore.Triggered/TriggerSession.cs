@@ -27,7 +27,7 @@ namespace EntityFrameworkCore.Triggered
         {
             _triggerService = triggerService ?? throw new ArgumentNullException(nameof(triggerService));
             _options = options ?? throw new ArgumentNullException(nameof(options));
-            _triggerDiscoveryService = triggerDiscoveryService ?? throw new ArgumentNullException(nameof(ITriggerDiscoveryService));
+            _triggerDiscoveryService = triggerDiscoveryService ?? throw new ArgumentNullException(nameof(triggerDiscoveryService));
             _tracker = tracker ?? throw new ArgumentNullException(nameof(tracker));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }

@@ -13,7 +13,7 @@ namespace EntityFrameworkCore.Triggered.Internal
             "Starting trigger discovery for {name} with a max recursion of {maxRecursion}");
 
         readonly static Action<ILogger, int, string, int, int, Exception?> _changesDetected = LoggerMessage.Define<int, string, int, int>(
-            LogLevel.Information,
+            LogLevel.Debug,
             new EventId(1, "Discovered"),
             "Discovered changes: {changes} for {name}. Iteration ({iteration}/{maxRecursion})");
 
@@ -49,7 +49,7 @@ namespace EntityFrameworkCore.Triggered.Internal
 
                 if (changes.Any())
                 {
-                    if (logger.IsEnabled(LogLevel.Information))
+                    if (logger.IsEnabled(LogLevel.Debug))
                     {
                         changes = changes.ToList();
                         _changesDetected(logger, changes.Count(), _name, iteration, maxRecursion, null);

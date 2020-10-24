@@ -13,6 +13,7 @@ namespace EntityFrameworkCore.Triggered.Internal
         readonly IRecursionStrategy _recursionStrategy;
 
         List<TriggerContextDescriptor>? _discoveredChanges;
+        List<int>? _capturedChangeIndexes;
 
         public TriggerContextTracker(ChangeTracker changeTracker, IRecursionStrategy recursionStrategy)
         {
@@ -26,6 +27,28 @@ namespace EntityFrameworkCore.Triggered.Internal
             EntityState.Deleted => ChangeType.Deleted,
             _ => null,
         };
+
+        public IEnumerable<TriggerContextDescriptor>? DiscoveredChanges
+        {
+            get
+            {
+                if (_discoveredChanges == null)
+                {
+                    return null;
+                }
+                else
+                {
+                    if (_capturedChangeIndexes == null)
+                    {
+                        return _discoveredChanges;
+                    }
+                    else
+                    {
+                        return _discoveredChanges.Where((_, index) => !_capturedChangeIndexes.Contains(index));
+                    }
+                }
+            }
+        }
 
         public IEnumerable<TriggerContextDescriptor> DiscoverChanges()
         {
@@ -95,26 +118,33 @@ namespace EntityFrameworkCore.Triggered.Internal
                 var changesCount = _discoveredChanges.Count;
                 if (changesCount > 0)
                 {
+                    if (_capturedChangeIndexes == null)
+                    {
+                        _capturedChangeIndexes = new List<int>(changesCount); // assuming all will be captured
+                    }
+
                     for (var changeIndex = 0; changeIndex < changesCount; changeIndex++)
                     {
-                        var discoveredChange = _discoveredChanges[changeIndex];
-
-                        var currentEntityEntry = _changeTracker.Context.Entry(discoveredChange.Entity);
-                        var changeType = ResolveChangeType(currentEntityEntry);
-
-                        if (changeType != discoveredChange.ChangeType)
+                        if (!_capturedChangeIndexes.Contains(changeIndex))
                         {
-                            _discoveredChanges.RemoveAt(changeIndex);
+                            var discoveredChange = _discoveredChanges[changeIndex];
 
-                            // we have 1 less change to deal with
-                            changeIndex--; 
-                            changesCount--;
+                            var currentEntityEntry = _changeTracker.Context.Entry(discoveredChange.Entity);
+                            var changeType = ResolveChangeType(currentEntityEntry);
+
+                            if (changeType != discoveredChange.ChangeType)
+                            {
+                                _capturedChangeIndexes.Add(changeIndex);
+                            }
                         }
                     }
                 }
             }
         }
 
-        public IEnumerable<TriggerContextDescriptor>? DiscoveredChanges => _discoveredChanges;
+        public void UncaptureChanges()
+        {
+            _capturedChangeIndexes = null;
+        }
     }
 }

@@ -153,5 +153,25 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
             subject.CaptureChanges();
             Assert.Single(subject.DiscoveredChanges);
         }
+
+
+        [Fact]
+        public void UncaptureDiscoveredChanges_OneEntry_RestoresDiscoveredChange()
+        {
+            using var dbContext = new TestDbContext();
+            var subject = new TriggerContextTracker(dbContext.ChangeTracker, new EntityAndTypeRecursionStrategy());
+
+            var testModel = new TestModel();
+            dbContext.Entry(testModel).State = EntityState.Added;
+
+            var disoveredChanges = subject.DiscoverChanges();
+            dbContext.Entry(testModel).State = EntityState.Unchanged;
+
+            subject.CaptureChanges();
+            Assert.Empty(subject.DiscoveredChanges);
+
+            subject.UncaptureChanges();
+            Assert.Single(subject.DiscoveredChanges);
+        }
     }
 }

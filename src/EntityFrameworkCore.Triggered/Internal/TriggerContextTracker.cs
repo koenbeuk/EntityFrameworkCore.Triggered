@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using EntityFrameworkCore.Triggered.Internal.RecursionStrategy;
 using Microsoft.EntityFrameworkCore;
@@ -19,8 +20,7 @@ namespace EntityFrameworkCore.Triggered.Internal
             _recursionStrategy = recursionStrategy;
         }
 
-        static ChangeType? ResolveChangeType(EntityEntry entry) => entry.State switch
-        {
+        static ChangeType? ResolveChangeType(EntityEntry entry) => entry.State switch {
             EntityState.Added => ChangeType.Added,
             EntityState.Modified => ChangeType.Modified,
             EntityState.Deleted => ChangeType.Deleted,
@@ -90,31 +90,26 @@ namespace EntityFrameworkCore.Triggered.Internal
 
         public void CaptureChanges()
         {
-            if (_discoveredChanges != null && _discoveredChanges.Count > 0)
+            if (_discoveredChanges != null)
             {
-                List<TriggerContextDescriptor>? ignoreCandidates = null;
-
-                foreach (var discoveredChange in _discoveredChanges)
+                var changesCount = _discoveredChanges.Count;
+                if (changesCount > 0)
                 {
-                    var currentEntityEntry = _changeTracker.Context.Entry(discoveredChange.Entity);
-                    var changeType = ResolveChangeType(currentEntityEntry);
-
-                    if (changeType != discoveredChange.ChangeType)
+                    for (var changeIndex = 0; changeIndex < changesCount; changeIndex++)
                     {
-                        if (ignoreCandidates == null)
+                        var discoveredChange = _discoveredChanges[changeIndex];
+
+                        var currentEntityEntry = _changeTracker.Context.Entry(discoveredChange.Entity);
+                        var changeType = ResolveChangeType(currentEntityEntry);
+
+                        if (changeType != discoveredChange.ChangeType)
                         {
-                            ignoreCandidates = new List<TriggerContextDescriptor>();
+                            _discoveredChanges.RemoveAt(changeIndex);
+
+                            // we have 1 less change to deal with
+                            changeIndex--; 
+                            changesCount--;
                         }
-
-                        ignoreCandidates.Add(discoveredChange);
-                    }
-                }
-
-                if (ignoreCandidates != null)
-                {
-                    foreach (var ignoreCandidate in ignoreCandidates)
-                    {
-                        _discoveredChanges.Remove(ignoreCandidate);
                     }
                 }
             }

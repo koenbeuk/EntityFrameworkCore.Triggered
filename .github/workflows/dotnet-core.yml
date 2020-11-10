@@ -34,7 +34,7 @@ jobs:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 3.1.x
+          dotnet-version: 5.0.x
       - name: Install dependencies
         run: dotnet restore EntityFrameworkCore.Triggered.sln -p:Configuration=ReleaseV1
       - name: Build
@@ -63,7 +63,7 @@ jobs:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 3.1.x
+          dotnet-version: 5.0.x
       - name: Install dependencies
         run: dotnet restore EntityFrameworkCore.Triggered.sln -p:Configuration=Release
       - name: Build
@@ -108,7 +108,7 @@ jobs:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 3.1.x
+          dotnet-version: 5.0.x
       - name: Create Release NuGet package
         run: |
           arrTag=(${GITHUB_REF//\// })

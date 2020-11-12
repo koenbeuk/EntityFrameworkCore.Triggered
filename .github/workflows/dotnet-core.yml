@@ -95,9 +95,9 @@ jobs:
         with:
           dotnet-version: ${{ matrix.dotnet }}
       - name: Install dependencies
-        run: dotnet restore EntityFrameworkCore.Triggered.Samples.sln
+        run: dotnet restore EntityFrameworkCore.Triggered.Samples.slnf
       - name: Build
-        run: dotnet build --configuration Release --no-restore  EntityFrameworkCore.Triggered.Samples.sln
+        run: dotnet build --configuration Release --no-restore  EntityFrameworkCore.Triggered.Samples.slnf
 
   deploy:
     needs: [build, build-v1]
@@ -118,7 +118,7 @@ jobs:
           VERSION="${VERSION//v}"
           echo Clean Version: $VERSION
           echo Configuration: $CONFIGURATION
-          dotnet pack -v normal -c $CONFIGURATION --include-symbols --include-source -p:PackageVersion=$VERSION -o nupkg EntityFrameworkCore.Triggered.sln
+          dotnet pack -v normal -c $CONFIGURATION --include-symbols --include-source -p:PackageVersion=$VERSION -o nupkg EntityFrameworkCore.Triggered.Core.slnf
       - name: Push to GitHub Feed
         run: |
           for f in ./nupkg/*.nupkg

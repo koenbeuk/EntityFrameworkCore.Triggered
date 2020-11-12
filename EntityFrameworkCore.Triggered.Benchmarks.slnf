@@ -1,0 +1,13 @@
+{
+  "solution": {
+    "path": "EntityFrameworkCore.Triggered.sln",
+    "projects": [
+      "benchmarks\\EntityFrameworkCore.Triggered.Benchmarks\\EntityFrameworkCore.Triggered.Benchmarks.csproj",
+      "src\\EntityFrameworkCore.Triggered.Abstractions\\EntityFrameworkCore.Triggered.Abstractions.csproj",
+      "src\\EntityFrameworkCore.Triggered.AspNetCore\\EntityFrameworkCore.Triggered.AspNetCore.csproj",
+      "src\\EntityFrameworkCore.Triggered.Transactions.Abstractions\\EntityFrameworkCore.Triggered.Transactions.Abstractions.csproj",
+      "src\\EntityFrameworkCore.Triggered.Transactions\\EntityFrameworkCore.Triggered.Transactions.csproj",
+      "src\\EntityFrameworkCore.Triggered\\EntityFrameworkCore.Triggered.csproj"
+    ]
+  }
+}

@@ -18,7 +18,7 @@
  
   <PropertyGroup>
     <EFCoreTriggeredVersion>2</EFCoreTriggeredVersion>
-    <EFCorePackageVersion>5.0.0-rc.2.20475.6</EFCorePackageVersion>
+    <EFCorePackageVersion>5.0.0</EFCorePackageVersion>
   </PropertyGroup> 
 
   <PropertyGroup Condition=" '$(Configuration)' == 'DebugV1' Or '$(Configuration)' == 'ReleaseV1' ">

@@ -31,12 +31,14 @@ namespace EntityFrameworkCore.Triggered.AspNetCore.Tests.Extensions
         {
             IServiceProvider capturedServiceProvider = null;
 
+#pragma warning disable CS0618 // Type or member is obsolete
             var serviceProvider = new ServiceCollection()
                 .AddSingleton<IHttpContextAccessor, Stubs.HttpContextAccessorStub>()
                 .AddAspNetCoreTriggeredDbContext<TestDbContext>(options => {
                     options.UseInMemoryDatabase("Test");
                     options.EnableServiceProviderCaching(false);
                 })
+#pragma warning restore CS0618 // Type or member is obsolete
                 .AddTransient<IBeforeSaveTrigger<TestModel>>(serviceProvider => {
                     capturedServiceProvider = serviceProvider;
                     return new TriggerStub<TestModel>();

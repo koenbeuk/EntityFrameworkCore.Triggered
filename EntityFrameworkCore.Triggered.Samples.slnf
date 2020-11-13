@@ -1,0 +1,16 @@
+{
+  "solution": {
+    "path": "EntityFrameworkCore.Triggered.sln",
+    "projects": [
+      "samples\\v1\\1 - HelloWorld\\1 - HelloWorld.csproj",
+      "samples\\v2\\1 - HelloWorld\\1 - HelloWorld.csproj",
+      "samples\\v2\\2 - PrimarySchool\\2 - PrimarySchool.csproj",
+      "samples\\v2\\3 - StudentManagerAspNetCore\\3 - StudentManagerAspNetCore.csproj",
+      "src\\EntityFrameworkCore.Triggered.Abstractions\\EntityFrameworkCore.Triggered.Abstractions.csproj",
+      "src\\EntityFrameworkCore.Triggered.AspNetCore\\EntityFrameworkCore.Triggered.AspNetCore.csproj",
+      "src\\EntityFrameworkCore.Triggered.Transactions.Abstractions\\EntityFrameworkCore.Triggered.Transactions.Abstractions.csproj",
+      "src\\EntityFrameworkCore.Triggered.Transactions\\EntityFrameworkCore.Triggered.Transactions.csproj",
+      "src\\EntityFrameworkCore.Triggered\\EntityFrameworkCore.Triggered.csproj"
+    ]
+  }
+}

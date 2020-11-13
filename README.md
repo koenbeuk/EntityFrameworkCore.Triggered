@@ -200,7 +200,7 @@ public class ApplicationDbContext : TriggeredDbContext {
 }
 ```
 
-### When you  don't want to use dependeny injection
+### When you  don't want to use dependency injection
 ```csharp
 class BeforeSaveStudentTrigger : IBeforeSaveTrigger<Student>
 {

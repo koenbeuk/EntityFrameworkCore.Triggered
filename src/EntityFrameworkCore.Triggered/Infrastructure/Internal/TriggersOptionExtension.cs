@@ -231,7 +231,7 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
 
         public void Validate(IDbContextOptions options) { }
 
-        protected TriggersOptionExtension Clone() => new TriggersOptionExtension(this);
+        protected TriggersOptionExtension Clone() => new(this);
 
         private bool TypeIsValidTrigger(Type type)
         {

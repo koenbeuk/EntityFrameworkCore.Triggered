@@ -142,9 +142,7 @@ namespace EntityFrameworkCore.Triggered.Internal
             }
         }
 
-        public void UncaptureChanges()
-        {
-            _capturedChangeIndexes = null;
-        }
+        public void UncaptureChanges() 
+            => _capturedChangeIndexes = null;
     }
 }

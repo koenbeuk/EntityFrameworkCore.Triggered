@@ -5,7 +5,7 @@ namespace EntityFrameworkCore.Triggered.Internal
 {
     public sealed class TriggerTypeRegistryService : ITriggerTypeRegistryService
     {
-        readonly ConcurrentDictionary<(Type, Type), TriggerTypeRegistry> _resolvedRegistries = new ConcurrentDictionary<(Type, Type), TriggerTypeRegistry>();
+        readonly ConcurrentDictionary<(Type, Type), TriggerTypeRegistry> _resolvedRegistries = new();
 
         TriggerTypeRegistry CreateRegistry(Type openTriggerType, Type entityType, Func<Type, ITriggerTypeDescriptor> triggerTypeDescriptorFactory) => _resolvedRegistries.GetOrAdd((openTriggerType, entityType), _ => new TriggerTypeRegistry(entityType, triggerTypeDescriptorFactory));
 

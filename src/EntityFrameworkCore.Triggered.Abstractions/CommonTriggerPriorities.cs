@@ -1,5 +1,6 @@
 ﻿namespace EntityFrameworkCore.Triggered
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Intended public constants")]
     public static class CommonTriggerPriority
     {
         public const int Earlier = -2;

@@ -76,7 +76,7 @@ namespace EntityFrameworkCore.Triggered.Tests
         }
 
         TestDbContext CreateSubject(bool stubService = true)
-            => new TestDbContext(stubService);
+            => new(stubService);
 
         [Fact]
         public void SaveChanges_CreatesChangeHandlerSession()

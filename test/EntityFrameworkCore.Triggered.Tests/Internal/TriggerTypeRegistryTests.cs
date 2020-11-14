@@ -13,7 +13,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
         public class DerivedTypeWithInterface : BaseTypeWithInterface, IInterfaceType { }
 
         TriggerTypeRegistry CreateSubject<TType>()
-            => new TriggerTypeRegistry(typeof(TType), type => new BeforeSaveTriggerDescriptor(type));
+            => new(typeof(TType), type => new BeforeSaveTriggerDescriptor(type));
 
         [Fact]
         public void GetTriggerTypeDescriptors_ForObject_Returns1Descriptor()

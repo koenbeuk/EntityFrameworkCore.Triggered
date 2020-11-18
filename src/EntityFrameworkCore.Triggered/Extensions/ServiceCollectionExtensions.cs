@@ -121,6 +121,35 @@ namespace Microsoft.Extensions.DependencyInjection
 
             var serviceDescriptor = serviceCollection.FirstOrDefault(x => x.ServiceType == typeof(IDbContextFactory<TContext>));
 
+            if (serviceDescriptor?.ImplementationType != null)
+            {
+                var triggeredFactoryType = typeof(TriggeredDbContextFactory<,>).MakeGenericType(typeof(TContext), serviceDescriptor.ImplementationType);
+
+                serviceCollection.TryAdd(ServiceDescriptor.Describe(
+                    serviceType: serviceDescriptor.ImplementationType,
+                    implementationType: serviceDescriptor.ImplementationType,
+                    lifetime: serviceDescriptor.Lifetime
+                ));
+
+                serviceCollection.Replace(ServiceDescriptor.Describe(
+                    serviceType: typeof(IDbContextFactory<TContext>),
+                    implementationFactory: serviceProvider => ActivatorUtilities.CreateInstance(serviceProvider, triggeredFactoryType, serviceProvider.GetService(serviceDescriptor.ImplementationType), serviceProvider),
+                    lifetime: ServiceLifetime.Scoped
+                ));
+            }
+
+            return serviceCollection;
+        }
+
+        public static IServiceCollection AddTriggeredPooledDbContextFactory<TContext>(this IServiceCollection serviceCollection, Action<DbContextOptionsBuilder>? optionsAction = null, int poolSize = 128)
+            where TContext : DbContext
+        {
+            serviceCollection.AddPooledDbContextFactory<TContext>(options => {
+                optionsAction?.Invoke(options);
+                options.UseTriggers();
+            }, poolSize);
+
+            var serviceDescriptor = serviceCollection.FirstOrDefault(x => x.ServiceType == typeof(IDbContextFactory<TContext>));
 
             if (serviceDescriptor?.ImplementationType != null)
             {

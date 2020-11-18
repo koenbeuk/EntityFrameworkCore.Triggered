@@ -104,6 +104,8 @@ namespace EntityFrameworkCore.Triggered.Tests.Infrastructure
             Assert.Equal(1, triggerStub.BeforeSaveInvocations.Count);
         }
 
+
+#if EFCORETRIGGERED2
         [Fact]
         public void AddTriggeredDbContextFactory_ReusesScopedServiceProvider()
         {
@@ -128,5 +130,6 @@ namespace EntityFrameworkCore.Triggered.Tests.Infrastructure
             Assert.NotNull(triggerStub);
             Assert.Equal(1, triggerStub.BeforeSaveInvocations.Count);
         }
+#endif
     }
 }

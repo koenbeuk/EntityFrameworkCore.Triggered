@@ -103,5 +103,58 @@ namespace EntityFrameworkCore.Triggered.Tests.Infrastructure
             Assert.NotNull(triggerStub);
             Assert.Equal(1, triggerStub.BeforeSaveInvocations.Count);
         }
+
+
+#if EFCORETRIGGERED2
+        [Fact]
+        public void AddTriggeredDbContextFactory_ReusesScopedServiceProvider()
+        {
+            var subject = new ServiceCollection();
+            subject.AddTriggeredDbContextFactory<TestDbContext>(options => {
+                options.UseInMemoryDatabase("test");
+                options.EnableServiceProviderCaching(false);
+            }).AddScoped<IBeforeSaveTrigger<TestModel>, TriggerStub<TestModel>>();
+
+            var serviceProvider = subject.BuildServiceProvider();
+
+            using var scope = serviceProvider.CreateScope();
+
+            var contextFactory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<TestDbContext>>();
+            var context = contextFactory.CreateDbContext();
+
+            context.TestModels.Add(new TestModel());
+
+            context.SaveChanges();
+
+            var triggerStub = scope.ServiceProvider.GetRequiredService<IBeforeSaveTrigger<TestModel>>() as TriggerStub<TestModel>;
+            Assert.NotNull(triggerStub);
+            Assert.Equal(1, triggerStub.BeforeSaveInvocations.Count);
+        }
+
+        [Fact]
+        public void AddTriggeredPooledDbContextFactory_ReusesScopedServiceProvider()
+        {
+            var subject = new ServiceCollection();
+            subject.AddTriggeredPooledDbContextFactory<TestDbContext>(options => {
+                options.UseInMemoryDatabase("test");
+                options.EnableServiceProviderCaching(false);
+            }).AddScoped<IBeforeSaveTrigger<TestModel>, TriggerStub<TestModel>>();
+
+            var serviceProvider = subject.BuildServiceProvider();
+
+            using var scope = serviceProvider.CreateScope();
+
+            var contextFactory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<TestDbContext>>();
+            var context = contextFactory.CreateDbContext();
+
+            context.TestModels.Add(new TestModel());
+
+            context.SaveChanges();
+
+            var triggerStub = scope.ServiceProvider.GetRequiredService<IBeforeSaveTrigger<TestModel>>() as TriggerStub<TestModel>;
+            Assert.NotNull(triggerStub);
+            Assert.Equal(1, triggerStub.BeforeSaveInvocations.Count);
+        }
+#endif
     }
 }

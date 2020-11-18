@@ -4,6 +4,7 @@ using System.Security.Cryptography.X509Certificates;
 using EntityFrameworkCore.Triggered.Internal;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -40,7 +41,8 @@ namespace Microsoft.Extensions.DependencyInjection
             return instance;
         }
 
-        public static IServiceCollection AddTriggeredDbContext<TContext>(this IServiceCollection serviceCollection, Action<DbContextOptionsBuilder>? optionsAction = null, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ServiceLifetime optionsLifetime = ServiceLifetime.Scoped) where TContext : DbContext
+        public static IServiceCollection AddTriggeredDbContext<TContext>(this IServiceCollection serviceCollection, Action<DbContextOptionsBuilder>? optionsAction = null, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ServiceLifetime optionsLifetime = ServiceLifetime.Scoped) 
+            where TContext : DbContext
         {
             serviceCollection.TryAdd(ServiceDescriptor.Describe(
                 serviceType: typeof(TContext),
@@ -55,7 +57,8 @@ namespace Microsoft.Extensions.DependencyInjection
             return serviceCollection;
         }
 
-        public static IServiceCollection AddTriggeredDbContextPool<TContext>(this IServiceCollection serviceCollection, Action<DbContextOptionsBuilder>? optionsAction = null, int poolSize = 128) where TContext : DbContext
+        public static IServiceCollection AddTriggeredDbContextPool<TContext>(this IServiceCollection serviceCollection, Action<DbContextOptionsBuilder>? optionsAction = null, int poolSize = 128) 
+            where TContext : DbContext
         {
             serviceCollection.AddDbContextPool<TContext>(options => {
                 optionsAction?.Invoke(options);
@@ -74,5 +77,99 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return serviceCollection;
         }
+
+#if EFCORETRIGGERED2
+        public static IServiceCollection AddTriggeredDbContextFactory<TContext>(this IServiceCollection serviceCollection, Action<DbContextOptionsBuilder>? optionsAction = null, ServiceLifetime lifetime = ServiceLifetime.Singleton)
+            where TContext : DbContext
+        {
+            serviceCollection.AddDbContextFactory<TContext>(options => {
+                optionsAction?.Invoke(options);
+                options.UseTriggers();
+            }, lifetime);
+
+            var serviceDescriptor = serviceCollection.FirstOrDefault(x => x.ServiceType == typeof(IDbContextFactory<TContext>));
+
+            
+            if (serviceDescriptor?.ImplementationType != null)
+            {
+                var triggeredFactoryType = typeof(TriggeredDbContextFactory<,>).MakeGenericType(typeof(TContext), serviceDescriptor.ImplementationType);
+
+                serviceCollection.TryAdd(ServiceDescriptor.Describe(
+                    serviceType: serviceDescriptor.ImplementationType,
+                    implementationType: serviceDescriptor.ImplementationType,
+                    lifetime: serviceDescriptor.Lifetime
+                ));
+
+                serviceCollection.Replace(ServiceDescriptor.Describe(
+                    serviceType: typeof(IDbContextFactory<TContext>),
+                    implementationFactory: serviceProvider => ActivatorUtilities.CreateInstance(serviceProvider, triggeredFactoryType, serviceProvider.GetService(serviceDescriptor.ImplementationType), serviceProvider),
+                    lifetime: ServiceLifetime.Scoped
+                ));
+            }
+            
+            return serviceCollection;
+        }
+
+        public static IServiceCollection AddTriggeredDbContextFactory<TContext, TFactory>(this IServiceCollection serviceCollection, Action<DbContextOptionsBuilder>? optionsAction = null, ServiceLifetime lifetime = ServiceLifetime.Singleton)
+            where TContext : DbContext
+            where TFactory : IDbContextFactory<TContext>
+        {
+            serviceCollection.AddDbContextFactory<TContext>(options => {
+                optionsAction?.Invoke(options);
+                options.UseTriggers();
+            }, lifetime);
+
+            var serviceDescriptor = serviceCollection.FirstOrDefault(x => x.ServiceType == typeof(IDbContextFactory<TContext>));
+
+            if (serviceDescriptor?.ImplementationType != null)
+            {
+                var triggeredFactoryType = typeof(TriggeredDbContextFactory<,>).MakeGenericType(typeof(TContext), serviceDescriptor.ImplementationType);
+
+                serviceCollection.TryAdd(ServiceDescriptor.Describe(
+                    serviceType: serviceDescriptor.ImplementationType,
+                    implementationType: serviceDescriptor.ImplementationType,
+                    lifetime: serviceDescriptor.Lifetime
+                ));
+
+                serviceCollection.Replace(ServiceDescriptor.Describe(
+                    serviceType: typeof(IDbContextFactory<TContext>),
+                    implementationFactory: serviceProvider => ActivatorUtilities.CreateInstance(serviceProvider, triggeredFactoryType, serviceProvider.GetService(serviceDescriptor.ImplementationType), serviceProvider),
+                    lifetime: ServiceLifetime.Scoped
+                ));
+            }
+
+            return serviceCollection;
+        }
+
+        public static IServiceCollection AddTriggeredPooledDbContextFactory<TContext>(this IServiceCollection serviceCollection, Action<DbContextOptionsBuilder>? optionsAction = null, int poolSize = 128)
+            where TContext : DbContext
+        {
+            serviceCollection.AddPooledDbContextFactory<TContext>(options => {
+                optionsAction?.Invoke(options);
+                options.UseTriggers();
+            }, poolSize);
+
+            var serviceDescriptor = serviceCollection.FirstOrDefault(x => x.ServiceType == typeof(IDbContextFactory<TContext>));
+
+            if (serviceDescriptor?.ImplementationType != null)
+            {
+                var triggeredFactoryType = typeof(TriggeredDbContextFactory<,>).MakeGenericType(typeof(TContext), serviceDescriptor.ImplementationType);
+
+                serviceCollection.TryAdd(ServiceDescriptor.Describe(
+                    serviceType: serviceDescriptor.ImplementationType,
+                    implementationType: serviceDescriptor.ImplementationType,
+                    lifetime: serviceDescriptor.Lifetime
+                ));
+
+                serviceCollection.Replace(ServiceDescriptor.Describe(
+                    serviceType: typeof(IDbContextFactory<TContext>),
+                    implementationFactory: serviceProvider => ActivatorUtilities.CreateInstance(serviceProvider, triggeredFactoryType, serviceProvider.GetService(serviceDescriptor.ImplementationType), serviceProvider),
+                    lifetime: ServiceLifetime.Scoped
+                ));
+            }
+
+            return serviceCollection;
+        }
+#endif
     }
 }

@@ -5,10 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace EntityFrameworkCore.Triggered.Internal
 {
+#if EFCORETRIGGERED2
     public sealed class TriggeredDbContextFactory<TContext, TFactory> : IDbContextFactory<TContext>
         where TContext : DbContext
         where TFactory : IDbContextFactory<TContext>
@@ -36,4 +36,5 @@ namespace EntityFrameworkCore.Triggered.Internal
             return context;
         }
     }
+#endif
 }

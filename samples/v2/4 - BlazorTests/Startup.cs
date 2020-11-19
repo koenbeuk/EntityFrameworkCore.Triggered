@@ -1,8 +1,10 @@
 using BlazorTests.Data;
+using EntityFrameworkCore.Triggered;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -28,12 +30,26 @@ namespace BlazorTests
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddSingleton<WeatherForecastService>();
+            services.AddSingleton<EventAggregator>();
+
+            services.AddTriggeredDbContextFactory<ApplicationDbContext>(options => {
+                options
+                    .UseSqlite("Data source=test.db");
+            })
+            .AddScoped<IBeforeSaveTrigger<Count>, Triggers.Counts.SetCreatedOn>()
+            .AddScoped<IAfterSaveTrigger<Count>, Triggers.Counts.PublishCountAddedEvent>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+            {
+                var contextFactory = serviceScope.ServiceProvider.GetRequiredService<IDbContextFactory<ApplicationDbContext>>();
+                using var context = contextFactory.CreateDbContext();
+                context.Database.EnsureCreated();
+            }
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

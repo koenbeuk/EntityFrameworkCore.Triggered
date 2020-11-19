@@ -10,10 +10,10 @@ namespace StudentManager.Triggers.StudentCourses
 {
     public class SendWelcomingEmail : IAfterSaveTrigger<StudentCourse>
     {
-        readonly ApplicationContext _applicationContext;
+        readonly ApplicationDbContext _applicationContext;
         readonly EmailService _emailService;
 
-        public SendWelcomingEmail(ApplicationContext applicationContext, EmailService emailService)
+        public SendWelcomingEmail(ApplicationDbContext applicationContext, EmailService emailService)
         {
             _applicationContext = applicationContext;
             _emailService = emailService;

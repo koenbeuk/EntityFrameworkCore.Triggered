@@ -11,9 +11,9 @@ namespace StudentManager.Pages
 {
     public class AuditsModel : PageModel
     {
-        private readonly StudentManager.ApplicationContext _context;
+        private readonly StudentManager.ApplicationDbContext _context;
 
-        public AuditsModel(StudentManager.ApplicationContext context)
+        public AuditsModel(StudentManager.ApplicationDbContext context)
         {
             _context = context;
         }

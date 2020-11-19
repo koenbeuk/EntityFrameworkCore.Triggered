@@ -12,9 +12,9 @@ namespace StudentManager.Pages.Courses
 {
     public class EditModel : PageModel
     {
-        private readonly StudentManager.ApplicationContext _context;
+        private readonly StudentManager.ApplicationDbContext _context;
 
-        public EditModel(StudentManager.ApplicationContext context)
+        public EditModel(StudentManager.ApplicationDbContext context)
         {
             _context = context;
         }

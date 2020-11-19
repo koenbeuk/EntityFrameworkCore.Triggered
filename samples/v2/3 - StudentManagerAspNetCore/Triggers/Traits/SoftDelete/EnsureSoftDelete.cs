@@ -10,9 +10,9 @@ namespace StudentManager.Triggers.Traits.SoftDelete
 {
     class EnsureSoftDelete : IBeforeSaveTrigger<ISoftDelete>
     {
-        readonly ApplicationContext _applicationContext;
+        readonly ApplicationDbContext _applicationContext;
 
-        public EnsureSoftDelete(ApplicationContext applicationContext)
+        public EnsureSoftDelete(ApplicationDbContext applicationContext)
         {
             _applicationContext = applicationContext;
         }

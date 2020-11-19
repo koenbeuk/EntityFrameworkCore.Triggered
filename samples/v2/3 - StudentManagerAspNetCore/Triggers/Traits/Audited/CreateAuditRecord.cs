@@ -13,9 +13,9 @@ namespace StudentManager.Triggers.Traits.Audited
 {
     public class CreateAuditRecord : IBeforeSaveTrigger<IAudited>
     {
-        private readonly ApplicationContext _applicationContext;
+        private readonly ApplicationDbContext _applicationContext;
 
-        public CreateAuditRecord(ApplicationContext applicationContext)
+        public CreateAuditRecord(ApplicationDbContext applicationContext)
         {
             _applicationContext = applicationContext;
         }

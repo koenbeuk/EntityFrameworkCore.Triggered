@@ -38,8 +38,14 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityFrameworkCore.Triggered.Benchmarks", "benchmarks\EntityFrameworkCore.Triggered.Benchmarks\EntityFrameworkCore.Triggered.Benchmarks.csproj", "{EC814B59-B387-4092-8F6B-6BDA4390AA9C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "v1", "v1", "{E0BFCF16-69AF-44B4-A3E3-FFB5AB6736B7}"
+	ProjectSection(SolutionItems) = preProject
+		samples\v1\Directory.Build.props = samples\v1\Directory.Build.props
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "v2", "v2", "{E24FAD52-9971-489B-AED1-1D977E545DD4}"
+	ProjectSection(SolutionItems) = preProject
+		samples\v2\Directory.Build.props = samples\v2\Directory.Build.props
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "1 - HelloWorld", "samples\v1\1 - HelloWorld\1 - HelloWorld.csproj", "{F93BA841-B47A-440E-82D9-FD65C278915F}"
 EndProject
@@ -49,7 +55,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "2 - PrimarySchool", "sample
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "3 - StudentManagerAspNetCore", "samples\v2\3 - StudentManagerAspNetCore\3 - StudentManagerAspNetCore.csproj", "{8C93D4CA-4F66-4A19-9CF5-87A227324896}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "4 - BlazorTests", "samples\v2\4 - BlazorTests\4 - BlazorTests.csproj", "{513E2D7F-628C-49DB-A7ED-15A9CCF27E6A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "4 - BlazorTests", "samples\v2\4 - BlazorTests\4 - BlazorTests.csproj", "{513E2D7F-628C-49DB-A7ED-15A9CCF27E6A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

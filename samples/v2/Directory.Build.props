@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
     <EFCorePackageVersion Condition=" '$(EFCorePackageVersion)'=='' ">5.0.0</EFCorePackageVersion>
-    <EFCoreTriggeredPackageVersion Condition=" '$(EFCoreTriggeredPackageVersion )'=='' ">2.0.0-beta2</EFCoreTriggeredPackageVersion>
+    <EFCoreTriggeredPackageVersion Condition=" '$(EFCoreTriggeredPackageVersion )'=='' ">2.0.0-beta3</EFCoreTriggeredPackageVersion>
   </PropertyGroup>
 </Project>

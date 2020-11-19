@@ -11,9 +11,9 @@ namespace StudentManager.Pages.Students
 {
     public class IndexModel : PageModel
     {
-        private readonly StudentManager.ApplicationContext _context;
+        private readonly StudentManager.ApplicationDbContext _context;
 
-        public IndexModel(StudentManager.ApplicationContext context)
+        public IndexModel(StudentManager.ApplicationDbContext context)
         {
             _context = context;
         }

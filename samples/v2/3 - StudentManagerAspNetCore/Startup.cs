@@ -31,7 +31,7 @@ namespace StudentManager
             services.AddSingleton<EmailService>();
 
             services
-                .AddTriggeredDbContextPool<ApplicationContext>(options => {
+                .AddTriggeredDbContextPool<ApplicationDbContext>(options => {
                     options
                         .UseSqlite("Data source=test.db");
                 })
@@ -51,7 +51,7 @@ namespace StudentManager
         {
             using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
             {
-                var context = serviceScope.ServiceProvider.GetRequiredService<ApplicationContext>();
+                var context = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
                 context.Database.EnsureCreated();
             }
 

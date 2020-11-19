@@ -11,9 +11,9 @@ namespace StudentManager.Pages.Students
 {
     public class CreateModel : PageModel
     {
-        private readonly StudentManager.ApplicationContext _context;
+        private readonly StudentManager.ApplicationDbContext _context;
 
-        public CreateModel(StudentManager.ApplicationContext context)
+        public CreateModel(StudentManager.ApplicationDbContext context)
         {
             _context = context;
         }

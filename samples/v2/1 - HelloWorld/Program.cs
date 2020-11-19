@@ -7,7 +7,7 @@ namespace PrimarySchool
     {
         static void Main(string[] args)
         {
-            var applicationContext = new ApplicationContext();
+            var applicationContext = new ApplicationDbContext();
 
             applicationContext.Students.Add(new Student {
                 Id = 1,

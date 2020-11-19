@@ -10,9 +10,9 @@ namespace StudentManager.Triggers.StudentCourses
 {
     public class BlockRemovalWhenCourseIsMandatory : IBeforeSaveTrigger<StudentCourse>
     {
-        readonly ApplicationContext _applicationContext;
+        readonly ApplicationDbContext _applicationContext;
 
-        public BlockRemovalWhenCourseIsMandatory(ApplicationContext applicationContext)
+        public BlockRemovalWhenCourseIsMandatory(ApplicationDbContext applicationContext)
         {
             _applicationContext = applicationContext;
         }

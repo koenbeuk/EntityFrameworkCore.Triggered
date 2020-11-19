@@ -17,7 +17,7 @@ namespace PrimarySchool
         public DateTime RegistrationDate { get; set; }
     }
         
-    public class ApplicationContext : DbContext
+    public class ApplicationDbContext : DbContext
     {
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

@@ -97,6 +97,22 @@ jobs:
         run: dotnet restore EntityFrameworkCore.Triggered.Samples.slnf
       - name: Build
         run: dotnet build --configuration Release --no-restore  EntityFrameworkCore.Triggered.Samples.slnf
+        
+  prerelease:
+    needs: build
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Artifact
+        uses: actions/download-artifact@v1
+        with:
+          name: nupkg
+      - name: Push to GitHub Feed
+        run: |
+          for f in ./nupkg/*.nupkg
+          do
+            curl -vX PUT -u "$GITHUB_USER:$GITHUB_TOKEN" -F package=@$f $GITHUB_FEED
+          done
 
   deploy:
     needs: [build, build-v1]

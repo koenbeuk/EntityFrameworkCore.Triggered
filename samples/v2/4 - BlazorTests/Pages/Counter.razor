@@ -1,0 +1,60 @@
+﻿@page "/counter"
+
+@using Microsoft.EntityFrameworkCore
+@implements IDisposable
+
+@inject IDbContextFactory<ApplicationDbContext> DbFactory
+@inject EventAggregator EventAggregator;
+
+<h1>Counter</h1>
+
+<p>Current count: @currentCount</p>
+@if (lastCountAddedOn != null)
+{
+    <p>Last count added on: @lastCountAddedOn</p>
+}
+
+<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+
+@code {
+    private int currentCount = 0;
+    private DateTime? lastCountAddedOn;
+
+    private void IncrementCount()
+    {
+        using var dbContext = DbFactory.CreateDbContext();
+
+        dbContext.Counts.Add(new Count { });
+
+        dbContext.SaveChanges();
+    }
+
+    public void RegisterCount(Count count)
+    {
+        InvokeAsync(() =>
+        {
+            this.currentCount++;
+            this.lastCountAddedOn = count.CreatedOn;
+
+            StateHasChanged();
+        });
+    }
+
+    protected override void OnInitialized()
+    {
+        using var dbContext = DbFactory.CreateDbContext();
+
+        this.currentCount = dbContext.Counts.Count();
+        if (this.currentCount > 0)
+        {
+            this.lastCountAddedOn = dbContext.Counts.Max(x => x.CreatedOn);
+        }
+
+        EventAggregator.CountAdded += RegisterCount;
+    }
+
+    public void Dispose()
+    {
+        EventAggregator.CountAdded -= RegisterCount;
+    }
+}

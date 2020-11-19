@@ -44,7 +44,7 @@ jobs:
       - name: Pack
         if: matrix.os == 'ubuntu-latest'
         run: | 
-          dotnet pack -v normal -c ReleaseV1 --include-symbols --include-source -p:PackageVersion=$GITHUB_RUN_ID -o nupkg EntityFrameworkCore.Triggered.Core.slnf
+          dotnet pack -v normal -c ReleaseV1 --include-symbols --include-source -p:PackageVersion=$GITHUB_RUN_ID -o nupkg EntityFrameworkCore.Triggered.Core-v1.slnf
       - name: Upload Artifact
         if: matrix.os == 'ubuntu-latest'
         uses: actions/upload-artifact@v2

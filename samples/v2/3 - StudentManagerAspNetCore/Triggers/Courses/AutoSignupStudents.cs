@@ -10,9 +10,9 @@ namespace StudentManager.Triggers.Courses
 {
     public class AutoSignupStudents : IBeforeSaveTrigger<Course>
     {
-        readonly ApplicationContext _applicationContext;
+        readonly ApplicationDbContext _applicationContext;
 
-        public AutoSignupStudents(ApplicationContext applicationContext)
+        public AutoSignupStudents(ApplicationDbContext applicationContext)
         {
             _applicationContext = applicationContext;
         }

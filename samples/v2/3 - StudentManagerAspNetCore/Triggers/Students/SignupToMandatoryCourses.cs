@@ -11,9 +11,9 @@ namespace StudentManager.Triggers.Students
 {
     public class SignupToMandatoryCourses : IBeforeSaveTrigger<Student>
     {
-        readonly ApplicationContext _applicationContext;
+        readonly ApplicationDbContext _applicationContext;
 
-        public SignupToMandatoryCourses(ApplicationContext applicationContext)
+        public SignupToMandatoryCourses(ApplicationDbContext applicationContext)
         {
             _applicationContext = applicationContext;
         }

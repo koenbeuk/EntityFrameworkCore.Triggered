@@ -12,7 +12,7 @@ namespace PrimarySchool
         static void Main(string[] args)
         {
             var serviceProvider = new ServiceCollection()
-                .AddTriggeredDbContext<ApplicationContext>(options => {
+                .AddTriggeredDbContext<ApplicationDbContext>(options => {
                    options
                       .UseInMemoryDatabase("PrimarySchool");
                })
@@ -20,7 +20,7 @@ namespace PrimarySchool
                .BuildServiceProvider();
 
             var serviceScope = serviceProvider.CreateScope();
-            var applicationContext = serviceScope.ServiceProvider.GetRequiredService<ApplicationContext>();
+            var applicationContext = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
             applicationContext.Courses.Add(new Course {
                 Id = 1,

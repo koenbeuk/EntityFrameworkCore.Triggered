@@ -10,9 +10,9 @@ namespace PrimarySchool.Triggers
 {
     public class StudentSignupToMandatoryCourses : IBeforeSaveTrigger<Student>
     {
-        readonly ApplicationContext _applicationContext;
+        readonly ApplicationDbContext _applicationContext;
 
-        public StudentSignupToMandatoryCourses(ApplicationContext applicationContext)
+        public StudentSignupToMandatoryCourses(ApplicationDbContext applicationContext)
         {
             _applicationContext = applicationContext;
         }

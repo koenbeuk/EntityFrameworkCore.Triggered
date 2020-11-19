@@ -11,9 +11,9 @@ namespace StudentManager.Pages.Courses
 {
     public class DetailsModel : PageModel
     {
-        private readonly StudentManager.ApplicationContext _context;
+        private readonly StudentManager.ApplicationDbContext _context;
 
-        public DetailsModel(StudentManager.ApplicationContext context)
+        public DetailsModel(StudentManager.ApplicationDbContext context)
         {
             _context = context;
         }

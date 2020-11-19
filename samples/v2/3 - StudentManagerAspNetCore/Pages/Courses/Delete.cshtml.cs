@@ -11,9 +11,9 @@ namespace StudentManager.Pages.Courses
 {
     public class DeleteModel : PageModel
     {
-        private readonly StudentManager.ApplicationContext _context;
+        private readonly StudentManager.ApplicationDbContext _context;
 
-        public DeleteModel(StudentManager.ApplicationContext context)
+        public DeleteModel(StudentManager.ApplicationDbContext context)
         {
             _context = context;
         }

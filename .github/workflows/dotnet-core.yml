@@ -100,7 +100,7 @@ jobs:
         
   prerelease:
     needs: build
-    if: github.ref == 'refs/heads/master'
+    # if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
       - name: Download Artifact
@@ -108,8 +108,12 @@ jobs:
         with:
           name: nupkg
       - name: Push to GitHub Feed
-        run: dotnet nuget push ./nupkg/*.nupkg --source $GITHUB_FEED --api-key ${{github.token}} --skip-duplicate --no-symbols true
-
+        run: |
+          for f in ./nupkg/*.nupkg
+          do
+            dotnet nuget push $f --source $GITHUB_FEED --api-key ${{github.token}} --skip-duplicate --no-symbols true
+          done
+          
   deploy:
     needs: [build, build-v1]
     if: github.event_name == 'release'
@@ -131,7 +135,11 @@ jobs:
           echo Configuration: $CONFIGURATION
           dotnet pack -v normal -c $CONFIGURATION --include-symbols --include-source -p:PackageVersion=$VERSION -o nupkg EntityFrameworkCore.Triggered.Core.slnf
       - name: Push to GitHub Feed
-        run: dotnet nuget push ./nupkg/*.nupkg --source $GITHUB_FEED --api-key ${{github.token}} --skip-duplicate --no-symbols true
+        run: |
+          for f in ./nupkg/*.nupkg
+          do
+            dotnet nuget push $f --source $GITHUB_FEED --api-key ${{github.token}} --skip-duplicate --no-symbols true
+          done
       - name: Push to NuGet Feed
         run: |
           for f in ./nupkg/*.nupkg

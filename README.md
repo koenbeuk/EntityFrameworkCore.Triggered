@@ -139,7 +139,6 @@ await triggerSession.RaiseBeforeSaveTriggers();
 
 try {
 	await context.SaveChangesAsync();
-	await triggerSession.RaiseAfterSaveTriggers();
 }
 catch {
 	await triggerSession.RaiseBeforeRollbackTriggers();

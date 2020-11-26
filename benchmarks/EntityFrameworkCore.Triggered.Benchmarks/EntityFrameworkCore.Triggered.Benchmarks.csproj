@@ -13,7 +13,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" Version="0.12.1" />
-    <PackageReference Include="EntityFrameworkCore.Triggered" Version="1.1.0" />
+    <PackageReference Include="EntityFrameworkCore.Triggered" Version="2.0.0" />
     <PackageReference Include="EntityFrameworkCore.Triggers" Version="1.2.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="5.0.0" />
     <PackageReference Include="Ramses" Version="3.0.1" />

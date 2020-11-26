@@ -135,8 +135,6 @@ using var tx = context.Database.BeginTransaction();
 var triggerService = context.GetService<ITriggerService>(); // ITriggerService is responsible for creating now trigger sessions (see below)
 var triggerSession = triggerService.CreateSession(context); // A trigger session keeps track of all changes that are relevant within that session. e.g. RaiseAfterSaveTriggers will only raise triggers on changes it discovered within this session (through RaiseBeforeSaveTriggers)
 
-await triggerSession.RaiseBeforeSaveTriggers();
-
 try {
 	await context.SaveChangesAsync();
 }

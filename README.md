@@ -20,7 +20,7 @@ Triggers for EF Core. Respond to changes in your DbContext before and after they
 
 ### Example
 ```csharp
-class StudentSignupTrigger  : IBeforeSaveTrigger<Student>, IAfterSaveTrigger<Student> {
+class StudentSignupTrigger  : IBeforeSaveTrigger<Student> {
     readonly ApplicationDbContext _applicationDbContext;
     
     public class StudentTrigger(ApplicationDbContext applicationDbContext) {

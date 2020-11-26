@@ -95,9 +95,9 @@ namespace EntityFrameworkCore.Triggered.Benchmarks
         public DbSet<StudentCourse> StudentCourses { get; set; }
     }
 
-    public class TriggeredApplicationContext : TriggeredDbContext, IApplicationContextContract
+    public class TriggeredApplicationContext : DbContext, IApplicationContextContract
     {
-        public TriggeredApplicationContext(DbContextOptions<TriggeredApplicationContext> options, IServiceProvider serviceProvider) : base(options, serviceProvider)
+        public TriggeredApplicationContext(DbContextOptions<TriggeredApplicationContext> options) : base(options)
         {
         }
 

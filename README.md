@@ -15,6 +15,7 @@ Triggers for EF Core. Respond to changes in your DbContext before and after they
 2. Implement Triggers by implementing `IBeforeSaveTrigger<TEntity>` and `IAfterSaveTrigger<TEntity>`
 3. Register your triggers with Dependency Injection (Or [read on](when-you-dont-want-to-use-dependeny-injection) if you don't want to use DI)
 4. View our [samples](https://github.com/koenbeuk/EntityFrameworkCore.Triggered/tree/master/samples)
+5. Check out our [WIKI](https://github.com/koenbeuk/EntityFrameworkCore.Triggered/wiki) for tips and tricks on getting started and being succesfull.
 
 > Since EntityFrameworkCore.Triggered 2.0, triggers will be invoked automatically, however this requires EFCore 5.0. If you're stuck with EFCore 3.1 then you can use [EntityFrameworkCore.Triggered V1](https://www.nuget.org/packages/EntityFrameworkCore.Triggered/1.1.0). This requires you to inherit from `TriggeredDbContext` or manual management of trigger sessions.
 

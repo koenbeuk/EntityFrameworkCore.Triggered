@@ -136,16 +136,16 @@ var triggerService = context.GetService<ITriggerService>(); // ITriggerService i
 var triggerSession = triggerService.CreateSession(context); // A trigger session keeps track of all changes that are relevant within that session. e.g. RaiseAfterSaveTriggers will only raise triggers on changes it discovered within this session (through RaiseBeforeSaveTriggers)
 
 try {
-	await context.SaveChangesAsync();
+    await context.SaveChangesAsync();
+    await triggerSession.RaiseBeforeCommitTriggers();    
 }
 catch {
-	await triggerSession.RaiseBeforeRollbackTriggers();
-	await context.RollbackAsync();
-	await triggerSession.RaiseAfterRollbackTriggers();	
-	throw;
+    await triggerSession.RaiseBeforeRollbackTriggers();
+    await context.RollbackAsync();
+    await triggerSession.RaiseAfterRollbackTriggers();	
+    throw;
 }
 
-await triggerSession.RaiseBeforeCommitTriggers();
 await context.CommitAsync();
 await triggerSession.RaiseAfterCommitTriggers();
 ```

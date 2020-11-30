@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using EntityFrameworkCore.Triggered.Internal;
 using EntityFrameworkCore.Triggered.Internal.RecursionStrategy;
+using EntityFrameworkCore.Triggered.Lyfecycles;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
@@ -100,7 +101,13 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
             _triggerTypes = new[] {
                 typeof(IBeforeSaveTrigger<>),
                 typeof(IAfterSaveTrigger<>),
-                typeof(IAfterSaveFailedTrigger<>)
+                typeof(IAfterSaveFailedTrigger<>),
+                typeof(IBeforeSaveStartingTrigger),
+                typeof(IBeforeSaveStartedTrigger),
+                typeof(IAfterSaveFailedStartingTrigger),
+                typeof(IAfterSaveFailedStartedTrigger),
+                typeof(IAfterSaveStartingTrigger),
+                typeof(IAfterSaveStartedTrigger)
             };
         }
 

@@ -142,7 +142,6 @@ namespace EntityFrameworkCore.Triggered
             }
 
             return RaiseTriggers(typeof(IAfterSaveFailedTrigger<>), exception, _afterSaveFailedTriggerContextDiscoveryStrategy, entityType => new AfterSaveFailedTriggerDescriptor(entityType, exception), cancellationToken);
-
         }
 
         public void Dispose()

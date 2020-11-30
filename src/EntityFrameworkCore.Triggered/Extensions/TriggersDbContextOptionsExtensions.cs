@@ -1,4 +1,5 @@
 ﻿using System;
+using EntityFrameworkCore.Triggered;
 using EntityFrameworkCore.Triggered.Infrastructure;
 using EntityFrameworkCore.Triggered.Infrastructure.Internal;
 using Microsoft.EntityFrameworkCore.Infrastructure;

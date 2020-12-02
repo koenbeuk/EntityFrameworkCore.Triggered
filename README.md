@@ -90,7 +90,7 @@ public class Startup
 }
 ```
 
-### Recursion
+### Recursion (Cascading changes)
 `BeforeSaveTrigger<TEntity>` supports recursion. This is useful since it allows your triggers to subsequently modify the same DbContext entity graph and have it raise additional triggers. By default this behavior is turned on and protected from infinite loops by limiting the number of recursion runs. If you don't like this behavior or want to change it, you can do so by:
 ```csharp
 optionsBuilder.UseTriggers(triggerOptions => {

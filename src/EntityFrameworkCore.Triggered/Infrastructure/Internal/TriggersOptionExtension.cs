@@ -82,7 +82,7 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
                 }
 
                 debugInfo["Triggers:TriggersCount"] = (((TriggersOptionExtension)Extension)._triggers?.Count() ?? 0).ToString();
-                debugInfo["Triggers:AdditionalTriggerTypesCount"] = (((TriggersOptionExtension)Extension)._triggerTypes?.Count() ?? 0).ToString();
+                debugInfo["Triggers:TriggerTypesCount"] = (((TriggersOptionExtension)Extension)._triggerTypes?.Count() ?? 0).ToString();
                 debugInfo["Triggers:MaxRecursion"] = ((TriggersOptionExtension)Extension)._maxRecursion.ToString();
                 debugInfo["Triggers:RecursionMode"] = ((TriggersOptionExtension)Extension)._recursionMode.ToString();
             }
@@ -90,14 +90,18 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
 
         private ExtensionInfo? _info;
         private IEnumerable<(object typeOrInstance, ServiceLifetime lifetime)>? _triggers;
-        private IEnumerable<Type>? _triggerTypes;
+        private IEnumerable<Type> _triggerTypes;
         private int _maxRecursion = 100;
         private RecursionMode _recursionMode = RecursionMode.EntityAndType;
         private Func<IServiceProvider, IServiceProvider>? _serviceProviderTransform;
 
         public TriggersOptionExtension()
         {
-
+            _triggerTypes = new[] {
+                typeof(IBeforeSaveTrigger<>),
+                typeof(IAfterSaveTrigger<>),
+                typeof(IAfterSaveFailedTrigger<>)
+            };
         }
 
         public TriggersOptionExtension(TriggersOptionExtension copyFrom)
@@ -107,11 +111,7 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
                 _triggers = copyFrom._triggers;
             }
 
-            if (copyFrom._triggerTypes != null)
-            {
-                _triggerTypes = copyFrom._triggerTypes;
-            }
-
+            _triggerTypes = copyFrom._triggerTypes;
             _maxRecursion = copyFrom._maxRecursion;
             _recursionMode = copyFrom._recursionMode;
             _serviceProviderTransform = copyFrom._serviceProviderTransform;
@@ -165,46 +165,6 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
                         object instance => (instance.GetType(), instance),
                         _ => throw new InvalidOperationException("Unknown type registration")
                     };
-
-                    var beforeSaveChangeTriggers = TypeHelpers.FindGenericInterfaces(triggerType, typeof(IBeforeSaveTrigger<>));
-                    var afterSaveChangeTriggers = TypeHelpers.FindGenericInterfaces(triggerType, typeof(IAfterSaveTrigger<>));
-                    var afterSaveFailedTriggers = TypeHelpers.FindGenericInterfaces(triggerType, typeof(IAfterSaveFailedTrigger<>));
-
-                    foreach (var beforeSaveChangeTrigger in beforeSaveChangeTriggers)
-                    {
-                        if (triggerInstance != null)
-                        {
-                            services.Add(new ServiceDescriptor(beforeSaveChangeTrigger, triggerInstance));
-                        }
-                        else
-                        {
-                            services.Add(new ServiceDescriptor(beforeSaveChangeTrigger, triggerType, lifetime));
-                        }
-                    }
-
-                    foreach (var afterSaveChangeTrigger in afterSaveChangeTriggers)
-                    {
-                        if (triggerInstance != null)
-                        {
-                            services.Add(new ServiceDescriptor(afterSaveChangeTrigger, triggerInstance));
-                        }
-                        else
-                        {
-                            services.Add(new ServiceDescriptor(afterSaveChangeTrigger, triggerType, lifetime));
-                        }
-                    }
-
-                    foreach (var afterSaveFailedTrigger in afterSaveFailedTriggers)
-                    {
-                        if (triggerInstance != null)
-                        {
-                            services.Add(new ServiceDescriptor(afterSaveFailedTrigger, triggerInstance));
-                        }
-                        else
-                        {
-                            services.Add(new ServiceDescriptor(afterSaveFailedTrigger, triggerType, lifetime));
-                        }
-                    }
 
                     if (_triggerTypes != null)
                     {

@@ -107,6 +107,8 @@ namespace EntityFrameworkCore.Triggered.Internal
 
                 try
                 {
+                    eventData.Context.ChangeTracker.AutoDetectChangesEnabled = false;
+
                     await _triggerSession!.RaiseBeforeSaveTriggers(cancellationToken).ConfigureAwait(false);
                     _triggerSession.CaptureDiscoveredChanges();
                 }

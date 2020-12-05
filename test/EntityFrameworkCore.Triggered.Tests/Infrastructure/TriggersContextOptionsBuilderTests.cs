@@ -18,23 +18,23 @@ namespace EntityFrameworkCore.Triggered.Tests.Infrastructure
         }
 
         [Fact]
-        public void CascadeMode_Sticks()
+        public void CascadingMode_Sticks()
         {
             var (subject, extensionAccessor) = CreateSubject();
 
-            subject.CascadeMode(CascadeMode.None);
+            subject.CascadingMode(CascadingMode.None);
 
-            Assert.Equal(CascadeMode.None, extensionAccessor().CascadeMode);
+            Assert.Equal(CascadingMode.None, extensionAccessor().CascadingMode);
         }
 
         [Fact]
-        public void MaxCascade_Sticks()
+        public void MaxCascadingCycles_Sticks()
         {
             var (subject, extensionAccessor) = CreateSubject();
 
-            subject.MaxCascade(10);
+            subject.MaxCascadingCycles(10);
 
-            Assert.Equal(10, extensionAccessor().MaxCascade);
+            Assert.Equal(10, extensionAccessor().MaxCascadingCycles);
         }
 
         [Fact]

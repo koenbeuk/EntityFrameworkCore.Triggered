@@ -27,11 +27,11 @@ namespace EntityFrameworkCore.Triggered.Infrastructure
         public TriggersContextOptionsBuilder AddTrigger(object trigger)
             => WithOption(e => e.WithAdditionalTrigger(trigger));
 
-        public TriggersContextOptionsBuilder CascadeMode(CascadeMode cascadeMode = Infrastructure.CascadeMode.EntityAndType)
-            => WithOption(e => e.WithCascadeMode(cascadeMode));
+        public TriggersContextOptionsBuilder CascadingMode(CascadingMode cascadingMode = Infrastructure.CascadingMode.EntityAndType)
+            => WithOption(e => e.WithCascadingMode(cascadingMode));
 
-        public TriggersContextOptionsBuilder MaxCascade(int maxCascade = 100)
-            => WithOption(e => e.WithMaxCascade(maxCascade));
+        public TriggersContextOptionsBuilder MaxCascadingCycles(int maxCascadingCycles = 100)
+            => WithOption(e => e.WithMaxCascadingCycles(maxCascadingCycles));
 
         public TriggersContextOptionsBuilder AddTriggerType(Type triggerType)
             => WithOption(e => e.WithAdditionalTriggerType(triggerType));

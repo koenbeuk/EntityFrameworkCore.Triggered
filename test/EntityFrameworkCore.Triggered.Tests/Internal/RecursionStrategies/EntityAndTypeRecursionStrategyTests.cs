@@ -1,15 +1,15 @@
-﻿using EntityFrameworkCore.Triggered.Internal.CascadeStrategies;
+﻿using EntityFrameworkCore.Triggered.Internal.CascadingStrategies;
 
-namespace EntityFrameworkCore.Triggered.Tests.Internal.CascadeStrategies
+namespace EntityFrameworkCore.Triggered.Tests.Internal.CascadingStrategies
 {
-    public class EntityAndTypeCascadeStrategyTests : CascadeStrategyTestsBase
+    public class EntityAndTypeCascadingStrategyTests : CascadingStrategyTestsBase
     {
         protected override bool CanCascadeUnmodifiedExpectedOutcome => false;
         protected override bool CanCascadeModifiedExpectedOutcome => false;
         protected override bool CanCascadeUnmodifiedDifferentTypeExpectedOutcome => true;
         protected override bool CanCascadeModifiedDifferentTypeExpectedOutcome => true;
 
-        protected override ICascadeStrategy CreateSubject()
-            => new NoCascadeStrategy();
+        protected override ICascadingStrategy CreateSubject()
+            => new NoCascadingStrategy();
     }
 }

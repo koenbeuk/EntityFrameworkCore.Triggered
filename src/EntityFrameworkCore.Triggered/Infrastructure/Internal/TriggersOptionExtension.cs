@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using EntityFrameworkCore.Triggered.Internal;
-using EntityFrameworkCore.Triggered.Internal.CascadeStrategies;
+using EntityFrameworkCore.Triggered.Internal.CascadingStrategies;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
@@ -60,8 +60,8 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
                         }
                     }
 
-                    hashCode ^= extension._maxCascade.GetHashCode();
-                    hashCode ^= extension._cascadeMode.GetHashCode();
+                    hashCode ^= extension._maxCascadingCycles.GetHashCode();
+                    hashCode ^= extension._cascadingMode.GetHashCode();
 
                     if (extension._serviceProviderTransform != null)
                     {
@@ -83,16 +83,16 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
 
                 debugInfo["Triggers:TriggersCount"] = (((TriggersOptionExtension)Extension)._triggers?.Count() ?? 0).ToString();
                 debugInfo["Triggers:TriggerTypesCount"] = (((TriggersOptionExtension)Extension)._triggerTypes?.Count() ?? 0).ToString();
-                debugInfo["Triggers:MaxCascade"] = ((TriggersOptionExtension)Extension)._maxCascade.ToString();
-                debugInfo["Triggers:CascadeMode"] = ((TriggersOptionExtension)Extension)._cascadeMode.ToString();
+                debugInfo["Triggers:MaxCascadingCycles"] = ((TriggersOptionExtension)Extension)._maxCascadingCycles.ToString();
+                debugInfo["Triggers:CascadingMode"] = ((TriggersOptionExtension)Extension)._cascadingMode.ToString();
             }
         }
 
         private ExtensionInfo? _info;
         private IEnumerable<(object typeOrInstance, ServiceLifetime lifetime)>? _triggers;
         private IEnumerable<Type> _triggerTypes;
-        private int _maxCascade = 100;
-        private CascadeMode _cascadeMode = CascadeMode.EntityAndType;
+        private int _maxCascadingCycles = 100;
+        private CascadingMode _cascadingMode = CascadingMode.EntityAndType;
         private Func<IServiceProvider, IServiceProvider>? _serviceProviderTransform;
 
         public TriggersOptionExtension()
@@ -112,16 +112,16 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
             }
 
             _triggerTypes = copyFrom._triggerTypes;
-            _maxCascade = copyFrom._maxCascade;
-            _cascadeMode = copyFrom._cascadeMode;
+            _maxCascadingCycles = copyFrom._maxCascadingCycles;
+            _cascadingMode = copyFrom._cascadingMode;
             _serviceProviderTransform = copyFrom._serviceProviderTransform;
         }
 
         public DbContextOptionsExtensionInfo Info
             => _info ??= new ExtensionInfo(this);
 
-        public int MaxCascade => _maxCascade;
-        public CascadeMode CascadeMode => _cascadeMode;
+        public int MaxCascadingCycles => _maxCascadingCycles;
+        public CascadingMode CascadingMode => _cascadingMode;
         public IEnumerable<(object typeOrInstance, ServiceLifetime lifetime)> Triggers => _triggers ?? Enumerable.Empty<(object typeOrInstance, ServiceLifetime lifetime)>();
 
         public void ApplyServices(IServiceCollection services)
@@ -143,17 +143,17 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
 
 
             services.Configure<TriggerOptions>(triggerServiceOptions => {
-                triggerServiceOptions.MaxCascades = _maxCascade;
+                triggerServiceOptions.MaxCascadingCycles = _maxCascadingCycles;
             });
 
-            var cascadeStrategyType = _cascadeMode switch
+            var cascadingStrategyType = _cascadingMode switch
             {
-                CascadeMode.None => typeof(NoCascadeStrategy),
-                CascadeMode.EntityAndType => typeof(EntityAndTypeCascadeStrategy),
-                _ => throw new InvalidOperationException("Unsupported cascade mode")
+                CascadingMode.None => typeof(NoCascadingStrategy),
+                CascadingMode.EntityAndType => typeof(EntityAndTypeCascadingStrategy),
+                _ => throw new InvalidOperationException("Unsupported cascading mode")
             };
 
-            services.TryAddTransient(typeof(ICascadeStrategy), cascadeStrategyType);
+            services.TryAddTransient(typeof(ICascadingStrategy), cascadingStrategyType);
 
             if (_triggers != null)
             {
@@ -209,20 +209,20 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
             }
         }
 
-        public TriggersOptionExtension WithCascadeMode(CascadeMode cascadeMode)
+        public TriggersOptionExtension WithCascadingMode(CascadingMode cascadingMode)
         {
             var clone = Clone();
 
-            clone._cascadeMode = cascadeMode;
+            clone._cascadingMode = cascadingMode;
 
             return clone;
         }
 
-        public TriggersOptionExtension WithMaxCascade(int maxCascade)
+        public TriggersOptionExtension WithMaxCascadingCycles(int maxCascadingCycles)
         {
             var clone = Clone();
 
-            clone._maxCascade = maxCascade;
+            clone._maxCascadingCycles = maxCascadingCycles;
 
             return clone;
         }

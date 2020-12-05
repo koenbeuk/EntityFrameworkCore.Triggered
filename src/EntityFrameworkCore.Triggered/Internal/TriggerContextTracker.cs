@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using EntityFrameworkCore.Triggered.Internal.CascadeStrategies;
+using EntityFrameworkCore.Triggered.Internal.CascadingStrategies;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
@@ -10,15 +10,15 @@ namespace EntityFrameworkCore.Triggered.Internal
     public sealed class TriggerContextTracker
     {
         readonly ChangeTracker _changeTracker;
-        readonly ICascadeStrategy _cascadeStrategy;
+        readonly ICascadingStrategy _cascadingStrategy;
 
         List<TriggerContextDescriptor>? _discoveredChanges;
         List<int>? _capturedChangeIndexes;
 
-        public TriggerContextTracker(ChangeTracker changeTracker, ICascadeStrategy cascadeStrategy)
+        public TriggerContextTracker(ChangeTracker changeTracker, ICascadingStrategy cascadingStrategy)
         {
             _changeTracker = changeTracker;
-            _cascadeStrategy = cascadeStrategy;
+            _cascadingStrategy = cascadingStrategy;
         }
 
         static ChangeType? ResolveChangeType(EntityEntry entry) => entry.State switch {
@@ -80,7 +80,7 @@ namespace EntityFrameworkCore.Triggered.Internal
                         {
                             if (discoveredChange.Entity == entry.Entity)
                             {
-                                canCascade = _cascadeStrategy.CanCascade(entry, changeType.Value, discoveredChange);
+                                canCascade = _cascadingStrategy.CanCascade(entry, changeType.Value, discoveredChange);
 
                                 if (!canCascade)
                                 {

@@ -27,11 +27,11 @@ namespace EntityFrameworkCore.Triggered.Infrastructure
         public TriggersContextOptionsBuilder AddTrigger(object trigger)
             => WithOption(e => e.WithAdditionalTrigger(trigger));
 
-        public TriggersContextOptionsBuilder RecursionMode(RecursionMode recursionMode = Infrastructure.RecursionMode.EntityAndType)
-            => WithOption(e => e.WithRecursionMode(recursionMode));
+        public TriggersContextOptionsBuilder CascadeMode(CascadeMode cascadeMode = Infrastructure.CascadeMode.EntityAndType)
+            => WithOption(e => e.WithCascadeMode(cascadeMode));
 
-        public TriggersContextOptionsBuilder MaxRecusion(int maxRecursion = 100)
-            => WithOption(e => e.WithMaxRecursion(maxRecursion));
+        public TriggersContextOptionsBuilder MaxCascade(int maxCascade = 100)
+            => WithOption(e => e.WithMaxCascade(maxCascade));
 
         public TriggersContextOptionsBuilder AddTriggerType(Type triggerType)
             => WithOption(e => e.WithAdditionalTriggerType(triggerType));

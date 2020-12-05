@@ -103,7 +103,7 @@ namespace EntityFrameworkCore.Triggered
             {
                 if (_beforeSaveTriggerContextDiscoveryStrategyWithSkipDetectedChanges == null)
                 {
-                    _beforeSaveTriggerContextDiscoveryStrategyWithSkipDetectedChanges = new RecursiveTriggerContextDiscoveryStrategy("BeforeSave", true);
+                    _beforeSaveTriggerContextDiscoveryStrategyWithSkipDetectedChanges = new CascadingTriggerContextDiscoveryStrategy("BeforeSave", true);
                 }
 
                 strategy = _beforeSaveTriggerContextDiscoveryStrategyWithSkipDetectedChanges;
@@ -112,7 +112,7 @@ namespace EntityFrameworkCore.Triggered
             {
                 if (_beforeSaveTriggerContextDiscoveryStrategy == null)
                 {
-                    _beforeSaveTriggerContextDiscoveryStrategy = new RecursiveTriggerContextDiscoveryStrategy("BeforeSave", false);
+                    _beforeSaveTriggerContextDiscoveryStrategy = new CascadingTriggerContextDiscoveryStrategy("BeforeSave", false);
                 }
 
                 strategy = _beforeSaveTriggerContextDiscoveryStrategy;
@@ -128,7 +128,7 @@ namespace EntityFrameworkCore.Triggered
         {
             if (_afterSaveTriggerContextDiscoveryStrategy == null)
             {
-                _afterSaveTriggerContextDiscoveryStrategy = new NonRecursiveTriggerContextDiscoveryStrategy("AfterSave");
+                _afterSaveTriggerContextDiscoveryStrategy = new NonCascadingTriggerContextDiscoveryStrategy("AfterSave");
             }
 
             return RaiseTriggers(typeof(IAfterSaveTrigger<>), null, _afterSaveTriggerContextDiscoveryStrategy, entityType => new AfterSaveTriggerDescriptor(entityType), cancellationToken);
@@ -138,7 +138,7 @@ namespace EntityFrameworkCore.Triggered
         {
             if (_afterSaveFailedTriggerContextDiscoveryStrategy == null)
             {
-                _afterSaveFailedTriggerContextDiscoveryStrategy = new NonRecursiveTriggerContextDiscoveryStrategy("AfterSaveFailed");
+                _afterSaveFailedTriggerContextDiscoveryStrategy = new NonCascadingTriggerContextDiscoveryStrategy("AfterSaveFailed");
             }
 
             return RaiseTriggers(typeof(IAfterSaveFailedTrigger<>), exception, _afterSaveFailedTriggerContextDiscoveryStrategy, entityType => new AfterSaveFailedTriggerDescriptor(entityType, exception), cancellationToken);

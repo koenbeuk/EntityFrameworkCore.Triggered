@@ -1,11 +1,11 @@
 ﻿using EntityFrameworkCore.Triggered.Internal;
-using EntityFrameworkCore.Triggered.Internal.RecursionStrategy;
+using EntityFrameworkCore.Triggered.Internal.CascadeStrategies;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 
-namespace EntityFrameworkCore.Triggered.Tests.Internal.RecursionStrategies
+namespace EntityFrameworkCore.Triggered.Tests.Internal.CascadeStrategies
 {
-    public abstract class RecursionStrategyTestsBase
+    public abstract class CascadeStrategyTestsBase
     {
         class TestModel { public int Id { get; set; } public int Property1 { get; set; } }
 
@@ -20,16 +20,16 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal.RecursionStrategies
             }
         }
 
-        protected abstract IRecursionStrategy CreateSubject();
+        protected abstract ICascadeStrategy CreateSubject();
 
-        protected abstract bool CanRecurseUnmodifiedExpectedOutcome { get; }
-        protected abstract bool CanRecurseModifiedExpectedOutcome { get; }
-        protected abstract bool CanRecurseUnmodifiedDifferentTypeExpectedOutcome { get; }
-        protected abstract bool CanRecurseModifiedDifferentTypeExpectedOutcome { get; }
+        protected abstract bool CanCascadeUnmodifiedExpectedOutcome { get; }
+        protected abstract bool CanCascadeModifiedExpectedOutcome { get; }
+        protected abstract bool CanCascadeUnmodifiedDifferentTypeExpectedOutcome { get; }
+        protected abstract bool CanCascadeModifiedDifferentTypeExpectedOutcome { get; }
 
 
         [Fact]
-        public void CanRecurse_Unmodified()
+        public void CanCascade_Unmodified()
         {
             using var dbContext = new TestDbContext();
             var subject = CreateSubject();
@@ -37,13 +37,13 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal.RecursionStrategies
             dbContext.Add(entity);
             var previousTriggerContextDescriptor = new TriggerContextDescriptor(dbContext.Entry(entity), ChangeType.Added);
 
-            var result = subject.CanRecurse(dbContext.Entry(entity), ChangeType.Added, previousTriggerContextDescriptor);
+            var result = subject.CanCascade(dbContext.Entry(entity), ChangeType.Added, previousTriggerContextDescriptor);
 
-            Assert.Equal(CanRecurseUnmodifiedExpectedOutcome, result);
+            Assert.Equal(CanCascadeUnmodifiedExpectedOutcome, result);
         }
 
         [Fact]
-        public void CanRecurse_Modified()
+        public void CanCascade_Modified()
         {
             using var dbContext = new TestDbContext();
             var subject = CreateSubject();
@@ -52,13 +52,13 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal.RecursionStrategies
             var previousTriggerContextDescriptor = new TriggerContextDescriptor(dbContext.Entry(entity), ChangeType.Added);
 
             entity.Property1 = 2;
-            var result = subject.CanRecurse(dbContext.Entry(entity), ChangeType.Added, previousTriggerContextDescriptor);
+            var result = subject.CanCascade(dbContext.Entry(entity), ChangeType.Added, previousTriggerContextDescriptor);
 
-            Assert.Equal(CanRecurseUnmodifiedExpectedOutcome, result);
+            Assert.Equal(CanCascadeUnmodifiedExpectedOutcome, result);
         }
 
         [Fact]
-        public void CanRecurse_UnmodifiedDifferentType()
+        public void CanCascade_UnmodifiedDifferentType()
         {
             using var dbContext = new TestDbContext();
             var subject = CreateSubject();
@@ -66,13 +66,13 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal.RecursionStrategies
             dbContext.Add(entity);
             var previousTriggerContextDescriptor = new TriggerContextDescriptor(dbContext.Entry(entity), ChangeType.Added);
 
-            var result = subject.CanRecurse(dbContext.Entry(entity), ChangeType.Modified, previousTriggerContextDescriptor);
+            var result = subject.CanCascade(dbContext.Entry(entity), ChangeType.Modified, previousTriggerContextDescriptor);
 
-            Assert.Equal(CanRecurseUnmodifiedExpectedOutcome, result);
+            Assert.Equal(CanCascadeUnmodifiedExpectedOutcome, result);
         }
 
         [Fact]
-        public void CanRecurse_ModifiedDifferentType()
+        public void CanCascade_ModifiedDifferentType()
         {
             using var dbContext = new TestDbContext();
             var subject = CreateSubject();
@@ -81,9 +81,9 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal.RecursionStrategies
             var previousTriggerContextDescriptor = new TriggerContextDescriptor(dbContext.Entry(entity), ChangeType.Added);
 
             entity.Property1 = 2;
-            var result = subject.CanRecurse(dbContext.Entry(entity), ChangeType.Modified, previousTriggerContextDescriptor);
+            var result = subject.CanCascade(dbContext.Entry(entity), ChangeType.Modified, previousTriggerContextDescriptor);
 
-            Assert.Equal(CanRecurseUnmodifiedExpectedOutcome, result);
+            Assert.Equal(CanCascadeUnmodifiedExpectedOutcome, result);
         }
     }
 }

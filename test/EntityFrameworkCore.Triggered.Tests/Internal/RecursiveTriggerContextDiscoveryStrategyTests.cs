@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Linq;
 using EntityFrameworkCore.Triggered.Internal;
-using EntityFrameworkCore.Triggered.Internal.RecursionStrategy;
+using EntityFrameworkCore.Triggered.Internal.CascadeStrategies;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
 namespace EntityFrameworkCore.Triggered.Tests.Internal
 {
-    public class RecursiveTriggerContextDiscoveryStrategyTests
+    public class CascadeTriggerContextDiscoveryStrategyTests
     {
         class TestModel
         {
@@ -44,8 +44,8 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
         public void DiscoverChanges_MultipleCalls_ReturnsDeltaOfChanges()
         {
             using var dbContext = new TestDbContext();
-            var subject = new RecursiveTriggerContextDiscoveryStrategy("test", false);
-            var triggerContextTracker = new TriggerContextTracker(dbContext.ChangeTracker, new EntityAndTypeRecursionStrategy());
+            var subject = new CascadingTriggerContextDiscoveryStrategy("test", false);
+            var triggerContextTracker = new TriggerContextTracker(dbContext.ChangeTracker, new EntityAndTypeCascadeStrategy());
             triggerContextTracker.DiscoverChanges().Count();
             var initialContextDescriptors = subject.Discover(new TriggerOptions { }, triggerContextTracker, new NullLogger<object>()).ToList();
 

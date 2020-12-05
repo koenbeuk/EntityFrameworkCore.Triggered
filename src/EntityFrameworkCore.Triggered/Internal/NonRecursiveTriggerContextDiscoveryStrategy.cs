@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace EntityFrameworkCore.Triggered.Internal
 {
-    public class NonRecursiveTriggerContextDiscoveryStrategy : ITriggerContextDiscoveryStrategy
+    public class NonCascadingTriggerContextDiscoveryStrategy : ITriggerContextDiscoveryStrategy
     {
         readonly static Action<ILogger, int, string, Exception?> _changesDetected = LoggerMessage.Define<int, string>(
             LogLevel.Debug,
@@ -14,7 +14,7 @@ namespace EntityFrameworkCore.Triggered.Internal
 
         readonly string _name;
 
-        public NonRecursiveTriggerContextDiscoveryStrategy(string name)
+        public NonCascadingTriggerContextDiscoveryStrategy(string name)
         {
             _name = name ?? throw new ArgumentNullException(nameof(name));
         }

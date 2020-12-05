@@ -155,7 +155,7 @@ namespace EntityFrameworkCore.Triggered.Tests
         }
 
         [Fact]
-        public async Task RaiseBeforeSaveTriggers_RecursiveCall_SkipsDiscoveredChanges()
+        public async Task RaiseBeforeSaveTriggers_CascadingCall_SkipsDiscoveredChanges()
         {
             using var context = new TestDbContext();
             var subject = CreateSubject(context);
@@ -261,7 +261,7 @@ namespace EntityFrameworkCore.Triggered.Tests
 
 
         [Fact]
-        public void RaiseBeforeSaveTriggers_RecursiveAdd_RaisesSubsequentTriggers()
+        public void RaiseBeforeSaveTriggers_CascadingAdd_RaisesSubsequentTriggers()
         {
             TestDbContext dbContext = null;
 

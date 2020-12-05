@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-namespace EntityFrameworkCore.Triggered.Internal.RecursionStrategy
+namespace EntityFrameworkCore.Triggered.Internal.CascadeStrategies
 {
-    public class NoRecursionStrategy : IRecursionStrategy
+    public class NoCascadeStrategy : ICascadeStrategy
     {
-        public bool CanRecurse(EntityEntry entry, ChangeType changeType, TriggerContextDescriptor previousTriggerContextDescriptor)
+        public bool CanCascade(EntityEntry entry, ChangeType changeType, TriggerContextDescriptor previousTriggerContextDescriptor)
             => false;
     }
 }

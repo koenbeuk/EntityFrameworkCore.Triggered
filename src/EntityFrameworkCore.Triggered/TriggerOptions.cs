@@ -2,6 +2,6 @@
 {
     public class TriggerOptions
     {
-        public int MaxRecursion { get; set; } = 100;
+        public int MaxCascades { get; set; } = 100;
     }
 }

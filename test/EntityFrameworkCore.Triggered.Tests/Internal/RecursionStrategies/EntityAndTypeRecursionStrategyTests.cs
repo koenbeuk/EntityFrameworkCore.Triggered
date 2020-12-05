@@ -1,15 +1,15 @@
-﻿using EntityFrameworkCore.Triggered.Internal.RecursionStrategy;
+﻿using EntityFrameworkCore.Triggered.Internal.CascadeStrategies;
 
-namespace EntityFrameworkCore.Triggered.Tests.Internal.RecursionStrategies
+namespace EntityFrameworkCore.Triggered.Tests.Internal.CascadeStrategies
 {
-    public class EntityAndTypeRecursionStrategyTests : RecursionStrategyTestsBase
+    public class EntityAndTypeCascadeStrategyTests : CascadeStrategyTestsBase
     {
-        protected override bool CanRecurseUnmodifiedExpectedOutcome => false;
-        protected override bool CanRecurseModifiedExpectedOutcome => false;
-        protected override bool CanRecurseUnmodifiedDifferentTypeExpectedOutcome => true;
-        protected override bool CanRecurseModifiedDifferentTypeExpectedOutcome => true;
+        protected override bool CanCascadeUnmodifiedExpectedOutcome => false;
+        protected override bool CanCascadeModifiedExpectedOutcome => false;
+        protected override bool CanCascadeUnmodifiedDifferentTypeExpectedOutcome => true;
+        protected override bool CanCascadeModifiedDifferentTypeExpectedOutcome => true;
 
-        protected override IRecursionStrategy CreateSubject()
-            => new NoRecursionStrategy();
+        protected override ICascadeStrategy CreateSubject()
+            => new NoCascadeStrategy();
     }
 }

@@ -112,7 +112,7 @@ namespace EntityFrameworkCore.Triggered.Tests
         }
 
         [Fact]
-        public void SaveChanges_RecursiveCall_ReturnsActiveTriggerSession()
+        public void SaveChanges_CascadingCall_ReturnsActiveTriggerSession()
         {
             var subject = CreateSubject(false);
 
@@ -148,7 +148,7 @@ namespace EntityFrameworkCore.Triggered.Tests
         }
 
         [Fact]
-        public async Task SaveChangesAsync_RecursiveCall_ReturnsActiveTriggerSession()
+        public async Task SaveChangesAsync_CascadingCall_ReturnsActiveTriggerSession()
         {
             var subject = CreateSubject(false);
 
@@ -174,8 +174,6 @@ namespace EntityFrameworkCore.Triggered.Tests
         [Fact]
         public void SetTriggerServiceProvider_CallsCapturedChanges()
         {
-            var serviceProvider = new ServiceCollection().BuildServiceProvider();
-
             var subject = new TestDbContext();
             var triggerServiceStub = (TriggerServiceStub)subject.GetService<ITriggerService>();
 

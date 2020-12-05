@@ -24,7 +24,7 @@ namespace EntityFrameworkCore.Triggered
 
             if (_beforeCommitTriggerContextDiscoveryStrategy == null)
             {
-                _beforeCommitTriggerContextDiscoveryStrategy = new NonRecursiveTriggerContextDiscoveryStrategy("BeforeCommit");
+                _beforeCommitTriggerContextDiscoveryStrategy = new NonCascadingTriggerContextDiscoveryStrategy("BeforeCommit");
             }
 
 
@@ -40,7 +40,7 @@ namespace EntityFrameworkCore.Triggered
 
             if (_afterCommitTriggerContextDiscoveryStrategy == null)
             {
-                _afterCommitTriggerContextDiscoveryStrategy = new NonRecursiveTriggerContextDiscoveryStrategy("AfterCommit");
+                _afterCommitTriggerContextDiscoveryStrategy = new NonCascadingTriggerContextDiscoveryStrategy("AfterCommit");
             }
 
             return ((TriggerSession)triggerSession).RaiseTriggers(typeof(IAfterCommitTrigger<>), null, _afterCommitTriggerContextDiscoveryStrategy, entityType => new AfterCommitTriggerDescriptor(entityType), cancellationToken);
@@ -54,7 +54,7 @@ namespace EntityFrameworkCore.Triggered
 
             if (_beforeRollbackTriggerContextDiscoveryStrategy == null)
             {
-                _beforeRollbackTriggerContextDiscoveryStrategy = new NonRecursiveTriggerContextDiscoveryStrategy("BeforeRollback");
+                _beforeRollbackTriggerContextDiscoveryStrategy = new NonCascadingTriggerContextDiscoveryStrategy("BeforeRollback");
             }
 
             return ((TriggerSession)triggerSession).RaiseTriggers(typeof(IBeforeRollbackTrigger<>), null, _beforeRollbackTriggerContextDiscoveryStrategy, entityType => new BeforeRollbackTriggerDescriptor(entityType), cancellationToken);
@@ -70,7 +70,7 @@ namespace EntityFrameworkCore.Triggered
 
             if (_afterRollbackTriggerContextDiscoveryStrategy == null)
             {
-                _afterRollbackTriggerContextDiscoveryStrategy = new NonRecursiveTriggerContextDiscoveryStrategy("AfterRollback");
+                _afterRollbackTriggerContextDiscoveryStrategy = new NonCascadingTriggerContextDiscoveryStrategy("AfterRollback");
             }
 
 

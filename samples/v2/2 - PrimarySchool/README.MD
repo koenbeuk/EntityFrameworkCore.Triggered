@@ -1,5 +1,5 @@
 ﻿# Hello world
-A sample application showing triggers using dependency injection and causing recursion.
+A sample application showing triggers using dependency injection and cascading triggers.
 
 ## Triggers
 

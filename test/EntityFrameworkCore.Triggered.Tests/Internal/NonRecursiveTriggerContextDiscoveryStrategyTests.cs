@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Linq;
 using EntityFrameworkCore.Triggered.Internal;
-using EntityFrameworkCore.Triggered.Internal.RecursionStrategy;
+using EntityFrameworkCore.Triggered.Internal.CascadeStrategies;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
 namespace EntityFrameworkCore.Triggered.Tests.Internal
 {
-    public class NonRecursiveTriggerContextDiscoveryStrategyTests
+    public class NonCascadingTriggerContextDiscoveryStrategyTests
     {
         class TestModel
         {
@@ -35,8 +35,8 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
         public void DiscoverChanges_MultipleCalls_ReturnsSameResult()
         {
             using var dbContext = new TestDbContext();
-            var subject = new NonRecursiveTriggerContextDiscoveryStrategy("test");
-            var triggerContextTracker = new TriggerContextTracker(dbContext.ChangeTracker, new EntityAndTypeRecursionStrategy());
+            var subject = new NonCascadingTriggerContextDiscoveryStrategy("test");
+            var triggerContextTracker = new TriggerContextTracker(dbContext.ChangeTracker, new EntityAndTypeCascadeStrategy());
             triggerContextTracker.DiscoverChanges().Count();
             var initialContextDescriptors = subject.Discover(new TriggerOptions { }, triggerContextTracker, new NullLogger<object>()).ToList();
 

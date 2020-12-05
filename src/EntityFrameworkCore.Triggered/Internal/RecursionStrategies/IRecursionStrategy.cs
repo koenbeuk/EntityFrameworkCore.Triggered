@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-namespace EntityFrameworkCore.Triggered.Internal.RecursionStrategy
+namespace EntityFrameworkCore.Triggered.Internal.CascadeStrategies
 {
-    public interface IRecursionStrategy
+    public interface ICascadeStrategy
     {
-        bool CanRecurse(EntityEntry entry, ChangeType changeType, TriggerContextDescriptor previousTriggerContextDescriptor);
+        bool CanCascade(EntityEntry entry, ChangeType changeType, TriggerContextDescriptor previousTriggerContextDescriptor);
     }
 }

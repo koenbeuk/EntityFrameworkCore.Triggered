@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using EntityFrameworkCore.Triggered.Internal;
-using EntityFrameworkCore.Triggered.Internal.CascadeStrategies;
+using EntityFrameworkCore.Triggered.Internal.CascadingStrategies;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 
@@ -33,7 +33,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
         public void DiscoverChanges_AddedEntity_CreatesDescriptor()
         {
             using var dbContext = new TestDbContext();
-            var subject = new TriggerContextTracker(dbContext.ChangeTracker, new EntityAndTypeCascadeStrategy());
+            var subject = new TriggerContextTracker(dbContext.ChangeTracker, new EntityAndTypeCascadingStrategy());
 
             dbContext.Entry(new TestModel { }).State = EntityState.Added;
 
@@ -46,7 +46,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
         public void DiscoverChanges_ModifiedEntity_CreatesDescriptor()
         {
             using var dbContext = new TestDbContext();
-            var subject = new TriggerContextTracker(dbContext.ChangeTracker, new EntityAndTypeCascadeStrategy());
+            var subject = new TriggerContextTracker(dbContext.ChangeTracker, new EntityAndTypeCascadingStrategy());
 
             dbContext.Entry(new TestModel { }).State = EntityState.Modified;
 
@@ -59,7 +59,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
         public void DiscoverChanges_DeletedEntity_CreatesDescriptor()
         {
             using var dbContext = new TestDbContext();
-            var subject = new TriggerContextTracker(dbContext.ChangeTracker, new EntityAndTypeCascadeStrategy());
+            var subject = new TriggerContextTracker(dbContext.ChangeTracker, new EntityAndTypeCascadingStrategy());
 
             dbContext.Entry(new TestModel { }).State = EntityState.Deleted;
 
@@ -72,7 +72,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
         public void DiscoveredChanges_NoCallToDiscoverChanges_ReturnsNull()
         {
             using var dbContext = new TestDbContext();
-            var subject = new TriggerContextTracker(dbContext.ChangeTracker, new EntityAndTypeCascadeStrategy());
+            var subject = new TriggerContextTracker(dbContext.ChangeTracker, new EntityAndTypeCascadingStrategy());
 
             var discoveredChanges = subject.DiscoveredChanges;
 
@@ -83,7 +83,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
         public void DiscoveredChanges_MultipleCallsToDiscoverChanges_ReturnsAllChanges()
         {
             using var dbContext = new TestDbContext();
-            var subject = new TriggerContextTracker(dbContext.ChangeTracker, new EntityAndTypeCascadeStrategy());
+            var subject = new TriggerContextTracker(dbContext.ChangeTracker, new EntityAndTypeCascadingStrategy());
 
             dbContext.Add(new TestModel { });
             subject.DiscoverChanges().Count();
@@ -100,7 +100,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
         public void CaptureDiscoveredChangesAfterAdd_UnchangedEntry_RemovesDiscoveredChange()
         {
             using var dbContext = new TestDbContext();
-            var subject = new TriggerContextTracker(dbContext.ChangeTracker, new EntityAndTypeCascadeStrategy());
+            var subject = new TriggerContextTracker(dbContext.ChangeTracker, new EntityAndTypeCascadingStrategy());
 
             var testModel = new TestModel();
             dbContext.Entry(testModel).State = EntityState.Added;
@@ -119,7 +119,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
         public void CaptureDiscoveredChangesAfterAdd_DetachedEntry_RemovesDiscoveredChange()
         {
             using var dbContext = new TestDbContext();
-            var subject = new TriggerContextTracker(dbContext.ChangeTracker, new EntityAndTypeCascadeStrategy());
+            var subject = new TriggerContextTracker(dbContext.ChangeTracker, new EntityAndTypeCascadingStrategy());
 
             var testModel = new TestModel();
             dbContext.Entry(testModel).State = EntityState.Added;
@@ -137,7 +137,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
         public void CaptureDiscoveredChanges_DeletedEntry_UpdatesDiscoveredChange()
         {
             using var dbContext = new TestDbContext();
-            var subject = new TriggerContextTracker(dbContext.ChangeTracker, new EntityAndTypeCascadeStrategy());
+            var subject = new TriggerContextTracker(dbContext.ChangeTracker, new EntityAndTypeCascadingStrategy());
 
             var testModel = new TestModel();
             dbContext.Entry(testModel).State = EntityState.Added;
@@ -159,7 +159,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
         public void UncaptureDiscoveredChanges_OneEntry_RestoresDiscoveredChange()
         {
             using var dbContext = new TestDbContext();
-            var subject = new TriggerContextTracker(dbContext.ChangeTracker, new EntityAndTypeCascadeStrategy());
+            var subject = new TriggerContextTracker(dbContext.ChangeTracker, new EntityAndTypeCascadingStrategy());
 
             var testModel = new TestModel();
             dbContext.Entry(testModel).State = EntityState.Added;

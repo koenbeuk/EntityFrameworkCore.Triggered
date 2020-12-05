@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using EntityFrameworkCore.Triggered.Internal.CascadeStrategies;
+using EntityFrameworkCore.Triggered.Internal.CascadingStrategies;
 using EntityFrameworkCore.Triggered.Tests.Stubs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -40,14 +40,14 @@ namespace EntityFrameworkCore.Triggered.Tests
         [Fact]
         public void Current_WithoutSession_ReturnsNull()
         {
-            var subject = new TriggerService(new TriggerDiscoveryServiceStub(), new NoCascadeStrategy(), new LoggerFactory(), new OptionsSnapshotStub<TriggerOptions>());
+            var subject = new TriggerService(new TriggerDiscoveryServiceStub(), new NoCascadingStrategy(), new LoggerFactory(), new OptionsSnapshotStub<TriggerOptions>());
             Assert.Null(subject.Current);
         }
 
         [Fact]
         public void Current_WithSingleSession_ReturnsSession()
         {
-            var subject = new TriggerService(new TriggerDiscoveryServiceStub(), new NoCascadeStrategy(), new LoggerFactory(), new OptionsSnapshotStub<TriggerOptions>());
+            var subject = new TriggerService(new TriggerDiscoveryServiceStub(), new NoCascadingStrategy(), new LoggerFactory(), new OptionsSnapshotStub<TriggerOptions>());
             var dbContext = new TestDbContext();
 
             var triggerSession = subject.CreateSession(dbContext, null);
@@ -58,7 +58,7 @@ namespace EntityFrameworkCore.Triggered.Tests
         [Fact]
         public void Current_WithMultipleSessions_ReturnsLatestSession()
         {
-            var subject = new TriggerService(new TriggerDiscoveryServiceStub(), new NoCascadeStrategy(), new LoggerFactory(), new OptionsSnapshotStub<TriggerOptions>());
+            var subject = new TriggerService(new TriggerDiscoveryServiceStub(), new NoCascadingStrategy(), new LoggerFactory(), new OptionsSnapshotStub<TriggerOptions>());
             var dbContext = new TestDbContext();
 
             subject.CreateSession(dbContext, null);

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Diagnostics;
@@ -82,6 +82,7 @@ namespace EntityFrameworkCore.Triggered.Internal
 
                 try
                 {
+
                     eventData.Context.ChangeTracker.AutoDetectChangesEnabled = false;
 
                     _triggerSession.RaiseBeforeSaveStartingTriggers().GetAwaiter().GetResult();

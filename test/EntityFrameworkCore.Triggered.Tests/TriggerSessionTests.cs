@@ -38,6 +38,11 @@ namespace EntityFrameworkCore.Triggered.Tests
             {
                 base.OnConfiguring(optionsBuilder);
 
+
+                optionsBuilder.ConfigureWarnings(warningOptions => {
+                    warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
+                });
+
                 optionsBuilder.EnableServiceProviderCaching(false);
                 optionsBuilder.UseInMemoryDatabase("test");
                 optionsBuilder.UseTriggers(triggerOptions => {

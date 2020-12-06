@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Xunit;
 
 namespace EntityFrameworkCore.Triggered.Tests.Internal
@@ -11,7 +12,14 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
         {
             public DbSet<TestModel> TestModels { get; set; }
 
-            protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.UseInMemoryDatabase("test");
+            protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+            {
+                optionsBuilder.UseInMemoryDatabase("test");
+
+                optionsBuilder.ConfigureWarnings(warningOptions => {
+                    warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
+                });
+            }
         }
 
         [Fact]

@@ -88,6 +88,10 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
         {
             var applicationServiceProvider = new ServiceCollection()
                 .AddDbContext<TestDbContext>(options => {
+                    options.ConfigureWarnings(warningOptions => {
+                        warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
+                    });
+
                     options.UseInMemoryDatabase("Test")
                            .UseTriggers();
                 })
@@ -107,6 +111,10 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
         {
             var applicationServiceProvider = new ServiceCollection()
                 .AddDbContext<TestDbContext>(options => {
+                    options.ConfigureWarnings(warningOptions => {
+                        warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
+                    });
+
                     options.UseInMemoryDatabase("Test")
                            .UseTriggers();
                 })

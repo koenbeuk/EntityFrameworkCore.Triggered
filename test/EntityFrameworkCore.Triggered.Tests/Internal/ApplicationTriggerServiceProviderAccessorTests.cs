@@ -1,6 +1,7 @@
 ﻿using EntityFrameworkCore.Triggered.Internal;
 using EntityFrameworkCore.Triggered.Tests.Stubs;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.InMemory.Internal;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,9 +29,12 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
                 base.OnConfiguring(optionsBuilder);
 
                 optionsBuilder.UseInMemoryDatabase("test");
-                optionsBuilder.EnableServiceProviderCaching(false);
                 optionsBuilder.UseTriggers(triggerOptions => {
                     triggerOptions.AddTrigger<TriggerStub<object>>();
+                });
+
+                optionsBuilder.ConfigureWarnings(warningOptions => {
+                    warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
                 });
             }
         }

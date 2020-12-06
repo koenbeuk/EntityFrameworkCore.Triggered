@@ -1,6 +1,7 @@
 ﻿using System;
 using EntityFrameworkCore.Triggered.Internal;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Xunit;
 
 namespace EntityFrameworkCore.Triggered.Tests.Internal
@@ -22,7 +23,9 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
                 base.OnConfiguring(optionsBuilder);
 
                 optionsBuilder.UseInMemoryDatabase(nameof(TriggerContextFactoryTests));
-                optionsBuilder.EnableServiceProviderCaching(false);
+                optionsBuilder.ConfigureWarnings(warningOptions => {
+                    warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
+                });
             }
         }
 

@@ -36,6 +36,8 @@ namespace EntityFrameworkCore.Triggered
 
         public TriggerContextTracker Tracker => _tracker;
 
+        public ITriggerDiscoveryService DiscoveryService => _triggerDiscoveryService;
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1806:Do not ignore method results", Justification = "Incorrect warning")]
         public void DiscoverChanges()
             => _tracker.DiscoverChanges().Count();

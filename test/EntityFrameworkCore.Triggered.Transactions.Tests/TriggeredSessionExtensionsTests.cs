@@ -158,5 +158,48 @@ namespace EntityFrameworkCore.Triggered.Transactions.Tests
         }
 
 
+        [Fact]
+        public void RaiseBeforeCommitStartingTriggers_CallsTriggers()
+        {
+            using var context = new TestDbContext();
+            var session = CreateSession(context);
+
+            session.RaiseBeforeCommitStartingTriggers().GetAwaiter().GetResult();
+
+            Assert.Equal(1, context.TriggerStub.BeforeCommitStartingInvocationsCount);
+        }
+
+        [Fact]
+        public void RaiseBeforeCommitStartedTriggers_CallsTriggers()
+        {
+            using var context = new TestDbContext();
+            var session = CreateSession(context);
+
+            session.RaiseBeforeCommitStartedTriggers().GetAwaiter().GetResult();
+
+            Assert.Equal(1, context.TriggerStub.BeforeCommitStartedInvocationsCount);
+        }
+
+        [Fact]
+        public void RaiseAfterCommitStartingTriggers_CallsTriggers()
+        {
+            using var context = new TestDbContext();
+            var session = CreateSession(context);
+
+            session.RaiseAfterCommitStartingTriggers().GetAwaiter().GetResult();
+
+            Assert.Equal(1, context.TriggerStub.AfterCommitStartingInvocationsCount);
+        }
+
+        [Fact]
+        public void RaiseAfterforeCommitStartedTrigger_CallsTriggers()
+        {
+            using var context = new TestDbContext();
+            var session = CreateSession(context);
+
+            session.RaiseAfterCommitStartedTriggers().GetAwaiter().GetResult();
+
+            Assert.Equal(1, context.TriggerStub.AfterCommitStartedInvocationsCount);
+        }
     }
 }

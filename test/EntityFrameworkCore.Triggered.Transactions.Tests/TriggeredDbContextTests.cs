@@ -8,6 +8,7 @@ using EntityFrameworkCore.Triggered.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Xunit;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace EntityFrameworkCore.Triggered.Transactions.Tests
 {
@@ -31,6 +32,10 @@ namespace EntityFrameworkCore.Triggered.Transactions.Tests
             {
                 base.OnConfiguring(optionsBuilder);
 
+                optionsBuilder.ConfigureWarnings(warningOptions => {
+                    warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
+                });
+                
                 optionsBuilder.UseInMemoryDatabase("test");
                 optionsBuilder.EnableServiceProviderCaching(false);
                 optionsBuilder.UseTriggers(triggerOptions => {

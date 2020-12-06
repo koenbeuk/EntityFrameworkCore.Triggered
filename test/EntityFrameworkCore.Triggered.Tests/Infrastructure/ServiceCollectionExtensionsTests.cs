@@ -28,7 +28,9 @@ namespace EntityFrameworkCore.Triggered.Tests.Infrastructure
             subject.AddTriggeredDbContext<TestDbContext>(options => {
                 optionsActionsCalled = true;
                 options.UseInMemoryDatabase("test");
-                options.EnableServiceProviderCaching(false);
+                options.ConfigureWarnings(warningOptions => {
+                    warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
+                });
             });
 
             var serviceProvider = subject.BuildServiceProvider();
@@ -46,7 +48,9 @@ namespace EntityFrameworkCore.Triggered.Tests.Infrastructure
             subject.AddTriggeredDbContext<TestDbContext>(options => {
                 optionsActionsCalled = true;
                 options.UseInMemoryDatabase("test");
-                options.EnableServiceProviderCaching(false);
+                options.ConfigureWarnings(warningOptions => {
+                    warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
+                });
             });
 
             var serviceProvider = subject.BuildServiceProvider();
@@ -63,7 +67,9 @@ namespace EntityFrameworkCore.Triggered.Tests.Infrastructure
             var subject = new ServiceCollection();
             subject.AddTriggeredDbContext<TestDbContext>(options => {
                 options.UseInMemoryDatabase("test");
-                options.EnableServiceProviderCaching(false);
+                options.ConfigureWarnings(warningOptions => {
+                    warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
+                });
             }).AddScoped<IBeforeSaveTrigger<TestModel>, TriggerStub<TestModel>>();
 
             var serviceProvider = subject.BuildServiceProvider();
@@ -87,7 +93,9 @@ namespace EntityFrameworkCore.Triggered.Tests.Infrastructure
             var subject = new ServiceCollection();
             subject.AddTriggeredDbContextPool<TestDbContext>(options => {
                 options.UseInMemoryDatabase("test");
-                options.EnableServiceProviderCaching(false);
+                options.ConfigureWarnings(warningOptions => {
+                    warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
+                });
             }).AddScoped<IBeforeSaveTrigger<TestModel>, TriggerStub<TestModel>>();
 
             var serviceProvider = subject.BuildServiceProvider();
@@ -112,7 +120,9 @@ namespace EntityFrameworkCore.Triggered.Tests.Infrastructure
             var subject = new ServiceCollection();
             subject.AddTriggeredDbContextFactory<TestDbContext>(options => {
                 options.UseInMemoryDatabase("test");
-                options.EnableServiceProviderCaching(false);
+                options.ConfigureWarnings(warningOptions => {
+                    warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
+                });
             }).AddScoped<IBeforeSaveTrigger<TestModel>, TriggerStub<TestModel>>();
 
             var serviceProvider = subject.BuildServiceProvider();
@@ -137,7 +147,9 @@ namespace EntityFrameworkCore.Triggered.Tests.Infrastructure
             var subject = new ServiceCollection();
             subject.AddTriggeredPooledDbContextFactory<TestDbContext>(options => {
                 options.UseInMemoryDatabase("test");
-                options.EnableServiceProviderCaching(false);
+                options.ConfigureWarnings(warningOptions => {
+                    warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
+                });
             }).AddScoped<IBeforeSaveTrigger<TestModel>, TriggerStub<TestModel>>();
 
             var serviceProvider = subject.BuildServiceProvider();

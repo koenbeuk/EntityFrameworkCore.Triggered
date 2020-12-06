@@ -62,8 +62,10 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
                 .AddDbContext<TestDbContext>(options => {
                     options.UseInMemoryDatabase("Test")
                            .UseTriggers();
-                    
-                    options.EnableServiceProviderCaching(false);
+
+                    options.ConfigureWarnings(warningOptions => {
+                        warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
+                    });
                 })
                 .AddScoped<object>()
                 .BuildServiceProvider();

@@ -165,7 +165,7 @@ namespace EntityFrameworkCore.Triggered.Internal
             {
                 Debug.Assert(_triggerSession != null);
 
-                _triggerSession.RaiseAfterSaveFailedStartedTriggers(eventData.Exception).GetAwaiter().GetResult();
+                _triggerSession.RaiseAfterSaveFailedStartingTriggers(eventData.Exception).GetAwaiter().GetResult();
                 _triggerSession.RaiseAfterSaveFailedTriggers(eventData.Exception).GetAwaiter().GetResult();
                 _triggerSession.RaiseAfterSaveFailedStartedTriggers(eventData.Exception).GetAwaiter().GetResult();
 

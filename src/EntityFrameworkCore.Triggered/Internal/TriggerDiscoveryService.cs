@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace EntityFrameworkCore.Triggered.Internal
 {
-    public sealed class TriggerDiscoveryService : ITriggerDiscoveryService
+    public sealed class TriggerDiscoveryService : ITriggerDiscoveryService, IResettableService
     {
         readonly static TriggerDescriptorComparer _triggerDescriptorComparer = new();
 
@@ -22,16 +25,7 @@ namespace EntityFrameworkCore.Triggered.Internal
 
         public IEnumerable<TriggerDescriptor> DiscoverTriggers(Type openTriggerType, Type entityType, Func<Type, ITriggerTypeDescriptor> triggerTypeDescriptorFactory)
         {
-            IServiceProvider serviceProvider;
-
-            if (_serviceProvider == null)
-            {
-                serviceProvider = _triggerServiceProviderAccessor.GetTriggerServiceProvider();
-            }
-            else
-            {
-                serviceProvider = _serviceProvider;
-            }
+            IServiceProvider serviceProvider = ServiceProvider;
 
             var registry = _triggerTypeRegistryService.ResolveRegistry(openTriggerType, entityType, triggerTypeDescriptorFactory);
 
@@ -73,6 +67,29 @@ namespace EntityFrameworkCore.Triggered.Internal
             }
         }
 
-        public void SetServiceProvider(IServiceProvider serviceProvider) => _serviceProvider = serviceProvider;
+        public IServiceProvider ServiceProvider
+        {
+            get
+            {
+                if (_serviceProvider == null)
+                {
+                    _serviceProvider = _triggerServiceProviderAccessor.GetTriggerServiceProvider();
+                }
+
+                return _serviceProvider;
+            }
+            set => _serviceProvider = value;
+        }
+
+        public void ResetState()
+        {
+            _serviceProvider = null;
+        }
+
+        public Task ResetStateAsync(CancellationToken cancellationToken = default) 
+        {
+            ResetState();
+            return Task.CompletedTask;
+        }
     }
 }

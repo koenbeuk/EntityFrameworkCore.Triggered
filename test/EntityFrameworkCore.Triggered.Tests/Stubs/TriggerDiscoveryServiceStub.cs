@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using EntityFrameworkCore.Triggered.Internal;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace EntityFrameworkCore.Triggered.Tests.Stubs
 {
@@ -12,6 +13,6 @@ namespace EntityFrameworkCore.Triggered.Tests.Stubs
         public IEnumerable<TriggerDescriptor> DiscoverTriggers(Type openTriggerType, Type entityType, Func<Type, ITriggerTypeDescriptor> triggerTypeDescriptorFactory)
             => Enumerable.Empty<TriggerDescriptor>();
 
-        public void SetServiceProvider(IServiceProvider serviceProvider) { }
+        public IServiceProvider ServiceProvider { get; set; } = new ServiceCollection().BuildServiceProvider();
     }
 }

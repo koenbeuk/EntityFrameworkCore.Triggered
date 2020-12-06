@@ -37,7 +37,6 @@ namespace EntityFrameworkCore.Triggered.Transactions.Tests
                 });
                 
                 optionsBuilder.UseInMemoryDatabase("test");
-                optionsBuilder.EnableServiceProviderCaching(false);
                 optionsBuilder.UseTriggers(triggerOptions => {
                     triggerOptions
                         .UseTransactionTriggers()

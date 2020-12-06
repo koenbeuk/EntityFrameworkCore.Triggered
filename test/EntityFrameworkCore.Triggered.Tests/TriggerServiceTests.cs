@@ -33,7 +33,6 @@ namespace EntityFrameworkCore.Triggered.Tests
             {
                 base.OnConfiguring(optionsBuilder);
 
-                optionsBuilder.EnableServiceProviderCaching(false);
                 optionsBuilder.UseInMemoryDatabase("test");
 
                 optionsBuilder.ConfigureWarnings(warningOptions => {

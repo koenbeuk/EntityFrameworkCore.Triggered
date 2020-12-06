@@ -43,7 +43,6 @@ namespace EntityFrameworkCore.Triggered.Tests
                     warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
                 });
 
-                optionsBuilder.EnableServiceProviderCaching(false);
                 optionsBuilder.UseInMemoryDatabase("test");
                 optionsBuilder.UseTriggers(triggerOptions => {
                     triggerOptions.AddTrigger(TriggerStub);
@@ -244,7 +243,9 @@ namespace EntityFrameworkCore.Triggered.Tests
                 .AddSingleton<IBeforeSaveTrigger<TestModel>>(earlyTrigger)
                 .AddTriggeredDbContext<TestDbContext>(options => {
                     options.UseInMemoryDatabase("Test");
-                    options.EnableServiceProviderCaching(false);
+                    options.ConfigureWarnings(warningOptions => {
+                        warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
+                    });
                 })
                 .BuildServiceProvider();
 
@@ -285,7 +286,9 @@ namespace EntityFrameworkCore.Triggered.Tests
                 .AddSingleton<IBeforeSaveTrigger<TestModel>>(trigger)
                 .AddTriggeredDbContext<TestDbContext>(options => {
                     options.UseInMemoryDatabase("Test");
-                    options.EnableServiceProviderCaching(false);
+                    options.ConfigureWarnings(warningOptions => {
+                        warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
+                    });
                 })
                 .BuildServiceProvider();
 
@@ -339,7 +342,9 @@ namespace EntityFrameworkCore.Triggered.Tests
                 .AddSingleton<IBeforeSaveTrigger<TestModel>>(lastTrigger)
                 .AddTriggeredDbContext<TestDbContext>(options => {
                     options.UseInMemoryDatabase("Test");
-                    options.EnableServiceProviderCaching(false);
+                    options.ConfigureWarnings(warningOptions => {
+                        warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
+                    });
                 })
                 .BuildServiceProvider();
 
@@ -379,7 +384,9 @@ namespace EntityFrameworkCore.Triggered.Tests
                 .AddSingleton<IAfterSaveTrigger<TestModel>>(trigger)
                 .AddTriggeredDbContext<TestDbContext>(options => {
                     options.UseInMemoryDatabase("Test");
-                    options.EnableServiceProviderCaching(false);
+                    options.ConfigureWarnings(warningOptions => {
+                        warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
+                    });
                 })
                 .BuildServiceProvider();
 

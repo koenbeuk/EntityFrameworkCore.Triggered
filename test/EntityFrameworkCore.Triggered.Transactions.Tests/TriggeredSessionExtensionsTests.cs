@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using EntityFrameworkCore.Triggered.Transactions.Tests.Stubs;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Xunit;
 
@@ -24,9 +25,11 @@ namespace EntityFrameworkCore.Triggered.Transactions.Tests
             protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
             {
                 base.OnConfiguring(optionsBuilder);
-
+                
+                optionsBuilder.ConfigureWarnings(warningOptions => {
+                    warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
+                });
                 optionsBuilder.UseInMemoryDatabase("test");
-                optionsBuilder.EnableServiceProviderCaching(false);
                 optionsBuilder.UseTriggers(triggerOptions => {
                     triggerOptions
                         .UseTransactionTriggers()

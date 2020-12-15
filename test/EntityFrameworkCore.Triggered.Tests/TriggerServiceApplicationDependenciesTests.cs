@@ -35,15 +35,19 @@ namespace EntityFrameworkCore.Triggered.Tests
                 .AddScoped<IBeforeSaveTrigger<TestModel>, Stubs.TriggerStub<TestModel>>()
                 .BuildServiceProvider();
 
-            using var serviceScope = applicationServiceProvider.CreateScope();
-            var dbContext = serviceScope.ServiceProvider.GetRequiredService<TestDbContext>();
+            void SimulateRequest()
+            {
+                using var serviceScope = applicationServiceProvider.CreateScope();
+                var dbContext = serviceScope.ServiceProvider.GetRequiredService<TestDbContext>();
+                var triggerStub = serviceScope.ServiceProvider.GetRequiredService<IBeforeSaveTrigger<TestModel>>() as TriggerStub<TestModel>;
+                Assert.Equal(0, triggerStub.BeforeSaveInvocations.Count);
+                
+                dbContext.Add(new TestModel { });
+                dbContext.SaveChanges();
+            }
 
-            dbContext.Add(new TestModel { });
-            dbContext.SaveChanges();
-
-            var triggerStub = serviceScope.ServiceProvider.GetRequiredService<IBeforeSaveTrigger<TestModel>>() as TriggerStub<TestModel>;
-
-            Assert.Equal(0, triggerStub.BeforeSaveInvocations.Count);
+            SimulateRequest();
+            SimulateRequest();
         }
 
         [Fact]

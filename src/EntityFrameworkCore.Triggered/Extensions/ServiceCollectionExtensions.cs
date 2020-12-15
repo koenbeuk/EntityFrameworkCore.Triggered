@@ -11,22 +11,6 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
-        private static object CreateContextFactory(IServiceProvider serviceProvider, Type contextType)
-        {
-            var instance = ActivatorUtilities.CreateInstance(serviceProvider, contextType);
-
-            if (instance is DbContext dbContextInstance)
-            {
-                var applicationTriggerServiceProviderAccessor = dbContextInstance.GetService<ApplicationTriggerServiceProviderAccessor>();
-                if (applicationTriggerServiceProviderAccessor != null)
-                {
-                    applicationTriggerServiceProviderAccessor.SetTriggerServiceProvider(serviceProvider);
-                }
-            }
-
-            return instance;
-        }
-
         private static object SetApplicationTriggerServiceProviderAccessor(object instance, IServiceProvider serviceProvider)
         {
             if (instance is DbContext dbContext)
@@ -44,11 +28,6 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddTriggeredDbContext<TContext>(this IServiceCollection serviceCollection, Action<DbContextOptionsBuilder>? optionsAction = null, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ServiceLifetime optionsLifetime = ServiceLifetime.Scoped) 
             where TContext : DbContext
         {
-            serviceCollection.TryAdd(ServiceDescriptor.Describe(
-                serviceType: typeof(TContext),
-                implementationFactory: serviceProvider => CreateContextFactory(serviceProvider, typeof(TContext)),
-                lifetime: contextLifetime));
-
             serviceCollection.AddDbContext<TContext>(options => {
                 optionsAction?.Invoke(options);
                 options.UseTriggers();
@@ -88,7 +67,6 @@ namespace Microsoft.Extensions.DependencyInjection
             }, lifetime);
 
             var serviceDescriptor = serviceCollection.FirstOrDefault(x => x.ServiceType == typeof(IDbContextFactory<TContext>));
-
             
             if (serviceDescriptor?.ImplementationType != null)
             {

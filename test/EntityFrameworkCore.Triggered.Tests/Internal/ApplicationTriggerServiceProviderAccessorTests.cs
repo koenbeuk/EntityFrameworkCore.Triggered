@@ -1,6 +1,7 @@
 ﻿using EntityFrameworkCore.Triggered.Internal;
 using EntityFrameworkCore.Triggered.Tests.Stubs;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.InMemory.Internal;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,9 +29,12 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
                 base.OnConfiguring(optionsBuilder);
 
                 optionsBuilder.UseInMemoryDatabase("test");
-                optionsBuilder.EnableServiceProviderCaching(false);
                 optionsBuilder.UseTriggers(triggerOptions => {
                     triggerOptions.AddTrigger<TriggerStub<object>>();
+                });
+
+                optionsBuilder.ConfigureWarnings(warningOptions => {
+                    warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
                 });
             }
         }
@@ -52,36 +56,14 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
         }
 
         [Fact]
-        public void GetTriggerServiceProvider_WithApplicationDi_ReturnsScopedApplication()
-        {
-            var applicationServiceProvider = new ServiceCollection()
-                .AddDbContext<TestDbContext>(options => {
-                    options.UseInMemoryDatabase("Test")
-                           .UseTriggers();
-                    
-                    options.EnableServiceProviderCaching(false);
-                })
-                .AddScoped<object>()
-                .BuildServiceProvider();
-
-            var dbContext = applicationServiceProvider.GetRequiredService<TestDbContext>();
-
-            var subject = new ApplicationTriggerServiceProviderAccessor(dbContext.GetInfrastructure(), null, new NullLogger<ApplicationTriggerServiceProviderAccessor>());
-            var triggerServiceProvider = subject.GetTriggerServiceProvider();
-
-            var scopedObject = triggerServiceProvider.GetService<object>();
-            Assert.NotNull(scopedObject);
-
-            var applicationScopedObject = applicationServiceProvider.GetService<object>();
-            Assert.NotNull(applicationScopedObject);
-            Assert.NotEqual(applicationScopedObject, scopedObject);
-        }
-
-        [Fact]
         public void GetTriggerServiceProvider_WithApplicationDiAndTransform_ReturnsCustomServiceProvider()
         {
             var applicationServiceProvider = new ServiceCollection()
                 .AddDbContext<TestDbContext>(options => {
+                    options.ConfigureWarnings(warningOptions => {
+                        warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
+                    });
+
                     options.UseInMemoryDatabase("Test")
                            .UseTriggers();
                 })
@@ -101,6 +83,10 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
         {
             var applicationServiceProvider = new ServiceCollection()
                 .AddDbContext<TestDbContext>(options => {
+                    options.ConfigureWarnings(warningOptions => {
+                        warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
+                    });
+
                     options.UseInMemoryDatabase("Test")
                            .UseTriggers();
                 })

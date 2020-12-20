@@ -10,9 +10,11 @@ namespace EntityFrameworkCore.Triggered.Internal
 {
     public sealed class ApplicationTriggerServiceProviderAccessor : ITriggerServiceProviderAccessor, IDisposable, IResettableService
     {
-        readonly IServiceProvider _rootServiceProvider;
+        readonly IServiceProvider _internalServiceProvider;
+        readonly IServiceProvider? _fallbackApplicationServiceProvider;
         readonly Func<IServiceProvider, IServiceProvider>? _scopedServiceProviderTransform;
         readonly ILogger? _logger;
+
         IServiceScope? _serviceScope;
         IServiceProvider? _applicationScopedServiceProvider;
 
@@ -26,7 +28,12 @@ namespace EntityFrameworkCore.Triggered.Internal
             var dbContextOptions = internalServiceProvider.GetRequiredService<IDbContextOptions>();
             var coreOptionsExtension = dbContextOptions.FindExtension<CoreOptionsExtension>();
 
-            _rootServiceProvider = coreOptionsExtension.ApplicationServiceProvider ?? internalServiceProvider;
+            _internalServiceProvider = internalServiceProvider;
+            if (scopedServiceProviderTransform == null)
+            {
+                _fallbackApplicationServiceProvider = coreOptionsExtension.ApplicationServiceProvider;
+            }
+            
             _scopedServiceProviderTransform = scopedServiceProviderTransform;
             _logger = logger;
         }
@@ -45,20 +52,30 @@ namespace EntityFrameworkCore.Triggered.Internal
         {
             if (_applicationScopedServiceProvider == null)
             {
-                if (_scopedServiceProviderTransform == null)
+                if (_fallbackApplicationServiceProvider != null)
+                {
+                    _applicationScopedServiceProvider = _fallbackApplicationServiceProvider;
+                }
+                else if (_scopedServiceProviderTransform != null)
+                {
+
+                    var dbContextOptions = _internalServiceProvider.GetRequiredService<IDbContextOptions>();
+                    var coreOptionsExtension = dbContextOptions.FindExtension<CoreOptionsExtension>();
+                    var serviceProvider = coreOptionsExtension.ApplicationServiceProvider ?? _internalServiceProvider;
+
+                    _applicationScopedServiceProvider = _scopedServiceProviderTransform(serviceProvider);
+                }
+                else
                 {
                     if (_logger != null && _logger.IsEnabled(LogLevel.Warning))
                     {
                         _logger.LogWarning("No ServiceProvider is provided to resolve triggers from.");
                     }
 
-                    _serviceScope = _rootServiceProvider.CreateScope();
+                    _serviceScope = _internalServiceProvider.CreateScope();
                     _applicationScopedServiceProvider = _serviceScope.ServiceProvider;
                 }
-                else
-                {
-                    _applicationScopedServiceProvider = _scopedServiceProviderTransform(_rootServiceProvider);
-                }
+
             }
 
             return _applicationScopedServiceProvider;

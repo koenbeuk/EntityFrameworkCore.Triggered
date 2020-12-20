@@ -3,7 +3,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using EntityFrameworkCore.Triggered.Internal;
 using EntityFrameworkCore.Triggered.Transactions;
+using EntityFrameworkCore.Triggered.Transactions.Abstractions.Lifecycles;
 using EntityFrameworkCore.Triggered.Transactions.Internal;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace EntityFrameworkCore.Triggered
 {
@@ -75,6 +77,86 @@ namespace EntityFrameworkCore.Triggered
 
 
             return ((TriggerSession)triggerSession).RaiseTriggers(typeof(IAfterRollbackTrigger<>), null, _afterRollbackTriggerContextDiscoveryStrategy, entityType => new AfterRollbackTriggerDescriptor(entityType), cancellationToken);
+        }
+
+        public static async Task RaiseBeforeCommitStartingTriggers(this ITriggerSession triggerSession, CancellationToken cancellationToken = default)
+        {
+            if (triggerSession == null)
+            {
+                throw new ArgumentNullException(nameof(triggerSession));
+            }
+
+            if (triggerSession is not TriggerSession typedTriggerSession)
+            {
+                throw new InvalidOperationException("Method is implemented for concrete TriggerSessions only");
+            }
+
+            var triggers = typedTriggerSession.DiscoveryService.ServiceProvider.GetServices<IBeforeCommitStartingTrigger>();
+
+            foreach (var trigger in triggers)
+            {
+                await trigger.BeforeCommitStarting(cancellationToken);
+            }
+        }
+
+        public static async Task RaiseBeforeCommitStartedTriggers(this ITriggerSession triggerSession, CancellationToken cancellationToken = default)
+        {
+            if (triggerSession == null)
+            {
+                throw new ArgumentNullException(nameof(triggerSession));
+            }
+
+            if (triggerSession is not TriggerSession typedTriggerSession)
+            {
+                throw new InvalidOperationException("Method is implemented for concrete TriggerSessions only");
+            }
+
+            var triggers = typedTriggerSession.DiscoveryService.ServiceProvider.GetServices<IBeforeCommitStartedTrigger>();
+
+            foreach (var trigger in triggers)
+            {
+                await trigger.BeforeCommitStarted(cancellationToken);
+            }
+        }
+
+        public static async Task RaiseAfterCommitStartingTriggers(this ITriggerSession triggerSession, CancellationToken cancellationToken = default)
+        {
+            if (triggerSession == null)
+            {
+                throw new ArgumentNullException(nameof(triggerSession));
+            }
+
+            if (triggerSession is not TriggerSession typedTriggerSession)
+            {
+                throw new InvalidOperationException("Method is implemented for concrete TriggerSessions only");
+            }
+
+            var triggers = typedTriggerSession.DiscoveryService.ServiceProvider.GetServices<IAfterCommitStartingTrigger>();
+
+            foreach (var trigger in triggers)
+            {
+                await trigger.AfterCommitStarting(cancellationToken);
+            }
+        }
+
+        public static async Task RaiseAfterCommitStartedTriggers(this ITriggerSession triggerSession, CancellationToken cancellationToken = default)
+        {
+            if (triggerSession == null)
+            {
+                throw new ArgumentNullException(nameof(triggerSession));
+            }
+
+            if (triggerSession is not TriggerSession typedTriggerSession)
+            {
+                throw new InvalidOperationException("Method is implemented for concrete TriggerSessions only");
+            }
+
+            var triggers = typedTriggerSession.DiscoveryService.ServiceProvider.GetServices<IAfterCommitStartedTrigger>();
+
+            foreach (var trigger in triggers)
+            {
+                await trigger.AfterCommitStarted(cancellationToken);
+            }
         }
 
     }

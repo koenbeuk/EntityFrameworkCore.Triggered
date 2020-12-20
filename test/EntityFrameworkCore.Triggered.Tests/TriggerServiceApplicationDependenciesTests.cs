@@ -1,6 +1,7 @@
 ﻿using System;
 using EntityFrameworkCore.Triggered.Tests.Stubs;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
@@ -30,20 +31,26 @@ namespace EntityFrameworkCore.Triggered.Tests
                 .AddDbContext<TestDbContext>(options => {
                     options.UseInMemoryDatabase("Test");
                     options.UseTriggers();
-                    options.EnableServiceProviderCaching(false);
+                    options.ConfigureWarnings(warningOptions => {
+                        warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
+                    });
                 })
                 .AddScoped<IBeforeSaveTrigger<TestModel>, Stubs.TriggerStub<TestModel>>()
                 .BuildServiceProvider();
 
-            using var serviceScope = applicationServiceProvider.CreateScope();
-            var dbContext = serviceScope.ServiceProvider.GetRequiredService<TestDbContext>();
+            void SimulateRequest()
+            {
+                using var serviceScope = applicationServiceProvider.CreateScope();
+                var dbContext = serviceScope.ServiceProvider.GetRequiredService<TestDbContext>();
+                var triggerStub = serviceScope.ServiceProvider.GetRequiredService<IBeforeSaveTrigger<TestModel>>() as TriggerStub<TestModel>;
+                Assert.Equal(0, triggerStub.BeforeSaveInvocations.Count);
+                
+                dbContext.Add(new TestModel { });
+                dbContext.SaveChanges();
+            }
 
-            dbContext.Add(new TestModel { });
-            dbContext.SaveChanges();
-
-            var triggerStub = serviceScope.ServiceProvider.GetRequiredService<IBeforeSaveTrigger<TestModel>>() as TriggerStub<TestModel>;
-
-            Assert.Equal(0, triggerStub.BeforeSaveInvocations.Count);
+            SimulateRequest();
+            SimulateRequest();
         }
 
         [Fact]
@@ -53,7 +60,9 @@ namespace EntityFrameworkCore.Triggered.Tests
                 .AddDbContextPool<TestDbContext>(options => {
                     options.UseInMemoryDatabase("Test");
                     options.UseTriggers();
-                    options.EnableServiceProviderCaching(false);
+                    options.ConfigureWarnings(warningOptions => {
+                        warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
+                    });
                 })
                 .AddScoped<IBeforeSaveTrigger<TestModel>, TriggerStub<TestModel>>()
                 .BuildServiceProvider();
@@ -81,7 +90,9 @@ namespace EntityFrameworkCore.Triggered.Tests
                     options.UseTriggers(triggerOptions => {
                         triggerOptions.UseApplicationScopedServiceProviderAccessor(_ => scopedServiceProvider);
                     });
-                    options.EnableServiceProviderCaching(false);
+                    options.ConfigureWarnings(warningOptions => {
+                        warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
+                    });
                 })
                 .AddScoped<IBeforeSaveTrigger<TestModel>, Stubs.TriggerStub<TestModel>>()
                 .BuildServiceProvider();
@@ -110,7 +121,9 @@ namespace EntityFrameworkCore.Triggered.Tests
                     options.UseTriggers(triggerOptions => {
                         triggerOptions.UseApplicationScopedServiceProviderAccessor(_ => scopedServiceProvider);
                     });
-                    options.EnableServiceProviderCaching(false);
+                    options.ConfigureWarnings(warningOptions => {
+                        warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
+                    });
                 })
                 .AddScoped<IBeforeSaveTrigger<TestModel>, TriggerStub<TestModel>>()
                 .BuildServiceProvider();
@@ -138,7 +151,9 @@ namespace EntityFrameworkCore.Triggered.Tests
                     options.UseTriggers(triggerOptions => {
                         triggerOptions.UseApplicationScopedServiceProviderAccessor(_ => scopedServiceProvider);
                     });
-                    options.EnableServiceProviderCaching(false);
+                    options.ConfigureWarnings(warningOptions => {
+                        warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
+                    });
                 })
                 .AddScoped<IBeforeSaveTrigger<TestModel>, TriggerStub<TestModel>>()
                 .BuildServiceProvider();

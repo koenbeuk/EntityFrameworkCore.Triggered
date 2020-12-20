@@ -45,7 +45,7 @@ namespace EntityFrameworkCore.Triggered
 
             if (serviceProvider != null)
             {
-                _triggerDiscoveryService.SetServiceProvider(serviceProvider);
+                _triggerDiscoveryService.ServiceProvider = serviceProvider;
             }
 
             var triggerSession = new TriggerSession(this, _options, _triggerDiscoveryService, triggerContextTracker, _loggerFactory.CreateLogger<TriggerSession>());

@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using EntityFrameworkCore.Triggered.Internal;
+using EntityFrameworkCore.Triggered.Lyfecycles;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace EntityFrameworkCore.Triggered
@@ -33,6 +35,8 @@ namespace EntityFrameworkCore.Triggered
         }
 
         public TriggerContextTracker Tracker => _tracker;
+
+        public ITriggerDiscoveryService DiscoveryService => _triggerDiscoveryService;
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1806:Do not ignore method results", Justification = "Incorrect warning")]
         public void DiscoverChanges()
@@ -90,6 +94,16 @@ namespace EntityFrameworkCore.Triggered
             }
         }
 
+        public async Task RaiseBeforeSaveStartingTriggers(CancellationToken cancellationToken)
+        {
+            var triggers = _triggerDiscoveryService.ServiceProvider.GetServices<IBeforeSaveStartingTrigger>();
+
+            foreach (var trigger in triggers)
+            {
+                await trigger.BeforeSaveStarting(cancellationToken);
+            }
+        }
+
         public Task RaiseBeforeSaveTriggers(CancellationToken cancellationToken)
             => RaiseBeforeSaveTriggers(_raiseBeforeSaveTriggersCalled, cancellationToken);
 
@@ -122,7 +136,27 @@ namespace EntityFrameworkCore.Triggered
             return RaiseTriggers(typeof(IBeforeSaveTrigger<>), null, strategy, entityType => new BeforeSaveTriggerDescriptor(entityType), cancellationToken);
         }
 
+        public async Task RaiseBeforeSaveStartedTriggers(CancellationToken cancellationToken)
+        {
+            var triggers = _triggerDiscoveryService.ServiceProvider.GetServices<IBeforeSaveStartedTrigger>();
+
+            foreach (var trigger in triggers)
+            {
+                await trigger.BeforeSaveStarted(cancellationToken);
+            }
+        }
+
         public void CaptureDiscoveredChanges() => _tracker.CaptureChanges();
+
+        public async Task RaiseAfterSaveStartingTriggers(CancellationToken cancellationToken)
+        {
+            var triggers = _triggerDiscoveryService.ServiceProvider.GetServices<IAfterSaveStartingTrigger>();
+
+            foreach (var trigger in triggers)
+            {
+                await trigger.AfterSaveStarting(cancellationToken);
+            }
+        }
 
         public Task RaiseAfterSaveTriggers(CancellationToken cancellationToken = default)
         {
@@ -134,6 +168,26 @@ namespace EntityFrameworkCore.Triggered
             return RaiseTriggers(typeof(IAfterSaveTrigger<>), null, _afterSaveTriggerContextDiscoveryStrategy, entityType => new AfterSaveTriggerDescriptor(entityType), cancellationToken);
         }
 
+        public async Task RaiseAfterSaveStartedTriggers(CancellationToken cancellationToken)
+        {
+            var triggers = _triggerDiscoveryService.ServiceProvider.GetServices<IAfterSaveStartedTrigger>();
+
+            foreach (var trigger in triggers)
+            {
+                await trigger.AfterSaveStarted(cancellationToken);
+            }
+        }
+
+        public async Task RaiseAfterSaveFailedStartingTriggers(Exception exception, CancellationToken cancellationToken)
+        {
+            var triggers = _triggerDiscoveryService.ServiceProvider.GetServices<IAfterSaveFailedStartingTrigger>();
+
+            foreach (var trigger in triggers)
+            {
+                await trigger.AfterSaveFailedStarting(exception, cancellationToken);
+            }
+        }
+
         public Task RaiseAfterSaveFailedTriggers(Exception exception, CancellationToken cancellationToken = default)
         {
             if (_afterSaveFailedTriggerContextDiscoveryStrategy == null)
@@ -142,7 +196,16 @@ namespace EntityFrameworkCore.Triggered
             }
 
             return RaiseTriggers(typeof(IAfterSaveFailedTrigger<>), exception, _afterSaveFailedTriggerContextDiscoveryStrategy, entityType => new AfterSaveFailedTriggerDescriptor(entityType, exception), cancellationToken);
+        }
 
+        public async Task RaiseAfterSaveFailedStartedTriggers(Exception exception, CancellationToken cancellationToken)
+        {
+            var triggers = _triggerDiscoveryService.ServiceProvider.GetServices<IAfterSaveFailedStartedTrigger>();
+
+            foreach (var trigger in triggers)
+            {
+                await trigger.AfterSaveFailedStarted(exception, cancellationToken);
+            }
         }
 
         public void Dispose()

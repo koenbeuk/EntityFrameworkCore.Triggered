@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using EntityFrameworkCore.Triggered.Internal;
-using EntityFrameworkCore.Triggered.Internal.RecursionStrategy;
+using EntityFrameworkCore.Triggered.Internal.CascadeStrategies;
 using EntityFrameworkCore.Triggered.Lyfecycles;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -61,8 +61,8 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
                         }
                     }
 
-                    hashCode ^= extension._maxRecursion.GetHashCode();
-                    hashCode ^= extension._recursionMode.GetHashCode();
+                    hashCode ^= extension._maxCascadeCycles.GetHashCode();
+                    hashCode ^= extension._cascadeBehavior.GetHashCode();
 
                     if (extension._serviceProviderTransform != null)
                     {
@@ -84,16 +84,16 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
 
                 debugInfo["Triggers:TriggersCount"] = (((TriggersOptionExtension)Extension)._triggers?.Count() ?? 0).ToString();
                 debugInfo["Triggers:TriggerTypesCount"] = (((TriggersOptionExtension)Extension)._triggerTypes?.Count() ?? 0).ToString();
-                debugInfo["Triggers:MaxRecursion"] = ((TriggersOptionExtension)Extension)._maxRecursion.ToString();
-                debugInfo["Triggers:RecursionMode"] = ((TriggersOptionExtension)Extension)._recursionMode.ToString();
+                debugInfo["Triggers:MaxCascadeCycles"] = ((TriggersOptionExtension)Extension)._maxCascadeCycles.ToString();
+                debugInfo["Triggers:CascadeBehavior"] = ((TriggersOptionExtension)Extension)._cascadeBehavior.ToString();
             }
         }
 
         private ExtensionInfo? _info;
         private IEnumerable<(object typeOrInstance, ServiceLifetime lifetime)>? _triggers;
         private IEnumerable<Type> _triggerTypes;
-        private int _maxRecursion = 100;
-        private RecursionMode _recursionMode = RecursionMode.EntityAndType;
+        private int _maxCascadeCycles = 100;
+        private CascadeBehavior _cascadeBehavior = CascadeBehavior.EntityAndType;
         private Func<IServiceProvider, IServiceProvider>? _serviceProviderTransform;
 
         public TriggersOptionExtension()
@@ -119,16 +119,16 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
             }
 
             _triggerTypes = copyFrom._triggerTypes;
-            _maxRecursion = copyFrom._maxRecursion;
-            _recursionMode = copyFrom._recursionMode;
+            _maxCascadeCycles = copyFrom._maxCascadeCycles;
+            _cascadeBehavior = copyFrom._cascadeBehavior;
             _serviceProviderTransform = copyFrom._serviceProviderTransform;
         }
 
         public DbContextOptionsExtensionInfo Info
             => _info ??= new ExtensionInfo(this);
 
-        public int MaxRecursion => _maxRecursion;
-        public RecursionMode RecursionMode => _recursionMode;
+        public int MaxCascadeCycles => _maxCascadeCycles;
+        public CascadeBehavior CascadeBehavior => _cascadeBehavior;
         public IEnumerable<(object typeOrInstance, ServiceLifetime lifetime)> Triggers => _triggers ?? Enumerable.Empty<(object typeOrInstance, ServiceLifetime lifetime)>();
 
         public void ApplyServices(IServiceCollection services)
@@ -153,17 +153,17 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
 
 
             services.Configure<TriggerOptions>(triggerServiceOptions => {
-                triggerServiceOptions.MaxRecursion = _maxRecursion;
+                triggerServiceOptions.MaxCascadeCycles = _maxCascadeCycles;
             });
 
-            var recursionStrategyType = _recursionMode switch
+            var cascadeStrategyType = _cascadeBehavior switch
             {
-                RecursionMode.None => typeof(NoRecursionStrategy),
-                RecursionMode.EntityAndType => typeof(EntityAndTypeRecursionStrategy),
-                _ => throw new InvalidOperationException("Unsupported recursion mode")
+                CascadeBehavior.None => typeof(NoCascadeStrategy),
+                CascadeBehavior.EntityAndType => typeof(EntityAndTypeCascadeStrategy),
+                _ => throw new InvalidOperationException("Unsupported cascading mode")
             };
 
-            services.TryAddTransient(typeof(IRecursionStrategy), recursionStrategyType);
+            services.TryAddTransient(typeof(ICascadeStrategy), cascadeStrategyType);
 
             if (_triggers != null)
             {
@@ -221,20 +221,20 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
             }
         }
 
-        public TriggersOptionExtension WithRecursionMode(RecursionMode recursionMode)
+        public TriggersOptionExtension WithCascadeBehavior(CascadeBehavior cascadeBehavior)
         {
             var clone = Clone();
 
-            clone._recursionMode = recursionMode;
+            clone._cascadeBehavior = cascadeBehavior;
 
             return clone;
         }
 
-        public TriggersOptionExtension WithMaxRecursion(int maxRecursion)
+        public TriggersOptionExtension WithMaxCascadeCycles(int maxCascadeCycles)
         {
             var clone = Clone();
 
-            clone._maxRecursion = maxRecursion;
+            clone._maxCascadeCycles = maxCascadeCycles;
 
             return clone;
         }

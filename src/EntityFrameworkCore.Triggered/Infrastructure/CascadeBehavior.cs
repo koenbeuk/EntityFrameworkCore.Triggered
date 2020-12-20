@@ -1,12 +1,12 @@
 ﻿namespace EntityFrameworkCore.Triggered.Infrastructure
 {
-    public enum RecursionMode
+    public enum CascadeBehavior
     {
         /// <summary>
-        /// Disables recursion. Any changes made in <see cref="EntityFrameworkCore.Triggered.IBeforeSaveTrigger{TEntity}"/> will not raise additional triggers
+        /// Disables cascading. Any changes made in <see cref="EntityFrameworkCore.Triggered.IBeforeSaveTrigger{TEntity}"/> will not raise additional triggers
         /// </summary>
         /// <remarks>
-        /// No recursion is often not desired since it puts a soft restriction on <see cref="EntityFrameworkCore.Triggered.IBeforeSaveTrigger{TEntity}"/>.
+        /// No cascading is often not desired since it puts a soft restriction on <see cref="EntityFrameworkCore.Triggered.IBeforeSaveTrigger{TEntity}"/>.
         /// </remarks>
         None,
         /// <summary>

@@ -5,22 +5,22 @@ using Microsoft.Extensions.Logging;
 
 namespace EntityFrameworkCore.Triggered.Internal
 {
-    public class RecursiveTriggerContextDiscoveryStrategy : ITriggerContextDiscoveryStrategy
+    public class CascadingTriggerContextDiscoveryStrategy : ITriggerContextDiscoveryStrategy
     {
         readonly static Action<ILogger, string, int, Exception?> _discoveryStarted = LoggerMessage.Define<string, int>(
             LogLevel.Debug,
             new EventId(1, "Discovered"),
-            "Starting trigger discovery for {name} with a max recursion of {maxRecursion}");
+            "Starting trigger discovery for {name} with a max cascade of {maxCascadingCycles}");
 
         readonly static Action<ILogger, int, string, int, int, Exception?> _changesDetected = LoggerMessage.Define<int, string, int, int>(
             LogLevel.Debug,
             new EventId(1, "Discovered"),
-            "Discovered changes: {changes} for {name}. Iteration ({iteration}/{maxRecursion})");
+            "Discovered changes: {changes} for {name}. Iteration ({iteration}/{maxCascadingCycles})");
 
         readonly string _name;
         readonly bool _skipDetectedChanges;
 
-        public RecursiveTriggerContextDiscoveryStrategy(string name, bool skipDetectedChanges)
+        public CascadingTriggerContextDiscoveryStrategy(string name, bool skipDetectedChanges)
         {
             _name = name ?? throw new ArgumentNullException(nameof(name));
             _skipDetectedChanges = skipDetectedChanges;
@@ -28,15 +28,15 @@ namespace EntityFrameworkCore.Triggered.Internal
 
         public IEnumerable<IEnumerable<TriggerContextDescriptor>> Discover(TriggerOptions options, TriggerContextTracker tracker, ILogger logger)
         {
-            var maxRecursion = options.MaxRecursion;
-            _discoveryStarted(logger, _name, maxRecursion, null);
+            var maxCascadingCycles = options.MaxCascadeCycles;
+            _discoveryStarted(logger, _name, maxCascadingCycles, null);
 
             var iteration = 0;
             while (true)
             {
-                if (iteration > maxRecursion)
+                if (iteration > maxCascadingCycles)
                 {
-                    throw new InvalidOperationException("MaxRecursion was reached");
+                    throw new InvalidOperationException("MaxCascadingCycle was reached");
                 }
 
                 var changes = tracker.DiscoverChanges();
@@ -52,7 +52,7 @@ namespace EntityFrameworkCore.Triggered.Internal
                     if (logger.IsEnabled(LogLevel.Debug))
                     {
                         changes = changes.ToList();
-                        _changesDetected(logger, changes.Count(), _name, iteration, maxRecursion, null);
+                        _changesDetected(logger, changes.Count(), _name, iteration, maxCascadingCycles, null);
                     }
 
                     yield return changes;

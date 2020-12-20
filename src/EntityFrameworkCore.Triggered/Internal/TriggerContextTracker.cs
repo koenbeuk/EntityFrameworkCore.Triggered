@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using EntityFrameworkCore.Triggered.Internal.RecursionStrategy;
+using EntityFrameworkCore.Triggered.Internal.CascadeStrategies;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
@@ -10,15 +10,15 @@ namespace EntityFrameworkCore.Triggered.Internal
     public sealed class TriggerContextTracker
     {
         readonly ChangeTracker _changeTracker;
-        readonly IRecursionStrategy _recursionStrategy;
+        readonly ICascadeStrategy _cascadingStrategy;
 
         List<TriggerContextDescriptor>? _discoveredChanges;
         List<int>? _capturedChangeIndexes;
 
-        public TriggerContextTracker(ChangeTracker changeTracker, IRecursionStrategy recursionStrategy)
+        public TriggerContextTracker(ChangeTracker changeTracker, ICascadeStrategy cascadingStrategy)
         {
             _changeTracker = changeTracker;
-            _recursionStrategy = recursionStrategy;
+            _cascadingStrategy = cascadingStrategy;
         }
 
         static ChangeType? ResolveChangeType(EntityEntry entry) => entry.State switch {
@@ -74,22 +74,22 @@ namespace EntityFrameworkCore.Triggered.Internal
                 {
                     if (startIndex > 0)
                     {
-                        var canRecurse = true;
+                        var canCascade = true;
 
                         foreach (var discoveredChange in _discoveredChanges)
                         {
                             if (discoveredChange.Entity == entry.Entity)
                             {
-                                canRecurse = _recursionStrategy.CanRecurse(entry, changeType.Value, discoveredChange);
+                                canCascade = _cascadingStrategy.CanCascade(entry, changeType.Value, discoveredChange);
 
-                                if (!canRecurse)
+                                if (!canCascade)
                                 {
                                     break;
                                 }
                             }
                         }
 
-                        if (!canRecurse)
+                        if (!canCascade)
                         {
                             continue;
                         }

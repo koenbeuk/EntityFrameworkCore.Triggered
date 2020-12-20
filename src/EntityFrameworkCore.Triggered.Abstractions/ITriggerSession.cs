@@ -17,11 +17,11 @@ namespace EntityFrameworkCore.Triggered
         Task RaiseAfterSaveStartingTriggers(CancellationToken cancellationToken = default);
         Task RaiseAfterSaveStartedTriggers(CancellationToken cancellationToken = default);
         /// <summary>
-        /// Makes a snapshot of all changes in the DbContext and invokes BeforeSaveTriggers recursively based on the recursive settings until all changes have been processed
+        /// Makes a snapshot of all changes in the DbContext and invokes BeforeSaveTriggers while detecting and cascading based on the cascade settings until all changes have been processed
         /// </summary>
         Task RaiseBeforeSaveTriggers(CancellationToken cancellationToken = default);
         /// <summary>
-        /// Makes a snapshot of all changes in the DbContext and invokes BeforeSaveTriggers recursively based on the recursive settings until all changes have been processed
+        /// Makes a snapshot of all changes in the DbContext and invokes BeforeSaveTriggers while detecting and cascading based on the cascade settings until all changes have been processed
         /// </summary>
         /// <param name="skipDetectedChanges">Allows BeforeSaveTriggers not to include previously detected changes. Only new changes will be detected and fired upon. This is useful in case of multiple calls to RaiseBeforeSaveTriggers</param>
         Task RaiseBeforeSaveTriggers(bool skipDetectedChanges, CancellationToken cancellationToken = default);
@@ -30,11 +30,11 @@ namespace EntityFrameworkCore.Triggered
         /// </summary>
         void CaptureDiscoveredChanges();
         /// <summary>
-        /// Invokes AfterSaveTriggers non-recursively. Calling this method expects that either RaiseBeforeSaveTriggers() or DiscoverChanges() has been called
+        /// Invokes AfterSaveTriggers. Calling this method expects that either RaiseBeforeSaveTriggers() or DiscoverChanges() has been called
         /// </summary>
         Task RaiseAfterSaveTriggers(CancellationToken cancellationToken = default);
         /// <summary>
-        /// Invokes AfterSaveFailedTriggers non-recursively. Calling this method expects that either RaiseBeforeSaveTriggers() or DiscoverChanges() has been called
+        /// Invokes AfterSaveFailedTriggers. Calling this method expects that either RaiseBeforeSaveTriggers() or DiscoverChanges() has been called
         /// </summary>
         Task RaiseAfterSaveFailedTriggers(Exception exception, CancellationToken cancellationToken = default);
     }

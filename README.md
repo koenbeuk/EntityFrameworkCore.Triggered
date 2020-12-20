@@ -94,11 +94,11 @@ public class Startup
 `BeforeSaveTrigger<TEntity>` supports cascading triggers. This is useful since it allows your triggers to subsequently modify the same DbContext entity graph and have it raise additional triggers. By default this behavior is turned on and protected from infinite loops by limiting the number of cascading cycles. If you don't like this behavior or want to change it, you can do so by:
 ```csharp
 optionsBuilder.UseTriggers(triggerOptions => {
-    triggerOptions.CascadingMode(CascadingMode.EntityAndType).MaxRecusion(20)
+    triggerOptions.CascadeBehavior(CascadeBehavior.EntityAndType).MaxRecusion(20)
 })
 ```
 
-Currently there are 2 types of cascading strategies out of the box, with the support to providing your own:  `NoCascading` and `EntityAndType` (default). The former simply disables cascading whereas the latter cascades triggers for as long as the combination of the Entity and the change type is unique. `EntityAndType` is the recommended and default cascading strategy.
+Currently there are 2 types of cascading strategies out of the box, with the support to providing your own:  `NoCascade` and `EntityAndType` (default). The former simply disables cascading whereas the latter cascades triggers for as long as the combination of the Entity and the change type is unique. `EntityAndType` is the recommended and default cascading strategy.
 
 ### Inheritance
 Triggers support inheritance and sort execution of these triggers based on least concrete to most concrete. Given the following example:

@@ -2,6 +2,6 @@
 {
     public class TriggerOptions
     {
-        public int MaxCascadingCycles { get; set; } = 100;
+        public int MaxCascadeCycles { get; set; } = 100;
     }
 }

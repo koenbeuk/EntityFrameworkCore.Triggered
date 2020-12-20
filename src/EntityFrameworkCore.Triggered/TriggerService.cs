@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using EntityFrameworkCore.Triggered.Internal;
-using EntityFrameworkCore.Triggered.Internal.CascadingStrategies;
+using EntityFrameworkCore.Triggered.Internal.CascadeStrategies;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -14,13 +14,13 @@ namespace EntityFrameworkCore.Triggered
     public class TriggerService : ITriggerService, IResettableService
     {
         readonly ITriggerDiscoveryService _triggerDiscoveryService;
-        readonly ICascadingStrategy _cascadingStrategy;
+        readonly ICascadeStrategy _cascadingStrategy;
         readonly ILoggerFactory _loggerFactory;
         readonly TriggerOptions _options;
 
         ITriggerSession? _currentTriggerSession;
 
-        public TriggerService(ITriggerDiscoveryService triggerDiscoveryService, ICascadingStrategy cascadingStrategy, ILoggerFactory loggerFactory, IOptionsSnapshot<TriggerOptions> triggerOptionsSnapshot)
+        public TriggerService(ITriggerDiscoveryService triggerDiscoveryService, ICascadeStrategy cascadingStrategy, ILoggerFactory loggerFactory, IOptionsSnapshot<TriggerOptions> triggerOptionsSnapshot)
         {
             _triggerDiscoveryService = triggerDiscoveryService ?? throw new ArgumentNullException(nameof(triggerDiscoveryService));
             _cascadingStrategy = cascadingStrategy ?? throw new ArgumentNullException(nameof(cascadingStrategy));

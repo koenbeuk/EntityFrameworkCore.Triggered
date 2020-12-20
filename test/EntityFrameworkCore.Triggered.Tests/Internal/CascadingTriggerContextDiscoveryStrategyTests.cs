@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using EntityFrameworkCore.Triggered.Internal;
-using EntityFrameworkCore.Triggered.Internal.CascadingStrategies;
+using EntityFrameworkCore.Triggered.Internal.CascadeStrategies;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -47,7 +47,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
         {
             using var dbContext = new TestDbContext();
             var subject = new CascadingTriggerContextDiscoveryStrategy("test", false);
-            var triggerContextTracker = new TriggerContextTracker(dbContext.ChangeTracker, new EntityAndTypeCascadingStrategy());
+            var triggerContextTracker = new TriggerContextTracker(dbContext.ChangeTracker, new EntityAndTypeCascadeStrategy());
             triggerContextTracker.DiscoverChanges().Count();
             var initialContextDescriptors = subject.Discover(new TriggerOptions { }, triggerContextTracker, new NullLogger<object>()).ToList();
 

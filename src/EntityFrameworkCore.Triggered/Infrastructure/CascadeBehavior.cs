@@ -1,6 +1,6 @@
 ﻿namespace EntityFrameworkCore.Triggered.Infrastructure
 {
-    public enum CascadingMode
+    public enum CascadeBehavior
     {
         /// <summary>
         /// Disables cascading. Any changes made in <see cref="EntityFrameworkCore.Triggered.IBeforeSaveTrigger{TEntity}"/> will not raise additional triggers

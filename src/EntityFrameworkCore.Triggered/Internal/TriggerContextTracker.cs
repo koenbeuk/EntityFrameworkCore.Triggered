@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using EntityFrameworkCore.Triggered.Internal.CascadingStrategies;
+using EntityFrameworkCore.Triggered.Internal.CascadeStrategies;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
@@ -10,12 +10,12 @@ namespace EntityFrameworkCore.Triggered.Internal
     public sealed class TriggerContextTracker
     {
         readonly ChangeTracker _changeTracker;
-        readonly ICascadingStrategy _cascadingStrategy;
+        readonly ICascadeStrategy _cascadingStrategy;
 
         List<TriggerContextDescriptor>? _discoveredChanges;
         List<int>? _capturedChangeIndexes;
 
-        public TriggerContextTracker(ChangeTracker changeTracker, ICascadingStrategy cascadingStrategy)
+        public TriggerContextTracker(ChangeTracker changeTracker, ICascadeStrategy cascadingStrategy)
         {
             _changeTracker = changeTracker;
             _cascadingStrategy = cascadingStrategy;

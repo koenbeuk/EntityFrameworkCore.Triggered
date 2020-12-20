@@ -22,9 +22,9 @@ namespace EntityFrameworkCore.Triggered.Tests.Infrastructure
         {
             var (subject, extensionAccessor) = CreateSubject();
 
-            subject.CascadingMode(CascadingMode.None);
+            subject.CascadeBehavior(CascadeBehavior.None);
 
-            Assert.Equal(CascadingMode.None, extensionAccessor().CascadingMode);
+            Assert.Equal(CascadeBehavior.None, extensionAccessor().CascadeBehavior);
         }
 
         [Fact]
@@ -32,9 +32,9 @@ namespace EntityFrameworkCore.Triggered.Tests.Infrastructure
         {
             var (subject, extensionAccessor) = CreateSubject();
 
-            subject.MaxCascadingCycles(10);
+            subject.MaxCascadeCycles(10);
 
-            Assert.Equal(10, extensionAccessor().MaxCascadingCycles);
+            Assert.Equal(10, extensionAccessor().MaxCascadeCycles);
         }
 
         [Fact]

@@ -1,5 +1,5 @@
 ﻿using EntityFrameworkCore.Triggered.Internal;
-using EntityFrameworkCore.Triggered.Internal.CascadingStrategies;
+using EntityFrameworkCore.Triggered.Internal.CascadeStrategies;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Xunit;
@@ -23,7 +23,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal.CascadingStrategies
             }
         }
 
-        protected abstract ICascadingStrategy CreateSubject();
+        protected abstract ICascadeStrategy CreateSubject();
 
         protected abstract bool CanCascadeUnmodifiedExpectedOutcome { get; }
         protected abstract bool CanCascadeModifiedExpectedOutcome { get; }

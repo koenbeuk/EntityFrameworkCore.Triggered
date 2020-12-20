@@ -1,4 +1,4 @@
-﻿using EntityFrameworkCore.Triggered.Internal.CascadingStrategies;
+﻿using EntityFrameworkCore.Triggered.Internal.CascadeStrategies;
 
 namespace EntityFrameworkCore.Triggered.Tests.Internal.CascadingStrategies
 {
@@ -9,7 +9,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal.CascadingStrategies
         protected override bool CanCascadeUnmodifiedDifferentTypeExpectedOutcome => false;
         protected override bool CanCascadeModifiedDifferentTypeExpectedOutcome => false;
 
-        protected override ICascadingStrategy CreateSubject()
-            => new NoCascadingStrategy();
+        protected override ICascadeStrategy CreateSubject()
+            => new NoCascadeStrategy();
     }
 }

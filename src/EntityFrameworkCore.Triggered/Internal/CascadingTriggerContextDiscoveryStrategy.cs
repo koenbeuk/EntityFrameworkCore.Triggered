@@ -28,7 +28,7 @@ namespace EntityFrameworkCore.Triggered.Internal
 
         public IEnumerable<IEnumerable<TriggerContextDescriptor>> Discover(TriggerOptions options, TriggerContextTracker tracker, ILogger logger)
         {
-            var maxCascadingCycles = options.MaxCascadingCycles;
+            var maxCascadingCycles = options.MaxCascadeCycles;
             _discoveryStarted(logger, _name, maxCascadingCycles, null);
 
             var iteration = 0;

@@ -53,7 +53,9 @@ namespace EntityFrameworkCore.Triggered
         {
             bool RaiseAfterSavFailedTriggers(Exception exception)
             {
-                _triggerSession.RaiseAfterSaveFailedTriggers(exception, default).GetAwaiter().GetResult();
+                _triggerSession.RaiseAfterSaveFailedStartingTriggers(exception).GetAwaiter().GetResult();
+                _triggerSession.RaiseAfterSaveFailedTriggers(exception).GetAwaiter().GetResult();
+                _triggerSession.RaiseAfterSaveFailedStartedTriggers(exception).GetAwaiter().GetResult();
 
                 return false;
             }
@@ -84,8 +86,10 @@ namespace EntityFrameworkCore.Triggered
                 {
                     ChangeTracker.AutoDetectChangesEnabled = false;
 
-                    _triggerSession.RaiseBeforeSaveTriggers(default).GetAwaiter().GetResult();
+                    _triggerSession.RaiseBeforeSaveStartingTriggers().GetAwaiter().GetResult();
+                    _triggerSession.RaiseBeforeSaveTriggers().GetAwaiter().GetResult();
                     _triggerSession.CaptureDiscoveredChanges();
+                    _triggerSession.RaiseBeforeSaveStartedTriggers().GetAwaiter().GetResult();
 
                     try
                     {
@@ -101,7 +105,9 @@ namespace EntityFrameworkCore.Triggered
                     ChangeTracker.AutoDetectChangesEnabled = defaultAutoDetectChangesEnabled;
                 }
 
-                _triggerSession.RaiseAfterSaveTriggers(default).GetAwaiter().GetResult();
+                _triggerSession.RaiseAfterSaveStartingTriggers().GetAwaiter().GetResult();
+                _triggerSession.RaiseAfterSaveTriggers().GetAwaiter().GetResult();
+                _triggerSession.RaiseAfterSaveStartedTriggers().GetAwaiter().GetResult();
 
                 return result;
             }
@@ -117,9 +123,11 @@ namespace EntityFrameworkCore.Triggered
 
         public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
         {
-            Task RaiseAfterSavFailedTriggers(Exception exception, CancellationToken cancellationToken)
+            async Task RaiseAfterSaveFailedTriggers(Exception exception, CancellationToken cancellationToken)
             {
-                return _triggerSession.RaiseAfterSaveFailedTriggers(exception, cancellationToken);
+                await _triggerSession.RaiseAfterSaveFailedStartingTriggers(exception, cancellationToken);
+                await _triggerSession.RaiseAfterSaveFailedTriggers(exception, cancellationToken);
+                await _triggerSession.RaiseAfterSaveFailedStartedTriggers(exception, cancellationToken);
             }
 
             var createdTriggerSession = false;
@@ -148,8 +156,10 @@ namespace EntityFrameworkCore.Triggered
                 {
                     ChangeTracker.AutoDetectChangesEnabled = false;
 
-                    await _triggerSession.RaiseBeforeSaveTriggers(default).ConfigureAwait(false);
+                    await _triggerSession.RaiseBeforeSaveStartingTriggers(cancellationToken).ConfigureAwait(false);
+                    await _triggerSession.RaiseBeforeSaveTriggers(cancellationToken).ConfigureAwait(false);
                     _triggerSession.CaptureDiscoveredChanges();
+                    await _triggerSession.RaiseBeforeSaveStartedTriggers(cancellationToken).ConfigureAwait(false);
 
                     try
                     {
@@ -157,7 +167,7 @@ namespace EntityFrameworkCore.Triggered
                     }
                     catch (Exception exception)
                     {
-                        await RaiseAfterSavFailedTriggers(exception, cancellationToken);
+                        await RaiseAfterSaveFailedTriggers(exception, cancellationToken);
                         throw;
                     }
                 }
@@ -166,7 +176,9 @@ namespace EntityFrameworkCore.Triggered
                     ChangeTracker.AutoDetectChangesEnabled = defaultAutoDetectChangesEnabled;
                 }
 
-                await _triggerSession.RaiseAfterSaveTriggers(default).ConfigureAwait(false);
+                await _triggerSession.RaiseAfterSaveStartingTriggers().ConfigureAwait(false);
+                await _triggerSession.RaiseAfterSaveTriggers().ConfigureAwait(false);
+                await _triggerSession.RaiseAfterSaveStartedTriggers().ConfigureAwait(false);
 
                 return result;
             }

@@ -161,7 +161,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
                 .BuildServiceProvider();
 
             var subject = new TriggerDiscoveryService(new TriggerServiceProviderAccessor(defaultServiceProvider), new TriggerTypeRegistryService());
-            subject.SetServiceProvider(externalServiceProvider);
+            subject.ServiceProvider = externalServiceProvider;
 
             var result = subject.DiscoverTriggers(typeof(IBeforeSaveTrigger<>), typeof(string), type => new BeforeSaveTriggerDescriptor(type));
 

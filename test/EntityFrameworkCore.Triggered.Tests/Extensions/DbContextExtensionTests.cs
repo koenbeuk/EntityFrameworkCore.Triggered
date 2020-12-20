@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using EntityFrameworkCore.Triggered.Extensions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Xunit;
 
@@ -18,7 +19,14 @@ namespace EntityFrameworkCore.Triggered.Tests.Extensions
         {
             public DbSet<TestModel> TestModels { get; set; }
 
-            protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.UseInMemoryDatabase("test").UseTriggers();
+            protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+            {
+                optionsBuilder.UseInMemoryDatabase("test").UseTriggers();
+
+                optionsBuilder.ConfigureWarnings(warningOptions => {
+                    warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
+                });
+            }
         }
 
         [Fact]

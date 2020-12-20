@@ -1,6 +1,7 @@
 ﻿using System;
 using EntityFrameworkCore.Triggered.Infrastructure;
 using EntityFrameworkCore.Triggered.Transactions;
+using EntityFrameworkCore.Triggered.Transactions.Abstractions.Lifecycles;
 
 namespace Microsoft.EntityFrameworkCore
 {
@@ -17,7 +18,11 @@ namespace Microsoft.EntityFrameworkCore
                 .AddTriggerType(typeof(IBeforeCommitTrigger<>))
                 .AddTriggerType(typeof(IAfterCommitTrigger<>))
                 .AddTriggerType(typeof(IBeforeRollbackTrigger<>))
-                .AddTriggerType(typeof(IAfterRollbackTrigger<>));
+                .AddTriggerType(typeof(IAfterRollbackTrigger<>))
+                .AddTriggerType(typeof(IBeforeCommitStartingTrigger))
+                .AddTriggerType(typeof(IBeforeCommitStartedTrigger))
+                .AddTriggerType(typeof(IAfterCommitStartingTrigger))
+                .AddTriggerType(typeof(IAfterCommitStartedTrigger));
         }
     }
 }

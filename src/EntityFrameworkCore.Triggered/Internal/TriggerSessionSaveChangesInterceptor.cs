@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Diagnostics;
@@ -85,8 +85,10 @@ namespace EntityFrameworkCore.Triggered.Internal
 
                     eventData.Context.ChangeTracker.AutoDetectChangesEnabled = false;
 
+                    _triggerSession.RaiseBeforeSaveStartingTriggers().GetAwaiter().GetResult();
                     _triggerSession.RaiseBeforeSaveTriggers().GetAwaiter().GetResult();
                     _triggerSession.CaptureDiscoveredChanges();
+                    _triggerSession.RaiseBeforeSaveStartedTriggers().GetAwaiter().GetResult();
                 }
                 finally
                 {
@@ -110,11 +112,12 @@ namespace EntityFrameworkCore.Triggered.Internal
 
                 try
                 {
-
                     eventData.Context.ChangeTracker.AutoDetectChangesEnabled = false;
 
+                    await _triggerSession.RaiseBeforeSaveStartingTriggers(cancellationToken).ConfigureAwait(false);
                     await _triggerSession.RaiseBeforeSaveTriggers(cancellationToken).ConfigureAwait(false);
                     _triggerSession.CaptureDiscoveredChanges();
+                    await _triggerSession.RaiseBeforeSaveStartedTriggers(cancellationToken).ConfigureAwait(false);
                 }
                 finally
                 {
@@ -131,8 +134,10 @@ namespace EntityFrameworkCore.Triggered.Internal
             {
                 Debug.Assert(_triggerSession != null);
 
+                _triggerSession.RaiseAfterSaveStartingTriggers().GetAwaiter().GetResult();
                 _triggerSession.RaiseAfterSaveTriggers().GetAwaiter().GetResult();
-                
+                _triggerSession.RaiseAfterSaveStartedTriggers().GetAwaiter().GetResult();
+
                 DelistTriggerSession(eventData);
             }
 
@@ -145,7 +150,9 @@ namespace EntityFrameworkCore.Triggered.Internal
             {
                 Debug.Assert(_triggerSession != null);
 
+                await _triggerSession.RaiseAfterSaveStartingTriggers(cancellationToken).ConfigureAwait(false);
                 await _triggerSession.RaiseAfterSaveTriggers(cancellationToken).ConfigureAwait(false);
+                await _triggerSession.RaiseAfterSaveStartedTriggers(cancellationToken).ConfigureAwait(false);
 
                 DelistTriggerSession(eventData);
             }
@@ -159,7 +166,9 @@ namespace EntityFrameworkCore.Triggered.Internal
             {
                 Debug.Assert(_triggerSession != null);
 
+                _triggerSession.RaiseAfterSaveFailedStartingTriggers(eventData.Exception).GetAwaiter().GetResult();
                 _triggerSession.RaiseAfterSaveFailedTriggers(eventData.Exception).GetAwaiter().GetResult();
+                _triggerSession.RaiseAfterSaveFailedStartedTriggers(eventData.Exception).GetAwaiter().GetResult();
 
                 DelistTriggerSession(eventData);
             }
@@ -171,7 +180,9 @@ namespace EntityFrameworkCore.Triggered.Internal
             {
                 Debug.Assert(_triggerSession != null);
 
+                await _triggerSession.RaiseAfterSaveFailedStartingTriggers(eventData.Exception, cancellationToken).ConfigureAwait(false);
                 await _triggerSession.RaiseAfterSaveFailedTriggers(eventData.Exception, cancellationToken).ConfigureAwait(false);
+                await _triggerSession.RaiseAfterSaveFailedStartedTriggers(eventData.Exception, cancellationToken).ConfigureAwait(false);
 
                 DelistTriggerSession(eventData);
             }

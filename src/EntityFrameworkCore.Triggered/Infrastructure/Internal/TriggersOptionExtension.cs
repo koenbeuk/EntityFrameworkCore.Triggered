@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using EntityFrameworkCore.Triggered.Internal;
 using EntityFrameworkCore.Triggered.Internal.RecursionStrategy;
+using EntityFrameworkCore.Triggered.Lyfecycles;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
@@ -100,7 +101,13 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
             _triggerTypes = new[] {
                 typeof(IBeforeSaveTrigger<>),
                 typeof(IAfterSaveTrigger<>),
-                typeof(IAfterSaveFailedTrigger<>)
+                typeof(IAfterSaveFailedTrigger<>),
+                typeof(IBeforeSaveStartingTrigger),
+                typeof(IBeforeSaveStartedTrigger),
+                typeof(IAfterSaveFailedStartingTrigger),
+                typeof(IAfterSaveFailedStartedTrigger),
+                typeof(IAfterSaveStartingTrigger),
+                typeof(IAfterSaveStartedTrigger)
             };
         }
 
@@ -131,10 +138,13 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
             services.TryAddScoped<ITriggerServiceProviderAccessor>(serviceProvider => serviceProvider.GetRequiredService<ApplicationTriggerServiceProviderAccessor>());
 
             services.TryAddSingleton<ITriggerTypeRegistryService, TriggerTypeRegistryService>();
-            services.TryAddScoped<ITriggerDiscoveryService, TriggerDiscoveryService>();
 
-            services.TryAddScoped<TriggerService>();
-            services.TryAddScoped<IResettableService>(serviceProvider => serviceProvider.GetRequiredService<TriggerService>());
+            services.AddScoped<TriggerDiscoveryService>();
+            services.AddScoped<IResettableService>(serviceProvider => serviceProvider.GetRequiredService<TriggerDiscoveryService>());
+            services.TryAddScoped<ITriggerDiscoveryService>(serviceProvider => serviceProvider.GetRequiredService<TriggerDiscoveryService>());
+
+            services.AddScoped<TriggerService>();
+            services.AddScoped<IResettableService>(serviceProvider => serviceProvider.GetRequiredService<TriggerService>());
             services.TryAddScoped<ITriggerService>(serviceProvider => serviceProvider.GetRequiredService<TriggerService>());
 
 #if EFCORETRIGGERED2
@@ -170,7 +180,9 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
                     {
                         foreach (var customTriggerType in _triggerTypes.Distinct())
                         {
-                            var customTriggers = TypeHelpers.FindGenericInterfaces(triggerType, customTriggerType);
+                            var customTriggers = customTriggerType.IsGenericTypeDefinition
+                                ? TypeHelpers.FindGenericInterfaces(triggerType, customTriggerType)
+                                : triggerType.GetInterfaces().Where(x => x == customTriggerType);
 
                             foreach (var customTrigger in customTriggers)
                             {

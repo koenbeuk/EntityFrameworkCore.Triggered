@@ -176,9 +176,9 @@ namespace EntityFrameworkCore.Triggered
                     ChangeTracker.AutoDetectChangesEnabled = defaultAutoDetectChangesEnabled;
                 }
 
-                await _triggerSession.RaiseAfterSaveStartingTriggers().ConfigureAwait(false);
-                await _triggerSession.RaiseAfterSaveTriggers().ConfigureAwait(false);
-                await _triggerSession.RaiseAfterSaveStartedTriggers().ConfigureAwait(false);
+                await _triggerSession.RaiseAfterSaveStartingTriggers(cancellationToken).ConfigureAwait(false);
+                await _triggerSession.RaiseAfterSaveTriggers(cancellationToken).ConfigureAwait(false);
+                await _triggerSession.RaiseAfterSaveStartedTriggers(cancellationToken).ConfigureAwait(false);
 
                 return result;
             }

@@ -201,7 +201,7 @@ namespace EntityFrameworkCore.Triggered.Tests
 
 
         [Fact]
-        public void SaveChanges_RaisesBeforeSaveChangesStartedTriggers()
+        public void SaveChanges_RaisesBeforeSaveChangesCompletedTriggers()
         {
             var serviceProvider = new ServiceCollection().BuildServiceProvider();
 
@@ -210,7 +210,7 @@ namespace EntityFrameworkCore.Triggered.Tests
 
             subject.SaveChanges();
 
-            Assert.Equal(1, triggerServiceStub.LastSession.RaiseBeforeSaveStartedTriggersCalls);
+            Assert.Equal(1, triggerServiceStub.LastSession.RaiseBeforeSaveCompletingTriggersCalls);
         }
 
         [Fact]
@@ -228,7 +228,7 @@ namespace EntityFrameworkCore.Triggered.Tests
 
 
         [Fact]
-        public void SaveChanges_RaisesAfterSaveChangesStartedTriggers()
+        public void SaveChanges_RaisesAfterSaveChangesCompletedTriggers()
         {
             var serviceProvider = new ServiceCollection().BuildServiceProvider();
 
@@ -237,7 +237,7 @@ namespace EntityFrameworkCore.Triggered.Tests
 
             subject.SaveChanges();
 
-            Assert.Equal(1, triggerServiceStub.LastSession.RaiseAfterSaveStartedTriggersCalls);
+            Assert.Equal(1, triggerServiceStub.LastSession.RaiseAfterSaveCompletedTriggersCalls);
         }
 
         [Fact]
@@ -267,7 +267,7 @@ namespace EntityFrameworkCore.Triggered.Tests
         }
 
         [Fact]
-        public void SaveChanges_OnDbUpdateException_RaisesAfterSaveFailedStartedTriggers()
+        public void SaveChanges_OnDbUpdateException_RaisesAfterSaveFailedCompletedTriggers()
         {
             var serviceProvider = new ServiceCollection().BuildServiceProvider();
             using var connection = new SqliteConnection("DataSource=:memory:");
@@ -289,7 +289,7 @@ namespace EntityFrameworkCore.Triggered.Tests
             });
 
             Assert.Throws<DbUpdateException>(() => subject.SaveChanges());
-            Assert.Equal(1, triggerServiceStub.LastSession.RaiseAfterSaveFailedStartedTriggersCalls);
+            Assert.Equal(1, triggerServiceStub.LastSession.RaiseAfterSaveFailedCompletedTriggersCalls);
         }
 
         [Fact]
@@ -307,7 +307,7 @@ namespace EntityFrameworkCore.Triggered.Tests
 
 
         [Fact]
-        public async Task SaveChangesAsync_RaisesBeforeSaveChangesStartedTriggers()
+        public async Task SaveChangesAsync_RaisesBeforeSaveChangesCompletedTriggers()
         {
             var serviceProvider = new ServiceCollection().BuildServiceProvider();
 
@@ -316,7 +316,7 @@ namespace EntityFrameworkCore.Triggered.Tests
 
             await subject.SaveChangesAsync();
 
-            Assert.Equal(1, triggerServiceStub.LastSession.RaiseBeforeSaveStartedTriggersCalls);
+            Assert.Equal(1, triggerServiceStub.LastSession.RaiseBeforeSaveCompletingTriggersCalls);
         }
 
         [Fact]
@@ -334,7 +334,7 @@ namespace EntityFrameworkCore.Triggered.Tests
 
 
         [Fact]
-        public async Task SaveChangesAsync_RaisesAfterSaveChangesStartedTriggers()
+        public async Task SaveChangesAsync_RaisesAfterSaveChangesCompletedTriggers()
         {
             var serviceProvider = new ServiceCollection().BuildServiceProvider();
 
@@ -343,7 +343,7 @@ namespace EntityFrameworkCore.Triggered.Tests
 
             await subject.SaveChangesAsync();
 
-            Assert.Equal(1, triggerServiceStub.LastSession.RaiseAfterSaveStartedTriggersCalls);
+            Assert.Equal(1, triggerServiceStub.LastSession.RaiseAfterSaveCompletedTriggersCalls);
         }
 
         [Fact]
@@ -373,7 +373,7 @@ namespace EntityFrameworkCore.Triggered.Tests
         }
 
         [Fact]
-        public async Task SaveChangesAsync_OnDbUpdateException_RaisesAfterSaveFailedStartedTriggers()
+        public async Task SaveChangesAsync_OnDbUpdateException_RaisesAfterSaveFailedCompletedTriggers()
         {
             var serviceProvider = new ServiceCollection().BuildServiceProvider();
             using var connection = new SqliteConnection("DataSource=:memory:");
@@ -395,7 +395,7 @@ namespace EntityFrameworkCore.Triggered.Tests
             });
 
             await Assert.ThrowsAsync<DbUpdateException>(() => subject.SaveChangesAsync());
-            Assert.Equal(1, triggerServiceStub.LastSession.RaiseAfterSaveFailedStartedTriggersCalls);
+            Assert.Equal(1, triggerServiceStub.LastSession.RaiseAfterSaveFailedCompletedTriggersCalls);
         }
 
         [Fact]

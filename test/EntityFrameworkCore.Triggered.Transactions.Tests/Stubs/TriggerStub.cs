@@ -6,13 +6,13 @@ using EntityFrameworkCore.Triggered.Transactions.Abstractions.Lifecycles;
 namespace EntityFrameworkCore.Triggered.Transactions.Tests.Stubs
 {
     public class TriggerStub<TEntity> : IBeforeCommitTrigger<TEntity>, IAfterCommitTrigger<TEntity>, IBeforeRollbackTrigger<TEntity>, IAfterRollbackTrigger<TEntity>,
-        IBeforeCommitStartingTrigger, IBeforeCommitStartedTrigger, IAfterCommitStartingTrigger, IAfterCommitStartedTrigger
+        IBeforeCommitStartingTrigger, IBeforeCommitCompletedTrigger, IAfterCommitStartingTrigger, IAfterCommitCompletedTrigger
         where TEntity : class
     {
         public int BeforeCommitStartingInvocationsCount { get; set; }
-        public int BeforeCommitStartedInvocationsCount { get; set; }
+        public int BeforeCommitCompletedInvocationsCount { get; set; }
         public int AfterCommitStartingInvocationsCount { get; set; }
-        public int AfterCommitStartedInvocationsCount { get; set; }
+        public int AfterCommitCompletedInvocationsCount { get; set; }
 
         public ICollection<ITriggerContext<TEntity>> BeforeCommitInvocations { get; } = new List<ITriggerContext<TEntity>>();
         public ICollection<ITriggerContext<TEntity>> AfterCommitInvocations { get; } = new List<ITriggerContext<TEntity>>();
@@ -25,9 +25,9 @@ namespace EntityFrameworkCore.Triggered.Transactions.Tests.Stubs
             return Task.CompletedTask;
         }
 
-        public Task BeforeCommitStarted(CancellationToken cancellationToken)
+        public Task BeforeCommitCompleted(CancellationToken cancellationToken)
         {
-            BeforeCommitStartedInvocationsCount++;
+            BeforeCommitCompletedInvocationsCount++;
             return Task.CompletedTask;
         }
 
@@ -37,9 +37,9 @@ namespace EntityFrameworkCore.Triggered.Transactions.Tests.Stubs
             return Task.CompletedTask;
         }
 
-        public Task AfterCommitStarted(CancellationToken cancellationToken)
+        public Task AfterCommitCompleted(CancellationToken cancellationToken)
         {
-            AfterCommitStartedInvocationsCount++;
+            AfterCommitCompletedInvocationsCount++;
             return Task.CompletedTask;
         }
 

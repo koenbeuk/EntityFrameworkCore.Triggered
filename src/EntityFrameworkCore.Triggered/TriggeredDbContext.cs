@@ -55,7 +55,7 @@ namespace EntityFrameworkCore.Triggered
             {
                 _triggerSession.RaiseAfterSaveFailedStartingTriggers(exception).GetAwaiter().GetResult();
                 _triggerSession.RaiseAfterSaveFailedTriggers(exception).GetAwaiter().GetResult();
-                _triggerSession.RaiseAfterSaveFailedStartedTriggers(exception).GetAwaiter().GetResult();
+                _triggerSession.RaiseAfterSaveFailedCompletedTriggers(exception).GetAwaiter().GetResult();
 
                 return false;
             }
@@ -89,7 +89,7 @@ namespace EntityFrameworkCore.Triggered
                     _triggerSession.RaiseBeforeSaveStartingTriggers().GetAwaiter().GetResult();
                     _triggerSession.RaiseBeforeSaveTriggers().GetAwaiter().GetResult();
                     _triggerSession.CaptureDiscoveredChanges();
-                    _triggerSession.RaiseBeforeSaveStartedTriggers().GetAwaiter().GetResult();
+                    _triggerSession.RaiseBeforeSaveCompletedTriggers().GetAwaiter().GetResult();
 
                     try
                     {
@@ -107,7 +107,7 @@ namespace EntityFrameworkCore.Triggered
 
                 _triggerSession.RaiseAfterSaveStartingTriggers().GetAwaiter().GetResult();
                 _triggerSession.RaiseAfterSaveTriggers().GetAwaiter().GetResult();
-                _triggerSession.RaiseAfterSaveStartedTriggers().GetAwaiter().GetResult();
+                _triggerSession.RaiseAfterSaveCompletedTriggers().GetAwaiter().GetResult();
 
                 return result;
             }
@@ -127,7 +127,7 @@ namespace EntityFrameworkCore.Triggered
             {
                 await _triggerSession.RaiseAfterSaveFailedStartingTriggers(exception, cancellationToken);
                 await _triggerSession.RaiseAfterSaveFailedTriggers(exception, cancellationToken);
-                await _triggerSession.RaiseAfterSaveFailedStartedTriggers(exception, cancellationToken);
+                await _triggerSession.RaiseAfterSaveFailedCompletedTriggers(exception, cancellationToken);
             }
 
             var createdTriggerSession = false;
@@ -159,7 +159,7 @@ namespace EntityFrameworkCore.Triggered
                     await _triggerSession.RaiseBeforeSaveStartingTriggers(cancellationToken).ConfigureAwait(false);
                     await _triggerSession.RaiseBeforeSaveTriggers(cancellationToken).ConfigureAwait(false);
                     _triggerSession.CaptureDiscoveredChanges();
-                    await _triggerSession.RaiseBeforeSaveStartedTriggers(cancellationToken).ConfigureAwait(false);
+                    await _triggerSession.RaiseBeforeSaveCompletedTriggers(cancellationToken).ConfigureAwait(false);
 
                     try
                     {
@@ -178,7 +178,7 @@ namespace EntityFrameworkCore.Triggered
 
                 await _triggerSession.RaiseAfterSaveStartingTriggers().ConfigureAwait(false);
                 await _triggerSession.RaiseAfterSaveTriggers().ConfigureAwait(false);
-                await _triggerSession.RaiseAfterSaveStartedTriggers().ConfigureAwait(false);
+                await _triggerSession.RaiseAfterSaveCompletedTriggers().ConfigureAwait(false);
 
                 return result;
             }

@@ -99,7 +99,7 @@ namespace EntityFrameworkCore.Triggered
             }
         }
 
-        public static async Task RaiseBeforeCommitStartedTriggers(this ITriggerSession triggerSession, CancellationToken cancellationToken = default)
+        public static async Task RaiseBeforeCommitCompletedTriggers(this ITriggerSession triggerSession, CancellationToken cancellationToken = default)
         {
             if (triggerSession == null)
             {
@@ -111,11 +111,11 @@ namespace EntityFrameworkCore.Triggered
                 throw new InvalidOperationException("Method is implemented for concrete TriggerSessions only");
             }
 
-            var triggers = typedTriggerSession.DiscoveryService.ServiceProvider.GetServices<IBeforeCommitStartedTrigger>();
+            var triggers = typedTriggerSession.DiscoveryService.ServiceProvider.GetServices<IBeforeCommitCompletedTrigger>();
 
             foreach (var trigger in triggers)
             {
-                await trigger.BeforeCommitStarted(cancellationToken);
+                await trigger.BeforeCommitCompleted(cancellationToken);
             }
         }
 
@@ -139,7 +139,7 @@ namespace EntityFrameworkCore.Triggered
             }
         }
 
-        public static async Task RaiseAfterCommitStartedTriggers(this ITriggerSession triggerSession, CancellationToken cancellationToken = default)
+        public static async Task RaiseAfterCommitCompletedTriggers(this ITriggerSession triggerSession, CancellationToken cancellationToken = default)
         {
             if (triggerSession == null)
             {
@@ -151,11 +151,11 @@ namespace EntityFrameworkCore.Triggered
                 throw new InvalidOperationException("Method is implemented for concrete TriggerSessions only");
             }
 
-            var triggers = typedTriggerSession.DiscoveryService.ServiceProvider.GetServices<IAfterCommitStartedTrigger>();
+            var triggers = typedTriggerSession.DiscoveryService.ServiceProvider.GetServices<IAfterCommitCompletedTrigger>();
 
             foreach (var trigger in triggers)
             {
-                await trigger.AfterCommitStarted(cancellationToken);
+                await trigger.AfterCommitCompleted(cancellationToken);
             }
         }
 

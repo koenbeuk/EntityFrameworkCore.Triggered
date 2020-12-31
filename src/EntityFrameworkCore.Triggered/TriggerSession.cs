@@ -136,13 +136,13 @@ namespace EntityFrameworkCore.Triggered
             return RaiseTriggers(typeof(IBeforeSaveTrigger<>), null, strategy, entityType => new BeforeSaveTriggerDescriptor(entityType), cancellationToken);
         }
 
-        public async Task RaiseBeforeSaveStartedTriggers(CancellationToken cancellationToken)
+        public async Task RaiseBeforeSaveCompletedTriggers(CancellationToken cancellationToken)
         {
-            var triggers = _triggerDiscoveryService.ServiceProvider.GetServices<IBeforeSaveStartedTrigger>();
+            var triggers = _triggerDiscoveryService.ServiceProvider.GetServices<IBeforeSaveCompletedTrigger>();
 
             foreach (var trigger in triggers)
             {
-                await trigger.BeforeSaveStarted(cancellationToken);
+                await trigger.BeforeSaveCompleted(cancellationToken);
             }
         }
 
@@ -168,13 +168,13 @@ namespace EntityFrameworkCore.Triggered
             return RaiseTriggers(typeof(IAfterSaveTrigger<>), null, _afterSaveTriggerContextDiscoveryStrategy, entityType => new AfterSaveTriggerDescriptor(entityType), cancellationToken);
         }
 
-        public async Task RaiseAfterSaveStartedTriggers(CancellationToken cancellationToken)
+        public async Task RaiseAfterSaveCompletedTriggers(CancellationToken cancellationToken)
         {
-            var triggers = _triggerDiscoveryService.ServiceProvider.GetServices<IAfterSaveStartedTrigger>();
+            var triggers = _triggerDiscoveryService.ServiceProvider.GetServices<IAfterSaveCompletedTrigger>();
 
             foreach (var trigger in triggers)
             {
-                await trigger.AfterSaveStarted(cancellationToken);
+                await trigger.AfterSaveCompleted(cancellationToken);
             }
         }
 
@@ -198,13 +198,13 @@ namespace EntityFrameworkCore.Triggered
             return RaiseTriggers(typeof(IAfterSaveFailedTrigger<>), exception, _afterSaveFailedTriggerContextDiscoveryStrategy, entityType => new AfterSaveFailedTriggerDescriptor(entityType, exception), cancellationToken);
         }
 
-        public async Task RaiseAfterSaveFailedStartedTriggers(Exception exception, CancellationToken cancellationToken)
+        public async Task RaiseAfterSaveFailedCompletedTriggers(Exception exception, CancellationToken cancellationToken)
         {
-            var triggers = _triggerDiscoveryService.ServiceProvider.GetServices<IAfterSaveFailedStartedTrigger>();
+            var triggers = _triggerDiscoveryService.ServiceProvider.GetServices<IAfterSaveFailedCompletedTrigger>();
 
             foreach (var trigger in triggers)
             {
-                await trigger.AfterSaveFailedStarted(exception, cancellationToken);
+                await trigger.AfterSaveFailedCompleted(exception, cancellationToken);
             }
         }
 

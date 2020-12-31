@@ -8,13 +8,13 @@ namespace EntityFrameworkCore.Triggered.Tests.Stubs
     {
         public int RaiseBeforeSaveStartingTriggersCalls;
         public int RaiseBeforeSaveTriggersCalls;
-        public int RaiseBeforeSaveStartedTriggersCalls;
+        public int RaiseBeforeSaveCompletingTriggersCalls;
         public int RaiseAfterSaveStartingTriggersCalls;
         public int RaiseAfterSaveTriggersCalls;
-        public int RaiseAfterSaveStartedTriggersCalls;
+        public int RaiseAfterSaveCompletedTriggersCalls;
         public int RaiseAfterSaveFailedStartingTriggersCalls;
         public int RaiseAfterSaveFailedTriggersCalls;
-        public int RaiseAfterSaveFailedStartedTriggersCalls;
+        public int RaiseAfterSaveFailedCompletedTriggersCalls;
         public int CaptureDiscoveredChangesCalls;
         public int DiscoverChangesCalls;
         public int DisposeCalls;
@@ -40,9 +40,9 @@ namespace EntityFrameworkCore.Triggered.Tests.Stubs
             return Task.CompletedTask;
         }
 
-        public Task RaiseAfterSaveFailedStartedTriggers(Exception exception, CancellationToken cancellationToken = default)
+        public Task RaiseAfterSaveFailedCompletedTriggers(Exception exception, CancellationToken cancellationToken = default)
         {
-            RaiseAfterSaveFailedStartedTriggersCalls += 1;
+            RaiseAfterSaveFailedCompletedTriggersCalls += 1;
             return Task.CompletedTask;
         }
 
@@ -58,9 +58,9 @@ namespace EntityFrameworkCore.Triggered.Tests.Stubs
             return Task.CompletedTask;
         }
 
-        public Task RaiseBeforeSaveStartedTriggers(CancellationToken cancellationToken = default)
+        public Task RaiseBeforeSaveCompletedTriggers(CancellationToken cancellationToken = default)
         {
-            RaiseBeforeSaveStartedTriggersCalls += 1;
+            RaiseBeforeSaveCompletingTriggersCalls += 1;
             return Task.CompletedTask;
         }
 
@@ -76,9 +76,9 @@ namespace EntityFrameworkCore.Triggered.Tests.Stubs
             return Task.CompletedTask;
         }
 
-        public Task RaiseAfterSaveStartedTriggers(CancellationToken cancellationToken = default)
+        public Task RaiseAfterSaveCompletedTriggers(CancellationToken cancellationToken = default)
         {
-            RaiseAfterSaveStartedTriggersCalls += 1;
+            RaiseAfterSaveCompletedTriggersCalls += 1;
             return Task.CompletedTask;
         }
 

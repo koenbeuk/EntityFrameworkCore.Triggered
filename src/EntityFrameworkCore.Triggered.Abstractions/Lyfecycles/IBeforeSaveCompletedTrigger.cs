@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 
 namespace EntityFrameworkCore.Triggered.Lyfecycles
 {
-    public interface IBeforeSaveStartedTrigger
+    public interface IBeforeSaveCompletedTrigger
     {
-        Task BeforeSaveStarted(CancellationToken cancellationToken);
+        Task BeforeSaveCompleted(CancellationToken cancellationToken);
     }
 }

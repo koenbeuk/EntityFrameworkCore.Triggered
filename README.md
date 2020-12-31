@@ -90,15 +90,15 @@ public class Startup
 }
 ```
 
-### Recursion (Cascading changes)
-`BeforeSaveTrigger<TEntity>` supports recursion. This is useful since it allows your triggers to subsequently modify the same DbContext entity graph and have it raise additional triggers. By default this behavior is turned on and protected from infinite loops by limiting the number of recursion runs. If you don't like this behavior or want to change it, you can do so by:
+### Cascading changes (previously called Recursion)
+`BeforeSaveTrigger<TEntity>` supports cascading triggers. This is useful since it allows your triggers to subsequently modify the same DbContext entity graph and have it raise additional triggers. By default this behavior is turned on and protected from infinite loops by limiting the number of cascading cycles. If you don't like this behavior or want to change it, you can do so by:
 ```csharp
 optionsBuilder.UseTriggers(triggerOptions => {
-    triggerOptions.RecursionMode(RecursionMode.EntityAndType).MaxRecusion(20)
+    triggerOptions.CascadeBehavior(CascadeBehavior.EntityAndType).MaxRecusion(20)
 })
 ```
 
-Currently there are 2 types of recursion strategies out of the box, with the support to providing your own:  `NoRecursion` and `EntityAndTypeRecursion` (default). The former simply disables recursion whereas the latter recursively detects changes and raises triggers for those changes for as long as the combination of the Entity and the change type is unique. `EntityAndTypeRecursion` is the recommended and default recursion strategy.
+Currently there are 2 types of cascading strategies out of the box, with the support to providing your own:  `NoCascade` and `EntityAndType` (default). The former simply disables cascading whereas the latter cascades triggers for as long as the combination of the Entity and the change type is unique. `EntityAndType` is the recommended and default cascading strategy.
 
 ### Inheritance
 Triggers support inheritance and sort execution of these triggers based on least concrete to most concrete. Given the following example:
@@ -124,7 +124,7 @@ Triggers shine in combination with DI. When configured, triggers are resolved fr
 - DEPRECATED: Use one of our integration packages. Currently we only support direct integration with ASP.NET Core through the [EntityFrameworkCore.Triggered.AspNetCore](https://www.nuget.org/packages/EntityFrameworkCore.Triggered.AspNetCore/) nuget package. This will use the IHttpContextAccessor to access the scoped ServiceProvider of the current request. To use this, please make sure to either call: `services.AddAspNetCoreTriggeredDbContext<MyTriggeredDbContext>()` or `triggerOptions.UseAspNetCoreIntegration()`.
 
 ### Error handling
-In some cases, you want to be triggered when a DbUpdateException occurs. For this purpose we have `IAfterSaveFailedTrigger<TEntity>`. This gets triggered for all entities as part of the change set when DbContext.SaveChanges raises a DbUpdateException. The handling method: `AfterSaveFailed` in turn gets called with the trigger context containing the entity as well as the exception. You may attempt to call `DbContext.SaveChanges` again from within this trigger. This will not raise triggers that are already raised and only raise triggers that have since become relevant (based on recursive configuration). 
+In some cases, you want to be triggered when a DbUpdateException occurs. For this purpose we have `IAfterSaveFailedTrigger<TEntity>`. This gets triggered for all entities as part of the change set when DbContext.SaveChanges raises a DbUpdateException. The handling method: `AfterSaveFailed` in turn gets called with the trigger context containing the entity as well as the exception. You may attempt to call `DbContext.SaveChanges` again from within this trigger. This will not raise triggers that are already raised and only raise triggers that have since become relevant (based on the cascading configuration). 
 
 ### Transactions
 Many database providers support the concept of a Transaction. By default when using SqlServer with EntityFrameworkCore, any call to SaveChanges will be wrapped in a transaction. Any changes made in `IBeforeSaveTrigger<TEntity>` will be included within the transaction and changes made in `IAfterSaveTrigger<TEntity>` will not. However, it is possible for the user to [explicitly control transactions](https://docs.microsoft.com/en-us/ef/core/saving/transactions). Triggers are extensible and one such extension are [Transactional Triggers](https://www.nuget.org/packages/EntityFrameworkCore.Triggered.Transactions/). In order to use this plugin you will have to implement a few steps:
@@ -174,4 +174,4 @@ public class ApplicationDbContext : DbContext {
 
 ### Similar products
 - [Ramses](https://github.com/JValck/Ramses): Lifecycle hooks for EFCore. A simple yet effective way of reacting to changes. Great for situations where you simply want to make sure that a property is set before saving to the database. Limited though in features as there is no dependency injection, no async support, no extensibility model and lifecycle hooks need to be implemented on the entity type itself.
-- [EntityFramework.Triggers](https://github.com/NickStrupat/EntityFramework.Triggers). Add triggers to your entities with insert, update, and delete events. There are three events for each: before, after, and upon failure. A fine alternative to EntityFrameworkCore.Triggered. It has been around for some time and has support for EF6 and boast a decent community. There are plenty of trigger types to opt into including the option to cancel SaveChanges from within a trigger. A big drawback however is that it does not support recursion so that triggers can never be relied on to enforce a domain constraint.
+- [EntityFramework.Triggers](https://github.com/NickStrupat/EntityFramework.Triggers). Add triggers to your entities with insert, update, and delete events. There are three events for each: before, after, and upon failure. A fine alternative to EntityFrameworkCore.Triggered. It has been around for some time and has support for EF6 and boast a decent community. There are plenty of trigger types to opt into including the option to cancel SaveChanges from within a trigger. A big drawback however is that it does not support cascading triggers so that triggers can never be relied on to enforce a domain constraint.

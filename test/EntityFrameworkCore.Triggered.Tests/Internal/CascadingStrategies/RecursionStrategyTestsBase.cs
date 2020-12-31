@@ -1,12 +1,11 @@
 ﻿using EntityFrameworkCore.Triggered.Internal;
 using EntityFrameworkCore.Triggered.Internal.CascadeStrategies;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 using Xunit;
 
-namespace EntityFrameworkCore.Triggered.Tests.Internal.CascadingStrategies
+namespace EntityFrameworkCore.Triggered.Tests.Internal.CascadeStrategies
 {
-    public abstract class CascadingStrategyTestsBase
+    public abstract class CascadeStrategyTestsBase
     {
         class TestModel { public int Id { get; set; } public int Property1 { get; set; } }
 
@@ -17,9 +16,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal.CascadingStrategies
             protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
             {
                 optionsBuilder.UseInMemoryDatabase("test");
-                optionsBuilder.ConfigureWarnings(warningOptions => {
-                    warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
-                });
+                optionsBuilder.EnableServiceProviderCaching(false);
             }
         }
 

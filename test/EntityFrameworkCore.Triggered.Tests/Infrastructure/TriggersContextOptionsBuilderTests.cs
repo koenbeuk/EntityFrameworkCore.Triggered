@@ -18,23 +18,23 @@ namespace EntityFrameworkCore.Triggered.Tests.Infrastructure
         }
 
         [Fact]
-        public void RecursionMode_Sticks()
+        public void CascadingMode_Sticks()
         {
             var (subject, extensionAccessor) = CreateSubject();
 
-            subject.RecursionMode(RecursionMode.None);
+            subject.CascadeBehavior(CascadeBehavior.None);
 
-            Assert.Equal(RecursionMode.None, extensionAccessor().RecursionMode);
+            Assert.Equal(CascadeBehavior.None, extensionAccessor().CascadeBehavior);
         }
 
         [Fact]
-        public void MaxRecursion_Sticks()
+        public void MaxCascadingCycles_Sticks()
         {
             var (subject, extensionAccessor) = CreateSubject();
 
-            subject.MaxRecusion(10);
+            subject.MaxCascadeCycles(10);
 
-            Assert.Equal(10, extensionAccessor().MaxRecursion);
+            Assert.Equal(10, extensionAccessor().MaxCascadeCycles);
         }
 
         [Fact]

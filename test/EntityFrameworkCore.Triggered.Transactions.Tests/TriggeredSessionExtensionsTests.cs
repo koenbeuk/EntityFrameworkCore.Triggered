@@ -173,14 +173,14 @@ namespace EntityFrameworkCore.Triggered.Transactions.Tests
         }
 
         [Fact]
-        public void RaiseBeforeCommitStartedTriggers_CallsTriggers()
+        public void RaiseBeforeCommitCompletedTriggers_CallsTriggers()
         {
             using var context = new TestDbContext();
             var session = CreateSession(context);
 
-            session.RaiseBeforeCommitStartedTriggers().GetAwaiter().GetResult();
+            session.RaiseBeforeCommitCompletedTriggers().GetAwaiter().GetResult();
 
-            Assert.Equal(1, context.TriggerStub.BeforeCommitStartedInvocationsCount);
+            Assert.Equal(1, context.TriggerStub.BeforeCommitCompletedInvocationsCount);
         }
 
         [Fact]
@@ -195,14 +195,14 @@ namespace EntityFrameworkCore.Triggered.Transactions.Tests
         }
 
         [Fact]
-        public void RaiseAfterforeCommitStartedTrigger_CallsTriggers()
+        public void RaiseAfterCommitCompletedTrigger_CallsTriggers()
         {
             using var context = new TestDbContext();
             var session = CreateSession(context);
 
-            session.RaiseAfterCommitStartedTriggers().GetAwaiter().GetResult();
+            session.RaiseAfterCommitCompletedTriggers().GetAwaiter().GetResult();
 
-            Assert.Equal(1, context.TriggerStub.AfterCommitStartedInvocationsCount);
+            Assert.Equal(1, context.TriggerStub.AfterCommitCompletedInvocationsCount);
         }
     }
 }

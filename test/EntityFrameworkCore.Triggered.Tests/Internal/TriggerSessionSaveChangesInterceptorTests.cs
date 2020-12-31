@@ -90,14 +90,14 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
 
 
         [Fact]
-        public void SaveChanges_RaisesBeforeSaveChangesStartedTriggers()
+        public void SaveChanges_RaisesBeforeSaveChangesCompletedTriggers()
         {
             var subject = new TestDbContext();
             var triggerServiceStub = (TriggerServiceStub)subject.GetService<ITriggerService>();
 
             subject.SaveChanges();
 
-            Assert.Equal(1, triggerServiceStub.LastSession.RaiseBeforeSaveStartedTriggersCalls);
+            Assert.Equal(1, triggerServiceStub.LastSession.RaiseBeforeSaveCompletingTriggersCalls);
         }
 
         [Fact]
@@ -113,14 +113,14 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
 
 
         [Fact]
-        public void SaveChanges_RaisesAfterSaveChangesStartedTriggers()
+        public void SaveChanges_RaisesAfterSaveChangesCompletedTriggers()
         {
             var subject = new TestDbContext();
             var triggerServiceStub = (TriggerServiceStub)subject.GetService<ITriggerService>();
 
             subject.SaveChanges();
 
-            Assert.Equal(1, triggerServiceStub.LastSession.RaiseAfterSaveStartedTriggersCalls);
+            Assert.Equal(1, triggerServiceStub.LastSession.RaiseAfterSaveCompletedTriggersCalls);
         }
 
         [Fact]
@@ -149,7 +149,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
         }
 
         [Fact]
-        public void SaveChanges_OnDbUpdateException_RaisesAfterSaveFailedStartedTriggers()
+        public void SaveChanges_OnDbUpdateException_RaisesAfterSaveFailedCompletedTriggers()
         {
             using var connection = new SqliteConnection("DataSource=:memory:");
             connection.Open();
@@ -170,7 +170,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
             });
 
             Assert.Throws<DbUpdateException>(() => subject.SaveChanges());
-            Assert.Equal(1, triggerServiceStub.LastSession.RaiseAfterSaveFailedStartedTriggersCalls);
+            Assert.Equal(1, triggerServiceStub.LastSession.RaiseAfterSaveFailedCompletedTriggersCalls);
         }
 
         [Fact]
@@ -186,14 +186,14 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
 
 
         [Fact]
-        public async Task SaveChangesAsync_RaisesBeforeSaveChangesStartedTriggers()
+        public async Task SaveChangesAsync_RaisesBeforeSaveChangesCompletedTriggers()
         {
             var subject = new TestDbContext();
             var triggerServiceStub = (TriggerServiceStub)subject.GetService<ITriggerService>();
 
             await subject.SaveChangesAsync();
 
-            Assert.Equal(1, triggerServiceStub.LastSession.RaiseBeforeSaveStartedTriggersCalls);
+            Assert.Equal(1, triggerServiceStub.LastSession.RaiseBeforeSaveCompletingTriggersCalls);
         }
 
         [Fact]
@@ -209,14 +209,14 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
 
 
         [Fact]
-        public async Task SaveChangesAsync_RaisesAfterSaveChangesStartedTriggers()
+        public async Task SaveChangesAsync_RaisesAfterSaveChangesCompletedTriggers()
         {
             var subject = new TestDbContext();
             var triggerServiceStub = (TriggerServiceStub)subject.GetService<ITriggerService>();
 
             await subject.SaveChangesAsync();
 
-            Assert.Equal(1, triggerServiceStub.LastSession.RaiseAfterSaveStartedTriggersCalls);
+            Assert.Equal(1, triggerServiceStub.LastSession.RaiseAfterSaveCompletedTriggersCalls);
         }
 
         [Fact]
@@ -245,7 +245,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
         }
 
         [Fact]
-        public async Task SaveChangesAsync_OnDbUpdateException_RaisesAfterSaveFailedStartedTriggers()
+        public async Task SaveChangesAsync_OnDbUpdateException_RaisesAfterSaveFailedCompletedTriggers()
         {
             using var connection = new SqliteConnection("DataSource=:memory:");
             connection.Open();
@@ -266,7 +266,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
             });
 
             await Assert.ThrowsAsync<DbUpdateException>(() => subject.SaveChangesAsync());
-            Assert.Equal(1, triggerServiceStub.LastSession.RaiseAfterSaveFailedStartedTriggersCalls);
+            Assert.Equal(1, triggerServiceStub.LastSession.RaiseAfterSaveFailedCompletedTriggersCalls);
         }
 
         [Fact]

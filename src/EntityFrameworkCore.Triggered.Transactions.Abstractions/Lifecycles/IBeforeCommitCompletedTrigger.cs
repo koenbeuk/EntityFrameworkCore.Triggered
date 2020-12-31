@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace EntityFrameworkCore.Triggered.Transactions.Abstractions.Lifecycles
 {
-    public interface IAfterCommitStartedTrigger
+    public interface IBeforeCommitCompletedTrigger
     {
-        Task AfterCommitStarted(CancellationToken cancellationToken);
+        Task BeforeCommitCompleted(CancellationToken cancellationToken);
     }
 }

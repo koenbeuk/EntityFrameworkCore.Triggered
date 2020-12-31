@@ -11,11 +11,11 @@ namespace EntityFrameworkCore.Triggered
         /// </summary>
         void DiscoverChanges();
         Task RaiseBeforeSaveStartingTriggers(CancellationToken cancellationToken = default);
-        Task RaiseBeforeSaveStartedTriggers(CancellationToken cancellationToken = default);
+        Task RaiseBeforeSaveCompletedTriggers(CancellationToken cancellationToken = default);
         Task RaiseAfterSaveFailedStartingTriggers(Exception exception, CancellationToken cancellationToken = default);
-        Task RaiseAfterSaveFailedStartedTriggers(Exception exception, CancellationToken cancellationToken = default); 
+        Task RaiseAfterSaveFailedCompletedTriggers(Exception exception, CancellationToken cancellationToken = default); 
         Task RaiseAfterSaveStartingTriggers(CancellationToken cancellationToken = default);
-        Task RaiseAfterSaveStartedTriggers(CancellationToken cancellationToken = default);
+        Task RaiseAfterSaveCompletedTriggers(CancellationToken cancellationToken = default);
         /// <summary>
         /// Makes a snapshot of all changes in the DbContext and invokes BeforeSaveTriggers while detecting and cascading based on the cascade settings until all changes have been processed
         /// </summary>

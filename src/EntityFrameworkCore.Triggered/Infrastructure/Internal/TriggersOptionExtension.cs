@@ -103,11 +103,11 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
                 typeof(IAfterSaveTrigger<>),
                 typeof(IAfterSaveFailedTrigger<>),
                 typeof(IBeforeSaveStartingTrigger),
-                typeof(IBeforeSaveStartedTrigger),
+                typeof(IBeforeSaveCompletedTrigger),
                 typeof(IAfterSaveFailedStartingTrigger),
-                typeof(IAfterSaveFailedStartedTrigger),
+                typeof(IAfterSaveFailedCompletedTrigger),
                 typeof(IAfterSaveStartingTrigger),
-                typeof(IAfterSaveStartedTrigger)
+                typeof(IAfterSaveCompletedTrigger)
             };
         }
 

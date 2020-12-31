@@ -20,9 +20,9 @@ namespace Microsoft.EntityFrameworkCore
                 .AddTriggerType(typeof(IBeforeRollbackTrigger<>))
                 .AddTriggerType(typeof(IAfterRollbackTrigger<>))
                 .AddTriggerType(typeof(IBeforeCommitStartingTrigger))
-                .AddTriggerType(typeof(IBeforeCommitStartedTrigger))
+                .AddTriggerType(typeof(IBeforeCommitCompletedTrigger))
                 .AddTriggerType(typeof(IAfterCommitStartingTrigger))
-                .AddTriggerType(typeof(IAfterCommitStartedTrigger));
+                .AddTriggerType(typeof(IAfterCommitCompletedTrigger));
         }
     }
 }

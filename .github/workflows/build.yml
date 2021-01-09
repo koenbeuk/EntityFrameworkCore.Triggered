@@ -1,6 +1,6 @@
 # Credits due: by https://dusted.codes/github-actions-for-dotnet-core-nuget-packages#branch-and-pull-request-trigger
 
-name: .NET Core
+name: Build
 
 on:
   push:

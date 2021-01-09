@@ -1,0 +1,53 @@
+# Credits due: by https://dusted.codes/github-actions-for-dotnet-core-nuget-packages#branch-and-pull-request-trigger
+
+name: Release
+
+on:
+  release:
+    types:
+      - published
+    
+env:
+  # Stop wasting time caching packages
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  # Disable sending usage data to Microsoft
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  # GitHub Packages Feed settings
+  GITHUB_FEED: https://nuget.pkg.github.com/koenbeuk/
+  GITHUB_USER: koenbeuk
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  # Official NuGet Feed settings
+  NUGET_FEED: https://api.nuget.org/v3/index.json
+  NUGET_KEY: ${{ secrets.NUGET_KEY }}
+  
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 5.0.x
+      - name: Create Release NuGet package
+        run: |
+          arrTag=(${GITHUB_REF//\// })
+          VERSION="${arrTag[2]}"
+          echo Version: $VERSION
+          CONFIGURATION=$([ "${VERSION:0:2}" == "v1" ] && echo "ReleaseV1" || echo "Release")
+          VERSION="${VERSION//v}"
+          echo Clean Version: $VERSION
+          echo Configuration: $CONFIGURATION
+          dotnet pack -v normal -c $CONFIGURATION --include-symbols --include-source -p:PackageVersion=$VERSION -o nupkg EntityFrameworkCore.Triggered.Core.slnf
+      - name: Push to GitHub Feed
+        run: |
+          for f in ./nupkg/*.nupkg
+          do
+            dotnet nuget push $f --source $GITHUB_FEED --api-key ${{github.token}} --skip-duplicate --no-symbols true
+          done
+      - name: Push to NuGet Feed
+        run: |
+          for f in ./nupkg/*.nupkg
+          do
+            dotnet nuget push $f --source $NUGET_FEED --skip-duplicate --api-key $NUGET_KEY
+          done

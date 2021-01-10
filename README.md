@@ -118,6 +118,27 @@ and the order in which triggers are registered, a trigger can also implement the
 ### Error handling
 In some cases, you want to be triggered when a DbUpdateException occurs. For this purpose we have `IAfterSaveFailedTrigger<TEntity>`. This gets triggered for all entities as part of the change set when DbContext.SaveChanges raises a DbUpdateException. The handling method: `AfterSaveFailed` in turn gets called with the trigger context containing the entity as well as the exception. You may attempt to call `DbContext.SaveChanges` again from within this trigger. This will not raise triggers that are already raised and only raise triggers that have since become relevant (based on the cascading configuration). 
 
+### Lifecycle triggers
+Starting with version 2.1.0, we added support for Lifecycle triggers. These triggers are invoked once per trigger type per SaveChanges lifecyle and reside within the   `EntityFrameworkCore.Triggered.Lifecycles` namespace. These can be used to run something before/after all individual triggers have run. Consider the following example:
+```csharp
+public BulkReportTrigger : IAfterSaveTrigger<Email>, IAfterSaveCompletedTrigger {
+    private List<string> _emailAddresses = new List<string>();
+    
+    // This may be invoked multiple times within the same SaveChanges call if there are multiple emails
+    public Task AfterSave(ITriggerContext<Email> context, CancellationToken cancellationToken) { 
+        if (context.ChangeType == ChangeType.Added) { 
+            this._emailAddresses.Add(context.Address);
+            return Task.CompletedTask;
+        }
+    }
+    
+    public Task AfterSaveCompleted(CancellationToken cancellationToken) {
+        Console.WriteLine($"We've sent {_emailAddresses.Count()} emails to {_emailAddresses.Distinct().Count()}" distinct email addresses");
+        return Task.CompletedTask;
+    }
+}
+```
+
 ### Transactions
 Many database providers support the concept of a Transaction. By default when using SqlServer with EntityFrameworkCore, any call to SaveChanges will be wrapped in a transaction. Any changes made in `IBeforeSaveTrigger<TEntity>` will be included within the transaction and changes made in `IAfterSaveTrigger<TEntity>` will not. However, it is possible for the user to [explicitly control transactions](https://docs.microsoft.com/en-us/ef/core/saving/transactions). Triggers are extensible and one such extension are [Transactional Triggers](https://www.nuget.org/packages/EntityFrameworkCore.Triggered.Transactions/). In order to use this plugin you will have to implement a few steps:
 ```csharp

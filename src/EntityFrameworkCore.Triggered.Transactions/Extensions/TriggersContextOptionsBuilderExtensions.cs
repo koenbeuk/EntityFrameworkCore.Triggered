@@ -1,7 +1,7 @@
 ﻿using System;
 using EntityFrameworkCore.Triggered.Infrastructure;
 using EntityFrameworkCore.Triggered.Transactions;
-using EntityFrameworkCore.Triggered.Transactions.Abstractions.Lifecycles;
+using EntityFrameworkCore.Triggered.Transactions.Lifecycles;
 
 namespace Microsoft.EntityFrameworkCore
 {

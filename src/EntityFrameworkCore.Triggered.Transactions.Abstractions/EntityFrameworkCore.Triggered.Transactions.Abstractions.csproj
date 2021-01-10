@@ -1,7 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
+  <PropertyGroup>
+    <RootNamespace>EntityFrameworkCore.Triggered.Transactions</RootNamespace>
+  </PropertyGroup>
+  
   <ItemGroup>
     <ProjectReference Include="..\EntityFrameworkCore.Triggered.Abstractions\EntityFrameworkCore.Triggered.Abstractions.csproj" />
   </ItemGroup>
-
 </Project>

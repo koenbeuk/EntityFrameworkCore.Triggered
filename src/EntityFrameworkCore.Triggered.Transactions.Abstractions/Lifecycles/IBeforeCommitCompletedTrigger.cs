@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace EntityFrameworkCore.Triggered.Transactions.Abstractions.Lifecycles
+namespace EntityFrameworkCore.Triggered.Transactions.Lifecycles
 {
     public interface IBeforeCommitCompletedTrigger
     {

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using EntityFrameworkCore.Triggered.Transactions.Abstractions.Lifecycles;
+using EntityFrameworkCore.Triggered.Transactions.Lifecycles;
 
 namespace EntityFrameworkCore.Triggered.Transactions.Tests.Stubs
 {

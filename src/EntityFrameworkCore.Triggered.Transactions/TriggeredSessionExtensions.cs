@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using EntityFrameworkCore.Triggered.Internal;
 using EntityFrameworkCore.Triggered.Transactions;
-using EntityFrameworkCore.Triggered.Transactions.Abstractions.Lifecycles;
+using EntityFrameworkCore.Triggered.Transactions.Lifecycles;
 using EntityFrameworkCore.Triggered.Transactions.Internal;
 using Microsoft.Extensions.DependencyInjection;
 

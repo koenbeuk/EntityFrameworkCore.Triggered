@@ -11,8 +11,6 @@ namespace EntityFrameworkCore.Triggered.Extensions.Tests
 {
     public class ServiceCollectionExtensionsTests
     {
-        class SampleTrigger : Trigger<object> {  }
-
         public static IEnumerable<object[]> Lifetimes()
         {
             yield return new object[] { ServiceLifetime.Transient };
@@ -22,15 +20,9 @@ namespace EntityFrameworkCore.Triggered.Extensions.Tests
 
         public static IEnumerable<object[]> TriggerTypes()
         {
-            yield return new object[] { typeof(IBeforeSaveStartingTrigger) };
             yield return new object[] { typeof(IBeforeSaveTrigger<object>) };
-            yield return new object[] { typeof(IBeforeSaveCompletedTrigger) };
-            yield return new object[] { typeof(IAfterSaveStartingTrigger) };
             yield return new object[] { typeof(IAfterSaveTrigger<object>) };
-            yield return new object[] { typeof(IAfterSaveCompletedTrigger) };
-            yield return new object[] { typeof(IAfterSaveFailedStartingTrigger) };
             yield return new object[] { typeof(IAfterSaveFailedTrigger<object>) };
-            yield return new object[] { typeof(IAfterSaveFailedCompletedTrigger) };
         }
 
         [Theory]

@@ -5,6 +5,7 @@
     <LangVersion>9.0</LangVersion>
     <Nullable>enable</Nullable>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <Configurations>Debug;DebugV1;Release;ReleaseV1</Configurations>
   </PropertyGroup>
 
   <PropertyGroup>

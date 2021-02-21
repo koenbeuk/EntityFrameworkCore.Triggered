@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using EntityFrameworkCore.Triggered.Internal;
 using EntityFrameworkCore.Triggered.Internal.CascadeStrategies;
-using EntityFrameworkCore.Triggered.Lyfecycles;
+using EntityFrameworkCore.Triggered.Lifecycles;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;

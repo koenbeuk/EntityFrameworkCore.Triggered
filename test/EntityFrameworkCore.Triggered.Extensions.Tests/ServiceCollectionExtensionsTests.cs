@@ -34,11 +34,11 @@ namespace EntityFrameworkCore.Triggered.Extensions.Tests
         public class TestDbContext : DbContext
         {
             public TestDbContext(DbContextOptions options)
-                : base (options)
+                : base(options)
             {
             }
 
-            public DbSet<TestModel> TestModels { get; set; }            
+            public DbSet<TestModel> TestModels { get; set; }
         }
 
         [Theory]
@@ -89,18 +89,16 @@ namespace EntityFrameworkCore.Triggered.Extensions.Tests
 
             Assert.Equal(5, serviceCollection.Count);
         }
-        
-        [Fact]
-        public async Task SaveChanges_WithAddedEntity_RaisesAllTriggerTypes()
+
+        protected async Task SaveChanges_TriggeredAddedThroughDI_Template(Func<IServiceCollection, IServiceCollection> transform)
         {
-            var serviceProvider = new ServiceCollection()
+            var serviceProvider = transform(new ServiceCollection()
                 .AddTriggeredDbContext<TestDbContext>(options => {
                     options.UseInMemoryDatabase("test");
                     options.ConfigureWarnings(warningOptions => {
                         warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
                     });
-                })
-                .AddTrigger<SampleTrigger>()
+                }))
                 .BuildServiceProvider();
 
             using var dbContext = serviceProvider.GetRequiredService<TestDbContext>();
@@ -116,5 +114,14 @@ namespace EntityFrameworkCore.Triggered.Extensions.Tests
             Assert.Equal(1, trigger.AfterSaveCalls);
             Assert.Equal(1, trigger.AfterSaveAsyncCalls);
         }
+
+        [Fact]
+        public Task SaveChanges_ExplicitlyAddedTriggerThroughDI_RaisesAllTriggerTypes()
+            => SaveChanges_TriggeredAddedThroughDI_Template(x => x.AddTrigger<SampleTrigger>());
+
+
+        [Fact]
+        public Task SaveChanges_DiscoveredTriggerThroughDI_RaisesAllTriggerTypes()
+            => SaveChanges_TriggeredAddedThroughDI_Template(x => x.AddAssemblyTriggers());
     }
 }

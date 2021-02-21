@@ -10,11 +10,6 @@ namespace EntityFrameworkCore.Triggered.Extensions.Tests
 {
     public class SampleTrigger : Trigger<object>, IBeforeSaveStartingTrigger
     {
-        public SampleTrigger()
-        {
-
-        }
-
         public int BeforeSaveCalls;
         public int BeforeSaveAsyncCalls;
 

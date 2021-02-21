@@ -3,7 +3,7 @@ using System.Linq;
 using System.Reflection;
 using EntityFrameworkCore.Triggered;
 using EntityFrameworkCore.Triggered.Infrastructure.Internal;
-using EntityFrameworkCore.Triggered.Lyfecycles;
+using EntityFrameworkCore.Triggered.Lifecycles;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Microsoft.Extensions.DependencyInjection

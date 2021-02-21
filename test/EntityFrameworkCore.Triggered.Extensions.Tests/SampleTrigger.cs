@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using EntityFrameworkCore.Triggered.Lyfecycles;
+using EntityFrameworkCore.Triggered.Lifecycles;
 
 namespace EntityFrameworkCore.Triggered.Extensions.Tests
 {

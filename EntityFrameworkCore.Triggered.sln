@@ -59,11 +59,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "4 - BlazorTests", "samples\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityFrameworkCore.Triggered.Extensions", "src\EntityFrameworkCore.Triggered.Extensions\EntityFrameworkCore.Triggered.Extensions.csproj", "{27A4A75B-112E-4B3E-867A-5F0D27F74CF8}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3289E5F3-BA14-43E9-A203-1EFE4A064290}"
-	ProjectSection(SolutionItems) = preProject
-		.editorconfig = .editorconfig
-	EndProjectSection
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityFrameworkCore.Triggered.Extensions.Tests", "test\EntityFrameworkCore.Triggered.Extensions.Tests\EntityFrameworkCore.Triggered.Extensions.Tests.csproj", "{57F94F2C-81C4-4304-8F5A-FD4F17A2698B}"
 EndProject
 Global

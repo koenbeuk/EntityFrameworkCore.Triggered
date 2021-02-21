@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using EntityFrameworkCore.Triggered.Internal;
-using EntityFrameworkCore.Triggered.Lyfecycles;
+using EntityFrameworkCore.Triggered.Lifecycles;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 

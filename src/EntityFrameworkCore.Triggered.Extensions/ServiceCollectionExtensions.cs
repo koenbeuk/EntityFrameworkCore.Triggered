@@ -34,7 +34,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 foreach (var customTrigger in customTriggers)
                 {
-                    services.TryAdd(new ServiceDescriptor(customTrigger, triggerImplementationType, ServiceLifetime.Transient)); ;
+                    services.TryAdd(new ServiceDescriptor(customTrigger, sp => sp.GetService(triggerImplementationType), ServiceLifetime.Transient)); ;
                 }
             }
         }
@@ -42,20 +42,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddTrigger<TTrigger>(this IServiceCollection services, ServiceLifetime lifetime = ServiceLifetime.Scoped)
             where TTrigger : class
         {
-            switch (lifetime)
-            {
-                case ServiceLifetime.Transient:
-                    services.AddTransient<TTrigger>();
-                    break;
-                case ServiceLifetime.Scoped:
-                    services.AddScoped<TTrigger>();
-                    break;
-                case ServiceLifetime.Singleton:
-                    services.AddSingleton<TTrigger>();
-                    break;
-                default:
-                    throw new InvalidOperationException("Unknown lifetime");
-            }
+            services.Add(new ServiceDescriptor(typeof(TTrigger), typeof(TTrigger), lifetime));
 
             RegisterTriggerTypes(typeof(TTrigger), services);
 
@@ -74,6 +61,9 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddAssemblyTriggers(this IServiceCollection services)
             => AddAssemblyTriggers(services, Assembly.GetCallingAssembly());
 
+        public static IServiceCollection AddAssemblyTriggers(this IServiceCollection services, ServiceLifetime lifetime)
+            => AddAssemblyTriggers(services, lifetime, Assembly.GetCallingAssembly());
+
         public static IServiceCollection AddAssemblyTriggers(this IServiceCollection services, params Assembly[] assemblies)
             => AddAssemblyTriggers(services, ServiceLifetime.Scoped, assemblies);
 
@@ -84,17 +74,15 @@ namespace Microsoft.Extensions.DependencyInjection
                 throw new ArgumentNullException(nameof(assemblies));
             }
 
-            var assemblyTypes = assemblies.SelectMany(x => x.GetTypes());
+            var assemblyTypes = assemblies
+                .SelectMany(x => x.GetTypes())
+                .Where(x => x.IsClass);
 
             foreach (var assemblyType in assemblyTypes)
             {
-                var triggerTypeCandidates = assemblyType
+                var triggerTypes = assemblyType
                     .GetInterfaces()
-                    .SelectMany(x => x.GetInterfaces())
-                    .Select(x => (genericTriggerType: x.IsGenericTypeDefinition ? x.GetGenericTypeDefinition() : x, triggerType: x));
-
-                var triggerTypes = _triggerTypes
-                    .Join(triggerTypeCandidates, x => x, x => x.genericTriggerType, (_, x) => x.triggerType);
+                    .Where(x => _triggerTypes.Contains(x.IsConstructedGenericType ? x.GetGenericTypeDefinition() : x));
 
                 var registered = false;
 
@@ -107,7 +95,7 @@ namespace Microsoft.Extensions.DependencyInjection
                         registered = true;
                     }
 
-                    services.TryAdd(new ServiceDescriptor(triggerType, assemblyType, ServiceLifetime.Transient));
+                    services.TryAdd(new ServiceDescriptor(triggerType, sp => sp.GetService(assemblyType), ServiceLifetime.Transient));
                 }
             }
 

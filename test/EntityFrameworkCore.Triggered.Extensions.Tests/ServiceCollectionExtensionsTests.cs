@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using EntityFrameworkCore.Triggered.Lyfecycles;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
@@ -23,6 +24,21 @@ namespace EntityFrameworkCore.Triggered.Extensions.Tests
             yield return new object[] { typeof(IBeforeSaveTrigger<object>) };
             yield return new object[] { typeof(IAfterSaveTrigger<object>) };
             yield return new object[] { typeof(IAfterSaveFailedTrigger<object>) };
+        }
+
+        public class TestModel
+        {
+            public int Id { get; set; }
+        }
+
+        public class TestDbContext : DbContext
+        {
+            public TestDbContext(DbContextOptions options)
+                : base (options)
+            {
+            }
+
+            public DbSet<TestModel> TestModels { get; set; }            
         }
 
         [Theory]
@@ -60,19 +76,45 @@ namespace EntityFrameworkCore.Triggered.Extensions.Tests
         public void AddAssemblyTriggers_WithCustomLifetime_RegistersWithThatLifetime(ServiceLifetime lifetime)
         {
             var serviceCollection = new ServiceCollection()
-                .AddTrigger<Trigger<object>>(lifetime);
+                .AddAssemblyTriggers(lifetime);
 
             Assert.Equal(lifetime, serviceCollection.First().Lifetime);
         }
 
-        [Theory]
-        [MemberData(nameof(TriggerTypes))]
-        public void AddAssemblyTriggers_WithType_RegistersWithThatType(Type triggerLifetimeType)
+        [Fact]
+        public void AddAssemblyTriggers_WithAssembly_RegistersWithThatAssembly()
         {
             var serviceCollection = new ServiceCollection()
-                .AddTrigger<Trigger<object>>();
+                .AddAssemblyTriggers(typeof(ServiceCollectionExtensionsTests).Assembly);
 
-            Assert.Contains(serviceCollection, x => x.ServiceType == triggerLifetimeType);
+            Assert.Equal(5, serviceCollection.Count);
+        }
+        
+        [Fact]
+        public async Task SaveChanges_WithAddedEntity_RaisesAllTriggerTypes()
+        {
+            var serviceProvider = new ServiceCollection()
+                .AddTriggeredDbContext<TestDbContext>(options => {
+                    options.UseInMemoryDatabase("test");
+                    options.ConfigureWarnings(warningOptions => {
+                        warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
+                    });
+                })
+                .AddTrigger<SampleTrigger>()
+                .BuildServiceProvider();
+
+            using var dbContext = serviceProvider.GetRequiredService<TestDbContext>();
+            dbContext.TestModels.Add(new TestModel { });
+
+            await dbContext.SaveChangesAsync();
+
+            var trigger = serviceProvider.GetRequiredService<SampleTrigger>();
+
+            Assert.Equal(1, trigger.BeforeSaveStartingTriggerCalls);
+            Assert.Equal(1, trigger.BeforeSaveCalls);
+            Assert.Equal(1, trigger.BeforeSaveAsyncCalls);
+            Assert.Equal(1, trigger.AfterSaveCalls);
+            Assert.Equal(1, trigger.AfterSaveAsyncCalls);
         }
     }
 }

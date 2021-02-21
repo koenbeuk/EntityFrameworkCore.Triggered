@@ -4,11 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using EntityFrameworkCore.Triggered.Lyfecycles;
 
 namespace EntityFrameworkCore.Triggered.Extensions.Tests
 {
-    public class SampleTrigger : Trigger<object>
+    public class SampleTrigger : Trigger<object>, IBeforeSaveStartingTrigger
     {
+        public SampleTrigger()
+        {
+
+        }
+
         public int BeforeSaveCalls;
         public int BeforeSaveAsyncCalls;
 
@@ -17,6 +23,8 @@ namespace EntityFrameworkCore.Triggered.Extensions.Tests
 
         public int AfterSaveFailedCalls;
         public int AfterSaveFailedAsyncCalls;
+
+        public int BeforeSaveStartingTriggerCalls;
 
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
@@ -28,6 +36,7 @@ namespace EntityFrameworkCore.Triggered.Extensions.Tests
 
         public override void AfterSaveFailed(ITriggerContext<object> context, Exception exception) => AfterSaveFailedCalls += 1;
         public override async Task AfterSaveFailed(ITriggerContext<object> context, Exception exception, CancellationToken cancellationToken) => AfterSaveFailedAsyncCalls += 1;
+        public async Task BeforeSaveStarting(CancellationToken cancellationToken) => BeforeSaveStartingTriggerCalls += 1;
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
     }
 }

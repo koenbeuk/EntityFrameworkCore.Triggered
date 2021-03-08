@@ -11,7 +11,6 @@ namespace Microsoft.EntityFrameworkCore
     /// </summary>
     public static class TriggersDbContextOptionsExtensions
     {
-
         public static DbContextOptionsBuilder<TContext> UseTriggers<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, Action<TriggersContextOptionsBuilder>? configure = null)
             where TContext : DbContext => (DbContextOptionsBuilder<TContext>)UseTriggers((DbContextOptionsBuilder)optionsBuilder, configure);
 

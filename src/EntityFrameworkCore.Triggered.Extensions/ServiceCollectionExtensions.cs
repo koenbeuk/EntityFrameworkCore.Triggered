@@ -10,7 +10,7 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
-        static readonly Type[] _triggerTypes = new Type[] {
+        static readonly Type[] _wellKnownTriggerTypes = new Type[] {
                 typeof(IBeforeSaveTrigger<>),
                 typeof(IAfterSaveTrigger<>),
                 typeof(IAfterSaveFailedTrigger<>),
@@ -24,7 +24,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         static void RegisterTriggerTypes(Type triggerImplementationType, IServiceCollection services)
         {
-            foreach (var customTriggerType in _triggerTypes)
+            foreach (var customTriggerType in _wellKnownTriggerTypes)
             {
                 var customTriggers = customTriggerType.IsGenericTypeDefinition
 #pragma warning disable EF1001 // Internal EF Core API usage.
@@ -82,7 +82,7 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 var triggerTypes = assemblyType
                     .GetInterfaces()
-                    .Where(x => _triggerTypes.Contains(x.IsConstructedGenericType ? x.GetGenericTypeDefinition() : x));
+                    .Where(x => _wellKnownTriggerTypes.Contains(x.IsConstructedGenericType ? x.GetGenericTypeDefinition() : x));
 
                 var registered = false;
 

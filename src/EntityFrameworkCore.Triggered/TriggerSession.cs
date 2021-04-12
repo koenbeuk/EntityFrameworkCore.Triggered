@@ -96,7 +96,7 @@ namespace EntityFrameworkCore.Triggered
 
         public async Task RaiseBeforeSaveStartingTriggers(CancellationToken cancellationToken)
         {
-            var triggers = _triggerDiscoveryService.ServiceProvider.GetServices<IBeforeSaveStartingTrigger>();
+            var triggers = _triggerDiscoveryService.DiscoverTriggers<IBeforeSaveStartingTrigger>();
 
             foreach (var trigger in triggers)
             {
@@ -138,7 +138,7 @@ namespace EntityFrameworkCore.Triggered
 
         public async Task RaiseBeforeSaveCompletedTriggers(CancellationToken cancellationToken)
         {
-            var triggers = _triggerDiscoveryService.ServiceProvider.GetServices<IBeforeSaveCompletedTrigger>();
+            var triggers = _triggerDiscoveryService.DiscoverTriggers<IBeforeSaveCompletedTrigger>();
 
             foreach (var trigger in triggers)
             {
@@ -150,7 +150,7 @@ namespace EntityFrameworkCore.Triggered
 
         public async Task RaiseAfterSaveStartingTriggers(CancellationToken cancellationToken)
         {
-            var triggers = _triggerDiscoveryService.ServiceProvider.GetServices<IAfterSaveStartingTrigger>();
+            var triggers = _triggerDiscoveryService.DiscoverTriggers<IAfterSaveStartingTrigger>();
 
             foreach (var trigger in triggers)
             {
@@ -170,7 +170,7 @@ namespace EntityFrameworkCore.Triggered
 
         public async Task RaiseAfterSaveCompletedTriggers(CancellationToken cancellationToken)
         {
-            var triggers = _triggerDiscoveryService.ServiceProvider.GetServices<IAfterSaveCompletedTrigger>();
+            var triggers = _triggerDiscoveryService.DiscoverTriggers<IAfterSaveCompletedTrigger>();
 
             foreach (var trigger in triggers)
             {
@@ -180,7 +180,7 @@ namespace EntityFrameworkCore.Triggered
 
         public async Task RaiseAfterSaveFailedStartingTriggers(Exception exception, CancellationToken cancellationToken)
         {
-            var triggers = _triggerDiscoveryService.ServiceProvider.GetServices<IAfterSaveFailedStartingTrigger>();
+            var triggers = _triggerDiscoveryService.DiscoverTriggers<IAfterSaveFailedStartingTrigger>();
 
             foreach (var trigger in triggers)
             {
@@ -200,7 +200,7 @@ namespace EntityFrameworkCore.Triggered
 
         public async Task RaiseAfterSaveFailedCompletedTriggers(Exception exception, CancellationToken cancellationToken)
         {
-            var triggers = _triggerDiscoveryService.ServiceProvider.GetServices<IAfterSaveFailedCompletedTrigger>();
+            var triggers = _triggerDiscoveryService.DiscoverTriggers<IAfterSaveFailedCompletedTrigger>();
 
             foreach (var trigger in triggers)
             {

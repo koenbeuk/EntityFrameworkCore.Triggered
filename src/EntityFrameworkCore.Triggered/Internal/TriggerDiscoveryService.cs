@@ -11,22 +11,21 @@ namespace EntityFrameworkCore.Triggered.Internal
     public sealed class TriggerDiscoveryService : ITriggerDiscoveryService, IResettableService
     {
         readonly static TriggerDescriptorComparer _triggerDescriptorComparer = new();
-
         readonly ITriggerServiceProviderAccessor _triggerServiceProviderAccessor;
         readonly ITriggerTypeRegistryService _triggerTypeRegistryService;
+        readonly TriggerFactory _triggerFactory;
 
         IServiceProvider? _serviceProvider;
 
-        public TriggerDiscoveryService(ITriggerServiceProviderAccessor triggerServiceProviderAccessor, ITriggerTypeRegistryService triggerTypeRegistryService)
+        public TriggerDiscoveryService(ITriggerServiceProviderAccessor triggerServiceProviderAccessor, ITriggerTypeRegistryService triggerTypeRegistryService, TriggerFactory triggerFactory)
         {
-            _triggerServiceProviderAccessor = triggerServiceProviderAccessor ?? throw new ArgumentNullException(nameof(triggerServiceProviderAccessor));
+            _triggerServiceProviderAccessor = triggerServiceProviderAccessor;
             _triggerTypeRegistryService = triggerTypeRegistryService ?? throw new ArgumentNullException(nameof(triggerTypeRegistryService));
+            _triggerFactory = triggerFactory;
         }
 
         public IEnumerable<TriggerDescriptor> DiscoverTriggers(Type openTriggerType, Type entityType, Func<Type, ITriggerTypeDescriptor> triggerTypeDescriptorFactory)
         {
-            IServiceProvider serviceProvider = ServiceProvider;
-
             var registry = _triggerTypeRegistryService.ResolveRegistry(openTriggerType, entityType, triggerTypeDescriptorFactory);
 
             var triggerTypeDescriptors = registry.GetTriggerTypeDescriptors();
@@ -40,7 +39,7 @@ namespace EntityFrameworkCore.Triggered.Internal
 
                 foreach (var triggerTypeDescriptor in triggerTypeDescriptors)
                 {
-                    var triggers = serviceProvider.GetServices(triggerTypeDescriptor.TriggerType);
+                    var triggers = _triggerFactory.Resolve(ServiceProvider, triggerTypeDescriptor.TriggerType);
                     foreach (var trigger in triggers)
                     {
                         if (triggerDescriptors == null)
@@ -67,6 +66,23 @@ namespace EntityFrameworkCore.Triggered.Internal
             }
         }
 
+        public IEnumerable<TTrigger> DiscoverTriggers<TTrigger>()
+        {
+            // We can skip the registry as there is no generic argument
+            var triggers = _triggerFactory.Resolve(ServiceProvider, typeof(TTrigger));
+
+            return triggers
+                .Select((trigger, index) => (
+                    trigger, 
+                    defaultPriority: index, 
+                    customPriority: (trigger as ITriggerPriority)?.Priority ?? 0
+                ))
+                .OrderBy(x => x.customPriority)
+                .ThenBy(x => x.defaultPriority)
+                .Select(x => x.trigger)
+                .Cast<TTrigger>();
+        }
+
         public IServiceProvider ServiceProvider
         {
             get
@@ -86,7 +102,7 @@ namespace EntityFrameworkCore.Triggered.Internal
             _serviceProvider = null;
         }
 
-        public Task ResetStateAsync(CancellationToken cancellationToken = default) 
+        public Task ResetStateAsync(CancellationToken cancellationToken = default)
         {
             ResetState();
             return Task.CompletedTask;

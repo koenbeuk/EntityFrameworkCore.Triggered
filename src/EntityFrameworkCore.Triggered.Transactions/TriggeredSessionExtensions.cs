@@ -91,7 +91,7 @@ namespace EntityFrameworkCore.Triggered
                 throw new InvalidOperationException("Method is implemented for concrete TriggerSessions only");
             }
 
-            var triggers = typedTriggerSession.DiscoveryService.ServiceProvider.GetServices<IBeforeCommitStartingTrigger>();
+            var triggers = typedTriggerSession.DiscoveryService.DiscoverTriggers<IBeforeCommitStartingTrigger>();
 
             foreach (var trigger in triggers)
             {
@@ -111,7 +111,7 @@ namespace EntityFrameworkCore.Triggered
                 throw new InvalidOperationException("Method is implemented for concrete TriggerSessions only");
             }
 
-            var triggers = typedTriggerSession.DiscoveryService.ServiceProvider.GetServices<IBeforeCommitCompletedTrigger>();
+            var triggers = typedTriggerSession.DiscoveryService.DiscoverTriggers<IBeforeCommitCompletedTrigger>();
 
             foreach (var trigger in triggers)
             {
@@ -131,7 +131,7 @@ namespace EntityFrameworkCore.Triggered
                 throw new InvalidOperationException("Method is implemented for concrete TriggerSessions only");
             }
 
-            var triggers = typedTriggerSession.DiscoveryService.ServiceProvider.GetServices<IAfterCommitStartingTrigger>();
+            var triggers = typedTriggerSession.DiscoveryService.DiscoverTriggers<IAfterCommitStartingTrigger>();
 
             foreach (var trigger in triggers)
             {
@@ -151,7 +151,7 @@ namespace EntityFrameworkCore.Triggered
                 throw new InvalidOperationException("Method is implemented for concrete TriggerSessions only");
             }
 
-            var triggers = typedTriggerSession.DiscoveryService.ServiceProvider.GetServices<IAfterCommitCompletedTrigger>();
+            var triggers = typedTriggerSession.DiscoveryService.DiscoverTriggers<IAfterCommitCompletedTrigger>();
 
             foreach (var trigger in triggers)
             {

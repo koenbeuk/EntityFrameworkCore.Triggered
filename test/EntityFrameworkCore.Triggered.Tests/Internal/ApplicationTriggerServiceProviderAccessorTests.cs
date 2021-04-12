@@ -41,21 +41,6 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
 
 
         [Fact]
-        public void GetTriggerServiceProvider_NoApplicationDi_ReturnsScopedInternal()
-        {
-            var dbContext = new TestDbContext();
-
-            var subject = dbContext.GetInfrastructure().GetRequiredService<ApplicationTriggerServiceProviderAccessor>();
-            var scopedObject1 = subject.GetTriggerServiceProvider().GetService<IBeforeSaveTrigger<object>>();
-            Assert.NotNull(scopedObject1);
-
-            var scopedObject2 = subject.GetTriggerServiceProvider().GetService<IBeforeSaveTrigger<object>>();
-            Assert.NotNull(scopedObject2);
-
-            Assert.NotEqual(scopedObject1, scopedObject2);
-        }
-
-        [Fact]
         public void GetTriggerServiceProvider_WithApplicationDiAndTransform_ReturnsCustomServiceProvider()
         {
             var applicationServiceProvider = new ServiceCollection()

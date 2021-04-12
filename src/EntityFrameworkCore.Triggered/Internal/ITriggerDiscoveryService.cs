@@ -6,6 +6,9 @@ namespace EntityFrameworkCore.Triggered.Internal
     public interface ITriggerDiscoveryService
     {
         IEnumerable<TriggerDescriptor> DiscoverTriggers(Type openTriggerType, Type entityType, Func<Type, ITriggerTypeDescriptor> triggerTypeDescriptorFactory);
-        IServiceProvider ServiceProvider { get; set; }
+
+        IEnumerable<TTrigger> DiscoverTriggers<TTrigger>();
+
+        public IServiceProvider ServiceProvider { get; set; }
     }
 }

@@ -12,6 +12,8 @@ namespace EntityFrameworkCore.Triggered.Tests.Stubs
     {
         public IEnumerable<TriggerDescriptor> DiscoverTriggers(Type openTriggerType, Type entityType, Func<Type, ITriggerTypeDescriptor> triggerTypeDescriptorFactory)
             => Enumerable.Empty<TriggerDescriptor>();
+        public IEnumerable<TTrigger> DiscoverTriggers<TTrigger>()
+            => Enumerable.Empty<TTrigger>();
 
         public IServiceProvider ServiceProvider { get; set; } = new ServiceCollection().BuildServiceProvider();
     }

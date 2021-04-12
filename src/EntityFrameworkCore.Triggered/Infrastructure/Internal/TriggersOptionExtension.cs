@@ -172,7 +172,6 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
             {
                 foreach (var (typeOrInstance, lifetime) in _triggers)
                 {
-
                     var (triggerServiceType, triggerServiceInstance) = typeOrInstance switch {
                         Type type => (type, null),
                         object instance => (instance.GetType(), instance),
@@ -180,7 +179,7 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
                     };
 
                     // todo: Optimize, dont use activator
-                    Func<IServiceProvider, object> triggerServiceFactoryBuilder = (IServiceProvider _) => Activator.CreateInstance(typeof(TriggerServiceFactory<>).MakeGenericType(triggerServiceType), triggerServiceInstance);
+                    Func<IServiceProvider, object> triggerServiceFactoryBuilder = (IServiceProvider _) => Activator.CreateInstance(typeof(TriggerInstanceFactory<>).MakeGenericType(triggerServiceType), triggerServiceInstance);
 
                     foreach (var triggerType in _triggerTypes.Distinct())
                     {
@@ -190,7 +189,7 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
 
                         foreach (var triggerTypeImplementation in triggerTypeImplementations)
                         {
-                            var triggerTypeImplementationFactoryType = typeof(ITriggerServiceFactory<>).MakeGenericType(triggerTypeImplementation);
+                            var triggerTypeImplementationFactoryType = typeof(ITriggerInstanceFactory<>).MakeGenericType(triggerTypeImplementation);
                             services.Add(new ServiceDescriptor(triggerTypeImplementationFactoryType, triggerServiceFactoryBuilder, lifetime));
                         }
                     }

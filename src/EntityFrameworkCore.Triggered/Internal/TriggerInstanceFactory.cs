@@ -8,25 +8,24 @@ using Microsoft.Extensions.DependencyInjection;
 namespace EntityFrameworkCore.Triggered.Internal
 {
 
-    public interface ITriggerServiceFactory
+    public interface ITriggerInstanceFactory
     {
         object Create(IServiceProvider serviceProvider);
     }
 
-    public interface ITriggerServiceFactory<out TTriggerType> : ITriggerServiceFactory
+    public interface ITriggerInstanceFactory<out TTriggerType> : ITriggerInstanceFactory
     {
 
     }
 
-    public sealed class TriggerServiceFactory<TTriggerType> : ITriggerServiceFactory<TTriggerType>
+    public sealed class TriggerInstanceFactory<TTriggerType> : ITriggerInstanceFactory<TTriggerType>
     {
         readonly TTriggerType? _serviceInstance;
 
-        public TriggerServiceFactory(TTriggerType? serviceInstance)
+        public TriggerInstanceFactory(TTriggerType? serviceInstance)
         {
             _serviceInstance = serviceInstance;
         }
-
 
         public object Create(IServiceProvider serviceProvider)
         {

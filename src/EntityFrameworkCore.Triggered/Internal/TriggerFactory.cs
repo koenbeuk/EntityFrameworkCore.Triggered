@@ -29,7 +29,7 @@ namespace EntityFrameworkCore.Triggered.Internal
             }
 
             // Alternatively, triggers may be registered with the extension configuration
-            var triggerServiceFactories = _internalServiceProvider.GetServices(typeof(ITriggerServiceFactory<>).MakeGenericType(triggerType)).Cast<ITriggerServiceFactory>();
+            var triggerServiceFactories = _internalServiceProvider.GetServices(typeof(ITriggerInstanceFactory<>).MakeGenericType(triggerType)).Cast<ITriggerInstanceFactory>();
             foreach (var triggerServiceFactory in triggerServiceFactories)
             {
                 yield return triggerServiceFactory.Create(serviceProvider);

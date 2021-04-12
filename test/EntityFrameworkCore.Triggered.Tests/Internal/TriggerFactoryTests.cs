@@ -52,7 +52,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
         public void Resolve_FromInternalServices_FindsType()
         {
             var serviceProvider = new ServiceCollection()
-                .AddTransient(typeof(ITriggerServiceFactory<IBeforeSaveTrigger<object>>), _ => new TriggerServiceFactory<SampleTrigger>(null))
+                .AddTransient(typeof(ITriggerInstanceFactory<IBeforeSaveTrigger<object>>), _ => new TriggerInstanceFactory<SampleTrigger>(null))
                 .BuildServiceProvider();
 
             var applicationServiceProvider = new ServiceCollection().BuildServiceProvider();
@@ -69,7 +69,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
         {
             var serviceProvider = new ServiceCollection()
                 .AddLogging()
-                .AddTransient(typeof(ITriggerServiceFactory<IBeforeSaveTrigger<object>>), _ => new TriggerServiceFactory<SampleTrigger2>(null))
+                .AddTransient(typeof(ITriggerInstanceFactory<IBeforeSaveTrigger<object>>), _ => new TriggerInstanceFactory<SampleTrigger2>(null))
                 .BuildServiceProvider();
 
             var subject = new TriggerFactory(serviceProvider);

@@ -20,9 +20,9 @@ namespace EntityFrameworkCore.Triggered.Internal
 
     public sealed class TriggerInstanceFactory<TTriggerType> : ITriggerInstanceFactory<TTriggerType>
     {
-        readonly TTriggerType? _serviceInstance;
+        readonly object? _serviceInstance;
 
-        public TriggerInstanceFactory(TTriggerType? serviceInstance)
+        public TriggerInstanceFactory(object? serviceInstance)
         {
             _serviceInstance = serviceInstance;
         }

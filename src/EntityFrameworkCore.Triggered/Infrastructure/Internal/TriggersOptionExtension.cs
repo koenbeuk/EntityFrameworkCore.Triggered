@@ -178,8 +178,17 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
                         _ => throw new InvalidOperationException("Unknown type registration")
                     };
 
-                    // todo: Optimize, dont use activator
-                    Func<IServiceProvider, object> triggerServiceFactoryBuilder = (IServiceProvider _) => Activator.CreateInstance(typeof(TriggerInstanceFactory<>).MakeGenericType(triggerServiceType), triggerServiceInstance);
+                    var instanceParamExpression = Expression.Parameter(typeof(object), "object");
+
+                    var triggerInstanceFactoryBuilder = 
+                        Expression.Lambda<Func<object?, object>>(
+                            Expression.New(
+                                typeof(TriggerInstanceFactory<>).MakeGenericType(triggerServiceType).GetConstructor(new[] { typeof(object) }),
+                                instanceParamExpression
+                            ),
+                            instanceParamExpression
+                    )
+                    .Compile();
 
                     foreach (var triggerType in _triggerTypes.Distinct())
                     {
@@ -190,7 +199,7 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
                         foreach (var triggerTypeImplementation in triggerTypeImplementations)
                         {
                             var triggerTypeImplementationFactoryType = typeof(ITriggerInstanceFactory<>).MakeGenericType(triggerTypeImplementation);
-                            services.Add(new ServiceDescriptor(triggerTypeImplementationFactoryType, triggerServiceFactoryBuilder, lifetime));
+                            services.Add(new ServiceDescriptor(triggerTypeImplementationFactoryType, _ => triggerInstanceFactoryBuilder(triggerServiceInstance), lifetime));
                         }
                     }
                 }

@@ -23,9 +23,10 @@ namespace EntityFrameworkCore.Triggered.Internal
             var triggers = serviceProvider.GetServices(triggerType);
             foreach (var trigger in triggers)
             {
-                Debug.Assert(trigger is not null);
-
-                yield return trigger;
+                if (trigger is not null)
+                {
+                    yield return trigger;
+                }
             }
 
             // Alternatively, triggers may be registered with the extension configuration

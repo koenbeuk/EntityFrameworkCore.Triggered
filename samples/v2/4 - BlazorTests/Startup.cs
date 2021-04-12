@@ -32,12 +32,13 @@ namespace BlazorTests
             services.AddServerSideBlazor();
             services.AddSingleton<EventAggregator>();
 
-            services.AddTriggeredDbContextFactory<ApplicationDbContext>(options => {
+            services.AddDbContextFactory<ApplicationDbContext>(options => {
                 options
-                    .UseSqlite("Data source=test.db");
-            })
-            .AddScoped<IBeforeSaveTrigger<Count>, Triggers.Counts.SetCreatedOn>()
-            .AddScoped<IAfterSaveTrigger<Count>, Triggers.Counts.PublishCountAddedEvent>();
+                    .UseSqlite("Data source=test.db")
+                    .UseTriggers(triggerOptions => {
+                        triggerOptions.AddAssemblyTriggers();
+                    });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

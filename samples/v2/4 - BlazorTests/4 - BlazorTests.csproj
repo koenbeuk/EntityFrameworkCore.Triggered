@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="EntityFrameworkCore.Triggered" Version="$(EFCoreTriggeredPackageVersion)" />
+    <PackageReference Include="EntityFrameworkCore.Triggered.Extensions" Version="$(EFCoreTriggeredPackageVersion)" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="$(EFCorePackageVersion)" />
   </ItemGroup>
 

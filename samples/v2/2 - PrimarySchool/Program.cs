@@ -12,11 +12,13 @@ namespace PrimarySchool
         static void Main(string[] args)
         {
             var serviceProvider = new ServiceCollection()
-                .AddTriggeredDbContext<ApplicationDbContext>(options => {
+                .AddDbContext<ApplicationDbContext>(options => {
                    options
-                      .UseInMemoryDatabase("PrimarySchool");
+                      .UseInMemoryDatabase("PrimarySchool")
+                      .UseTriggers(triggerOptions => {
+                          triggerOptions.AddTrigger<Triggers.StudentSignupToMandatoryCourses>();
+                      });
                })
-               .AddScoped<IBeforeSaveTrigger<Student>, Triggers.StudentSignupToMandatoryCourses>()
                .BuildServiceProvider();
 
             var serviceScope = serviceProvider.CreateScope();

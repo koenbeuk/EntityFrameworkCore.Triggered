@@ -33,17 +33,18 @@ namespace StudentManager
             services
                 .AddTriggeredDbContextPool<ApplicationDbContext>(options => {
                     options
-                        .UseSqlite("Data source=test.db");
+                        .UseSqlite("Data source=test.db")
+                        .UseTriggers(triggerOptions => {
+                            triggerOptions.AddTrigger<Triggers.Traits.Audited.CreateAuditRecord>();
+                            triggerOptions.AddTrigger<Triggers.Traits.SoftDelete.EnsureSoftDelete>();
+                            triggerOptions.AddTrigger<Triggers.Courses.AutoSignupStudents>();
+                            triggerOptions.AddTrigger<Triggers.StudentCourses.BlockRemovalWhenCourseIsMandatory>();
+                            triggerOptions.AddTrigger<Triggers.StudentCourses.SendWelcomingEmail>();
+                            triggerOptions.AddTrigger<Triggers.Students.AssignRegistrationDate>();
+                            triggerOptions.AddTrigger<Triggers.Students.SignupToMandatoryCourses>();
+                        });
                 })
-                .AddHttpContextAccessor()
-                .AddScoped<IBeforeSaveTrigger<Traits.ISoftDelete>, Triggers.Traits.SoftDelete.EnsureSoftDelete>()
-                .AddScoped<IBeforeSaveTrigger<Traits.IAudited>, Triggers.Traits.Audited.CreateAuditRecord>()
-
-                .AddScoped<IBeforeSaveTrigger<Course>, Triggers.Courses.AutoSignupStudents>()
-                .AddScoped<IBeforeSaveTrigger<Student>, Triggers.Students.AssignRegistrationDate>()
-                .AddScoped<IBeforeSaveTrigger<Student>, Triggers.Students.SignupToMandatoryCourses>()
-                .AddScoped<IBeforeSaveTrigger<StudentCourse>, Triggers.StudentCourses.BlockRemovalWhenCourseIsMandatory>()
-                .AddScoped<IAfterSaveTrigger<StudentCourse>, Triggers.StudentCourses.SendWelcomingEmail>();
+                .AddHttpContextAccessor();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

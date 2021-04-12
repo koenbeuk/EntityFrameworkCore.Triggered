@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using EntityFrameworkCore.Triggered.Internal;
 using EntityFrameworkCore.Triggered.Internal.CascadeStrategies;
 using EntityFrameworkCore.Triggered.Lifecycles;
@@ -147,6 +148,8 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
             services.AddScoped<IResettableService>(serviceProvider => serviceProvider.GetRequiredService<TriggerService>());
             services.TryAddScoped<ITriggerService>(serviceProvider => serviceProvider.GetRequiredService<TriggerService>());
 
+            services.AddTransient<TriggerFactory>();
+
 #if EFCORETRIGGERED2
             services.TryAddScoped<IInterceptor, TriggerSessionSaveChangesInterceptor>();
 #endif
@@ -165,36 +168,38 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
 
             services.TryAddTransient(typeof(ICascadeStrategy), cascadeStrategyType);
 
-            if (_triggers != null)
+            if (_triggers != null && _triggerTypes != null)
             {
                 foreach (var (typeOrInstance, lifetime) in _triggers)
                 {
-                    var (triggerType, triggerInstance) = typeOrInstance switch
-                    {
+                    var (triggerServiceType, triggerServiceInstance) = typeOrInstance switch {
                         Type type => (type, null),
                         object instance => (instance.GetType(), instance),
                         _ => throw new InvalidOperationException("Unknown type registration")
                     };
 
-                    if (_triggerTypes != null)
-                    {
-                        foreach (var customTriggerType in _triggerTypes.Distinct())
-                        {
-                            var customTriggers = customTriggerType.IsGenericTypeDefinition
-                                ? TypeHelpers.FindGenericInterfaces(triggerType, customTriggerType)
-                                : triggerType.GetInterfaces().Where(x => x == customTriggerType);
+                    var instanceParamExpression = Expression.Parameter(typeof(object), "object");
 
-                            foreach (var customTrigger in customTriggers)
-                            {
-                                if (triggerInstance != null)
-                                {
-                                    services.Add(new ServiceDescriptor(customTrigger, triggerInstance));
-                                }
-                                else
-                                {
-                                    services.Add(new ServiceDescriptor(customTrigger, triggerType, lifetime));
-                                }
-                            }
+                    var triggerInstanceFactoryBuilder = 
+                        Expression.Lambda<Func<object?, object>>(
+                            Expression.New(
+                                typeof(TriggerInstanceFactory<>).MakeGenericType(triggerServiceType).GetConstructor(new[] { typeof(object) }),
+                                instanceParamExpression
+                            ),
+                            instanceParamExpression
+                    )
+                    .Compile();
+
+                    foreach (var triggerType in _triggerTypes.Distinct())
+                    {
+                        var triggerTypeImplementations = triggerType.IsGenericTypeDefinition
+                            ? TypeHelpers.FindGenericInterfaces(triggerServiceType, triggerType)
+                            : triggerServiceType.GetInterfaces().Where(x => x == triggerType);
+
+                        foreach (var triggerTypeImplementation in triggerTypeImplementations)
+                        {
+                            var triggerTypeImplementationFactoryType = typeof(ITriggerInstanceFactory<>).MakeGenericType(triggerTypeImplementation);
+                            services.Add(new ServiceDescriptor(triggerTypeImplementationFactoryType, _ => triggerInstanceFactoryBuilder(triggerServiceInstance), lifetime));
                         }
                     }
                 }

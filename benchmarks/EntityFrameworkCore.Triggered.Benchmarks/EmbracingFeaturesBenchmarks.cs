@@ -26,7 +26,10 @@ namespace EntityFrameworkCore.Triggered.Benchmarks
                 .AddTriggeredDbContext<TriggeredApplicationContext>(options => {
                     options
                         .UseInMemoryDatabase(nameof(WithTriggeredDbContext))
-                        .UseTriggers();
+                        .UseTriggers(triggerOptions => {
+                            triggerOptions.AddTrigger<Triggers.SetStudentRegistrationDateTrigger>();
+                            triggerOptions.AddTrigger<Triggers.SignStudentUpForMandatoryCourses>();
+                        });
                 })
                 .AddDbContext<ApplicationContextWithTriggers>(options => {
                     options
@@ -36,8 +39,6 @@ namespace EntityFrameworkCore.Triggered.Benchmarks
                     options
                         .UseInMemoryDatabase(nameof(RamsesApplicationContext));
                 })
-                .AddSingleton<IBeforeSaveTrigger<Student>, Triggers.SetStudentRegistrationDateTrigger>()
-                .AddScoped<IBeforeSaveTrigger<Student>, Triggers.SignStudentUpForMandatoryCourses>()
                 .AddTriggers()
                 .AddSingleton(typeof(ITriggers<,>), typeof(Triggers<,>))
                 .AddSingleton(typeof(ITriggers<>), typeof(Triggers<>))

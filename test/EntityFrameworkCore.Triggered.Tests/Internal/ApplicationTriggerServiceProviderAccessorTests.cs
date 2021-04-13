@@ -57,7 +57,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
 
             var dbContext = applicationServiceProvider.GetRequiredService<TestDbContext>();
 
-            var subject = new ApplicationTriggerServiceProviderAccessor(dbContext.GetInfrastructure(), _ => applicationServiceProvider, new NullLogger<ApplicationTriggerServiceProviderAccessor>());
+            var subject = new ApplicationTriggerServiceProviderAccessor(dbContext.GetInfrastructure(), _ => applicationServiceProvider);
             var triggerServiceProvider = subject.GetTriggerServiceProvider();
 
             Assert.Equal(applicationServiceProvider, triggerServiceProvider);

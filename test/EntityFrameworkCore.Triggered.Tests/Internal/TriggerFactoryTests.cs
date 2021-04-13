@@ -6,7 +6,10 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using EntityFrameworkCore.Triggered.Internal;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using Xunit.Sdk;
@@ -30,6 +33,31 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
             public TriggerFactory TriggerFactory { get; }
 
             public Task BeforeSave(ITriggerContext<object> context, CancellationToken cancellationToken) => throw new NotImplementedException();
+        }
+
+        class SampleTrigger3 : IBeforeSaveTrigger<object>
+        {
+            public SampleTrigger3(SampleDbContext3 dbContext)
+            {
+                DbContext = dbContext;
+            }
+
+            public SampleDbContext3 DbContext { get; }
+
+            public Task BeforeSave(ITriggerContext<object> context, CancellationToken cancellationToken) => throw new NotImplementedException();
+        }
+
+        public class SampleDbContext3 : DbContext
+        {
+            protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+            {
+                optionsBuilder
+                    .UseInMemoryDatabase(nameof(SampleDbContext3))
+                    .UseTriggers(triggerOptions => triggerOptions.AddTrigger<SampleTrigger3>());
+                optionsBuilder.ConfigureWarnings(warningOptions => {
+                    warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
+                });
+            }
         }
 
         [Fact]
@@ -82,6 +110,18 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
 
             Assert.NotNull(trigger);
             Assert.Equal(subject, trigger.TriggerFactory);
+        }
+
+        [Fact]
+        public void Resolve_FromInternalServices_AcceptsTheDbContextAsAnArugmnet()
+        {
+            using var dbContext = new SampleDbContext3();
+            var subject = dbContext.GetService<TriggerFactory>();
+
+            var trigger = subject.Resolve(dbContext.GetInfrastructure(), typeof(IBeforeSaveTrigger<object>)).FirstOrDefault() as SampleTrigger3;
+
+            Assert.NotNull(trigger);
+            Assert.Equal(dbContext, trigger.DbContext);
         }
     }
 }

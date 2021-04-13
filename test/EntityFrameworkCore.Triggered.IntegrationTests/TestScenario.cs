@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using EntityFrameworkCore.Triggered.IntegrationTests.Models;
-using Linker.ScenarioTests;
+using ScenarioTests;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;

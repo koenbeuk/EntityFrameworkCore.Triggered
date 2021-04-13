@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,12 +14,11 @@ namespace EntityFrameworkCore.Triggered.Internal
         readonly IServiceProvider _internalServiceProvider;
         readonly IServiceProvider? _fallbackApplicationServiceProvider;
         readonly Func<IServiceProvider, IServiceProvider>? _scopedServiceProviderTransform;
-        readonly ILogger? _logger;
 
         IServiceScope? _serviceScope;
         IServiceProvider? _applicationScopedServiceProvider;
 
-        public ApplicationTriggerServiceProviderAccessor(IServiceProvider internalServiceProvider, Func<IServiceProvider, IServiceProvider>? scopedServiceProviderTransform, ILogger? logger)
+        public ApplicationTriggerServiceProviderAccessor(IServiceProvider internalServiceProvider, Func<IServiceProvider, IServiceProvider>? scopedServiceProviderTransform)
         {
             if (internalServiceProvider is null)
             {
@@ -35,7 +35,6 @@ namespace EntityFrameworkCore.Triggered.Internal
             }
             
             _scopedServiceProviderTransform = scopedServiceProviderTransform;
-            _logger = logger;
         }
 
         public void SetTriggerServiceProvider(IServiceProvider serviceProvider)
@@ -67,11 +66,6 @@ namespace EntityFrameworkCore.Triggered.Internal
                 }
                 else
                 {
-                    if (_logger != null && _logger.IsEnabled(LogLevel.Warning))
-                    {
-                        _logger.LogWarning("No ServiceProvider is provided to resolve triggers from.");
-                    }
-
                     _serviceScope = _internalServiceProvider.CreateScope();
                     _applicationScopedServiceProvider = _serviceScope.ServiceProvider;
                 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace EntityFrameworkCore.Triggered.Internal
@@ -10,7 +11,7 @@ namespace EntityFrameworkCore.Triggered.Internal
 
     public interface ITriggerInstanceFactory
     {
-        object Create(IServiceProvider serviceProvider);
+        object Create(DbContext? dbContext, IServiceProvider serviceProvider);
     }
 
     public interface ITriggerInstanceFactory<out TTriggerType> : ITriggerInstanceFactory
@@ -27,14 +28,16 @@ namespace EntityFrameworkCore.Triggered.Internal
             _serviceInstance = serviceInstance;
         }
 
-        public object Create(IServiceProvider serviceProvider)
+        public object Create(DbContext? dbContext, IServiceProvider serviceProvider)
         {
             if (_serviceInstance is not null)
             {
                 return _serviceInstance;
             }
 
-            return ActivatorUtilities.GetServiceOrCreateInstance(serviceProvider, typeof(TTriggerType));
+            var arguments = dbContext is not null ? new object[] { dbContext } : Array.Empty<object>();
+
+            return ActivatorUtilities.CreateInstance(serviceProvider, typeof(TTriggerType), arguments);
         }
     }
 }

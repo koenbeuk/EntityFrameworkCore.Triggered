@@ -11,5 +11,7 @@ namespace EntityFrameworkCore.Triggered.IntegrationTests.Models
         public int Id { get; set; }
 
         public string UserName { get; set; }
+
+        public DateTime DeletedDate { get; set; }
     }
 }

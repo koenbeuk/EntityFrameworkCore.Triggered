@@ -3,18 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using EntityFrameworkCore.Triggered.IntegrationTests;
 using EntityFrameworkCore.Triggered.IntegrationTests.Models;
 using Linker.ScenarioTests;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
-namespace IntegrationTests
+namespace EntityFrameworkCore.Triggered.IntegrationTests
 {
     public partial class TestScenario
     {
-        [Scenario]
+        [Scenario(NamingPolicy = ScenarioTestMethodNamingPolicy.Test)]
         public void TestScenario1(ScenarioContext scenario)
         {
             const int sampleUsersCount = 100;

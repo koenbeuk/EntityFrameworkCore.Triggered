@@ -13,6 +13,9 @@ namespace EntityFrameworkCore.Triggered.IntegrationTests
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseInMemoryDatabase("test");
+            optionsBuilder.UseTriggers(triggerOptions => {
+                triggerOptions.AddAssemblyTriggers();
+            });
         }
 
         public DbSet<User> Users { get; set; }

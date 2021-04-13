@@ -14,7 +14,7 @@ Triggers for EF Core. Respond to changes in your DbContext before and after they
 ## Getting started
 1. Install the package from [NuGet](https://www.nuget.org/packages/EntityFrameworkCore.Triggered)
 2. Implement Triggers by implementing `IBeforeSaveTrigger<TEntity>` and `IAfterSaveTrigger<TEntity>`
-3. Register your triggers with Dependency Injection (Or [read on](when-you-dont-want-to-use-dependeny-injection) if you don't want to use DI)
+3. Register your triggers with your DbContext
 4. View our [samples](https://github.com/koenbeuk/EntityFrameworkCore.Triggered/tree/master/samples)
 5. Check out our [wiki](https://github.com/koenbeuk/EntityFrameworkCore.Triggered/wiki) for tips and tricks on getting started and being succesfull.
 
@@ -82,14 +82,39 @@ public class Startup
     {
         services.AddSingleton<EmailService>();
         services
-            .AddTriggeredDbContext<ApplicationContext>()
-            .AddScoped<IBeforeSaveTrigger<Course>, BeforeSaveStudentTrigger>()
+            .AddDbContext<ApplicationContext>(options => {
+                options.UseTriggers(triggerOptions => {
+                    triggerOptions.AddTrigger<StudentSignupTrigger>();
+                    triggerOptions.AddTrigger<SendEmailTrigger>();
+                });
+            })
+            .AddTransient<IEmailService, MyEmailService>();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     { ... }
 }
 ```
+
+### Trigger discovery
+In the given example, we register triggers directly with our DbContext. This is the recommended approach starting from version 2.3 and 1.4 respectively. If you're on an older version then its recommend to register triggers with your applications DI container instead:
+
+```csharp
+    services
+        .AddDbContext<ApplicationContext>(options => options.UseTriggers())
+        .AddTransient<IBeforeSaveTrigger<User>, MyBeforeSaveTrigger<User>>();
+```
+
+Doing so will make sure that your triggers can use other services registered in your DI container.
+
+You can also use functionality in [EntityFrameworkCore.Triggered.Extensions](https://www.nuget.org/packages/EntityFrameworkCore.Triggered.Extensions/) which allows you to discover triggers that are part of an assembly: 
+
+```csharp
+services.AddDbContext<ApplicationContext>(options => options.UseTriggers(triggerOptions => triggerOptions.AddAssemblyTriggers()));
+// or alternatively
+services.AddAssemblyTriggers();
+```
+
 
 ### Cascading changes (previously called Recursion)
 `BeforeSaveTrigger<TEntity>` supports cascading triggers. This is useful since it allows your triggers to subsequently modify the same DbContext entity graph and have it raise additional triggers. By default this behavior is turned on and protected from infinite loops by limiting the number of cascading cycles. If you don't like this behavior or want to change it, you can do so by:
@@ -168,23 +193,6 @@ In this example we were not able to inherit from TriggeredDbContext since we wan
 
 ### Custom trigger types
 By default we offer 3 trigger types: `IBeforeSaveTrigger`, `IAfterSaveTrigger` and `IAfterSaveFailedTrigger`. These will cover most cases. In addition we offer `IRaiseBeforeCommitTrigger` and `IRaiseAfterCommitTrigger` as an extension to further enhance your control of when triggers should run. We also offer support for custom triggers. Lets say we want to react to specific events happening in your context. We can do so by creating a new interface: IThisThingJustHappenedTrigger and implementing an extension method for ITriggerSession to invoke triggers of that type. Please take a look at how [Transactional triggers](https://github.com/koenbeuk/EntityFrameworkCore.Triggered/tree/master/src/EntityFrameworkCore.Triggered.Transactions) are implemented as an example.
-
-### When you  don't want to use dependency injection
-```csharp
-
-public class ApplicationDbContext : DbContext {
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder
-            // Enable triggers
-            .UseTriggers(triggerOptions => { 
-                triggerOptions.AddTrigger<BeforeSaveStudentTrigger>();  // Register your triggers
-            });
-
-        base.OnConfiguring(optionsBuilder);
-    }
-}
-```
 
 ### Similar products
 - [Ramses](https://github.com/JValck/Ramses): Lifecycle hooks for EFCore. A simple yet effective way of reacting to changes. Great for situations where you simply want to make sure that a property is set before saving to the database. Limited though in features as there is no dependency injection, no async support, no extensibility model and lifecycle hooks need to be implemented on the entity type itself.

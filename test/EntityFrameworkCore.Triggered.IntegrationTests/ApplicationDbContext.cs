@@ -10,9 +10,16 @@ namespace EntityFrameworkCore.Triggered.IntegrationTests
 {
     public class ApplicationDbContext : DbContext
     {
+        readonly string _databaseName;
+
+        public ApplicationDbContext(string databaseName)
+        {
+            _databaseName = databaseName;
+        }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseInMemoryDatabase("test");
+            optionsBuilder.UseInMemoryDatabase(_databaseName);
             optionsBuilder.UseTriggers(triggerOptions => {
                 triggerOptions.AddAssemblyTriggers();
             });

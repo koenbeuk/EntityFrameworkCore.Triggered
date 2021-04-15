@@ -180,15 +180,7 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
 
                     var instanceParamExpression = Expression.Parameter(typeof(object), "object");
 
-                    var triggerInstanceFactoryBuilder = 
-                        Expression.Lambda<Func<object?, object>>(
-                            Expression.New(
-                                typeof(TriggerInstanceFactory<>).MakeGenericType(triggerServiceType).GetConstructor(new[] { typeof(object) }),
-                                instanceParamExpression
-                            ),
-                            instanceParamExpression
-                    )
-                    .Compile();
+                    Func<object?, object>? triggerInstanceFactoryBuilder = null;
 
                     foreach (var triggerType in _triggerTypes.Distinct())
                     {
@@ -198,6 +190,19 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
 
                         foreach (var triggerTypeImplementation in triggerTypeImplementations)
                         {
+                            if (triggerInstanceFactoryBuilder is null)
+                            {
+                                triggerInstanceFactoryBuilder =
+                                    Expression.Lambda<Func<object?, object>>(
+                                            Expression.New(
+                                                typeof(TriggerInstanceFactory<>).MakeGenericType(triggerServiceType).GetConstructor(new[] { typeof(object) }),
+                                                instanceParamExpression
+                                            ),
+                                            instanceParamExpression
+                                    )
+                                    .Compile();
+                            }
+
                             var triggerTypeImplementationFactoryType = typeof(ITriggerInstanceFactory<>).MakeGenericType(triggerTypeImplementation);
                             services.Add(new ServiceDescriptor(triggerTypeImplementationFactoryType, _ => triggerInstanceFactoryBuilder(triggerServiceInstance), lifetime));
                         }

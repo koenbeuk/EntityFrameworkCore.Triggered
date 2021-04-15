@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EntityFrameworkCore.Triggered.IntegrationTests
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : TriggeredDbContext
     {
         readonly string _databaseName;
 

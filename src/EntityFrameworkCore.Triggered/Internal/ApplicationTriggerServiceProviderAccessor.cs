@@ -57,7 +57,6 @@ namespace EntityFrameworkCore.Triggered.Internal
                 }
                 else if (_scopedServiceProviderTransform != null)
                 {
-
                     var dbContextOptions = _internalServiceProvider.GetRequiredService<IDbContextOptions>();
                     var coreOptionsExtension = dbContextOptions.FindExtension<CoreOptionsExtension>();
                     var serviceProvider = coreOptionsExtension.ApplicationServiceProvider ?? _internalServiceProvider;
@@ -66,8 +65,8 @@ namespace EntityFrameworkCore.Triggered.Internal
                 }
                 else
                 {
-                    _serviceScope = _internalServiceProvider.CreateScope();
-                    _applicationScopedServiceProvider = _serviceScope.ServiceProvider;
+                    var dbContext = _internalServiceProvider.GetRequiredService<ICurrentDbContext>().Context;
+                    _applicationScopedServiceProvider = new HybridServiceProvider(_internalServiceProvider, dbContext);
                 }
 
             }

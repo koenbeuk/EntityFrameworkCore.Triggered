@@ -111,17 +111,5 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
             Assert.NotNull(trigger);
             Assert.Equal(subject, trigger.TriggerFactory);
         }
-
-        [Fact]
-        public void Resolve_FromInternalServices_AcceptsTheDbContextAsAnArugmnet()
-        {
-            using var dbContext = new SampleDbContext3();
-            var subject = dbContext.GetService<TriggerFactory>();
-
-            var trigger = subject.Resolve(dbContext.GetInfrastructure(), typeof(IBeforeSaveTrigger<object>)).FirstOrDefault() as SampleTrigger3;
-
-            Assert.NotNull(trigger);
-            Assert.Equal(dbContext, trigger.DbContext);
-        }
     }
 }

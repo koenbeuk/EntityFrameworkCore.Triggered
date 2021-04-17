@@ -33,11 +33,9 @@ namespace EntityFrameworkCore.Triggered.Internal
             var triggerServiceFactories = _internalServiceProvider.GetServices(typeof(ITriggerInstanceFactory<>).MakeGenericType(triggerType)).Cast<ITriggerInstanceFactory>();
             if (triggerServiceFactories.Any())
             {
-                var dbContext = _internalServiceProvider.GetService<Microsoft.EntityFrameworkCore.Infrastructure.ICurrentDbContext>()?.Context;
-
                 foreach (var triggerServiceFactory in triggerServiceFactories)
                 {
-                    yield return triggerServiceFactory.Create(dbContext, serviceProvider);
+                    yield return triggerServiceFactory.Create(serviceProvider);
                 }
             }
         }

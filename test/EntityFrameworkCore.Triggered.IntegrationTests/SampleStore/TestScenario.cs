@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using EntityFrameworkCore.Triggered.IntegrationTests.Models;
+using EntityFrameworkCore.Triggered.IntegrationTests.SampleStore.Models;
 using ScenarioTests;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
-namespace EntityFrameworkCore.Triggered.IntegrationTests
+namespace EntityFrameworkCore.Triggered.IntegrationTests.SampleStore
 {
     public partial class TestScenario
     {

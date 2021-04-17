@@ -11,7 +11,7 @@ namespace EntityFrameworkCore.Triggered.Internal
 
     public interface ITriggerInstanceFactory
     {
-        object Create(DbContext? dbContext, IServiceProvider serviceProvider);
+        object Create(IServiceProvider serviceProvider);
     }
 
     public interface ITriggerInstanceFactory<out TTriggerType> : ITriggerInstanceFactory
@@ -21,23 +21,24 @@ namespace EntityFrameworkCore.Triggered.Internal
 
     public sealed class TriggerInstanceFactory<TTriggerType> : ITriggerInstanceFactory<TTriggerType>
     {
-        readonly object? _serviceInstance;
+        object? _instance;
 
-        public TriggerInstanceFactory(object? serviceInstance)
+        public TriggerInstanceFactory(object? instance)
         {
-            _serviceInstance = serviceInstance;
+            _instance = instance;
         }
 
-        public object Create(DbContext? dbContext, IServiceProvider serviceProvider)
+        public object Create(IServiceProvider serviceProvider)
         {
-            if (_serviceInstance is not null)
+            if (_instance is not null)
             {
-                return _serviceInstance;
+                return _instance;
             }
 
-            var arguments = dbContext is not null ? new object[] { dbContext } : Array.Empty<object>();
+            // todo: create object factory and cache
+            _instance = ActivatorUtilities.CreateInstance(serviceProvider, typeof(TTriggerType));
 
-            return ActivatorUtilities.CreateInstance(serviceProvider, typeof(TTriggerType), arguments);
+            return _instance;
         }
     }
 }

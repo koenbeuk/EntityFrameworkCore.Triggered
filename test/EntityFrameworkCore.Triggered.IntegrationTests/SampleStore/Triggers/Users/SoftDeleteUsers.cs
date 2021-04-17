@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using EntityFrameworkCore.Triggered.Extensions;
-using EntityFrameworkCore.Triggered.IntegrationTests.Models;
+using EntityFrameworkCore.Triggered.IntegrationTests.SampleStore.Models;
 
-namespace EntityFrameworkCore.Triggered.IntegrationTests.Triggers.Users
+namespace EntityFrameworkCore.Triggered.IntegrationTests.SampleStore.Triggers.Users
 {
     public class SoftDeleteUsers : Trigger<User>
     {

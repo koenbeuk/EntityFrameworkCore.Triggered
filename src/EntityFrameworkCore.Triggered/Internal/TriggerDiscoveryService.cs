@@ -44,7 +44,7 @@ namespace EntityFrameworkCore.Triggered.Internal
                     {
                         if (triggerDescriptors == null)
                         {
-                            triggerDescriptors = new List<TriggerDescriptor>(triggers.Count());
+                            triggerDescriptors = new List<TriggerDescriptor>();
                         }
 
                         if (trigger != null)

@@ -4,14 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EntityFrameworkCore.Triggered.IntegrationTests.Models
+namespace EntityFrameworkCore.Triggered.IntegrationTests.LifetimeTests
 {
     public class User
     {
         public int Id { get; set; }
-
-        public string UserName { get; set; }
-
-        public DateTime? DeletedDate { get; set; }
     }
 }

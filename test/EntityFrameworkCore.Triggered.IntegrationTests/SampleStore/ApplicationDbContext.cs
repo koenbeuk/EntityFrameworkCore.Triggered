@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using EntityFrameworkCore.Triggered.IntegrationTests.Models;
+using EntityFrameworkCore.Triggered.IntegrationTests.SampleStore.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace EntityFrameworkCore.Triggered.IntegrationTests
+namespace EntityFrameworkCore.Triggered.IntegrationTests.SampleStore
 {
     public class ApplicationDbContext
 #if EFCORETRIGGERED1
@@ -26,14 +26,10 @@ namespace EntityFrameworkCore.Triggered.IntegrationTests
         {
             optionsBuilder.UseInMemoryDatabase(_databaseName);
             optionsBuilder.UseTriggers(triggerOptions => {
-                triggerOptions.AddAssemblyTriggers();
+                triggerOptions.AddTrigger<Triggers.Users.SoftDeleteUsers>();
             });
         }
 
         public DbSet<User> Users { get; set; }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-        }
     }
 }

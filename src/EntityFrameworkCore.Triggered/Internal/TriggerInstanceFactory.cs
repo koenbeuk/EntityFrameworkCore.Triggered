@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -21,6 +22,8 @@ namespace EntityFrameworkCore.Triggered.Internal
 
     public sealed class TriggerInstanceFactory<TTriggerType> : ITriggerInstanceFactory<TTriggerType>
     {
+        static ObjectFactory? _internalFactory;
+
         object? _instance;
 
         public TriggerInstanceFactory(object? instance)
@@ -35,9 +38,12 @@ namespace EntityFrameworkCore.Triggered.Internal
                 return _instance;
             }
 
-            // todo: create object factory and cache
-            _instance = ActivatorUtilities.CreateInstance(serviceProvider, typeof(TTriggerType));
+            if (_internalFactory is null)
+            {
+                _internalFactory = ActivatorUtilities.CreateFactory(typeof(TTriggerType), Array.Empty<Type>());
+            }
 
+            _instance = _internalFactory(serviceProvider, null);
             return _instance;
         }
     }

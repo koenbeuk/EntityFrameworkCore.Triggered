@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Buffers;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
@@ -6,8 +8,7 @@ namespace EntityFrameworkCore.Triggered.Internal
 {
     public readonly struct TriggerContextDescriptor
     {
-        [ThreadStatic]
-        static Dictionary<Type, Func<object, PropertyValues?, ChangeType, object>>? _cachedTriggerContextFactories;
+        static readonly ConcurrentDictionary<Type, Func<object, PropertyValues?, ChangeType, object>> _cachedTriggerContextFactories = new();
 
         readonly EntityEntry _entityEntry;
         readonly ChangeType _changeType;
@@ -37,19 +38,10 @@ namespace EntityFrameworkCore.Triggered.Internal
 
             var entityType = entityEntry.Entity.GetType();
 
-            if (_cachedTriggerContextFactories == null)
-            {
-                _cachedTriggerContextFactories = new Dictionary<Type, Func<object, PropertyValues?, ChangeType, object>>();
-            }
-
-            if (!_cachedTriggerContextFactories.TryGetValue(entityType, out var triggerContextFactory))
-            {
-                triggerContextFactory = (Func<object, PropertyValues?, ChangeType, object>)typeof(TriggerContextFactory<>).MakeGenericType(entityType)
+            var triggerContextFactory = _cachedTriggerContextFactories.GetOrAdd(entityType, entityType => 
+                (Func<object, PropertyValues?, ChangeType, object>)typeof(TriggerContextFactory<>).MakeGenericType(entityType)
                     .GetMethod(nameof(TriggerContextFactory<object>.Activate))
-                    .CreateDelegate(typeof(Func<object, PropertyValues?, ChangeType, object>));
-
-                _cachedTriggerContextFactories.Add(entityType, triggerContextFactory);
-            }
+                    .CreateDelegate(typeof(Func<object, PropertyValues?, ChangeType, object>)));
 
             return triggerContextFactory(entityEntry.Entity, originalValues, changeType);
         }

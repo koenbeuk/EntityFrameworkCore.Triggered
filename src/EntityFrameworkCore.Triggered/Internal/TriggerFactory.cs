@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -10,6 +11,7 @@ namespace EntityFrameworkCore.Triggered.Internal
 {
     public sealed class TriggerFactory
     {
+        static readonly ConcurrentDictionary<Type, Type> _instanceFactoryTypeCache = new();
         readonly IServiceProvider _internalServiceProvider;
 
         public TriggerFactory(IServiceProvider internalServiceProvider)
@@ -30,12 +32,19 @@ namespace EntityFrameworkCore.Triggered.Internal
             }
 
             // Alternatively, triggers may be registered with the extension configuration
-            var triggerServiceFactories = _internalServiceProvider.GetServices(typeof(ITriggerInstanceFactory<>).MakeGenericType(triggerType)).Cast<ITriggerInstanceFactory>();
+            var instanceFactoryType = _instanceFactoryTypeCache.GetOrAdd(triggerType,
+                triggerType => typeof(ITriggerInstanceFactory<>).MakeGenericType(triggerType)
+            );
+
+            var triggerServiceFactories = _internalServiceProvider.GetServices(instanceFactoryType);
             if (triggerServiceFactories.Any())
             {
                 foreach (var triggerServiceFactory in triggerServiceFactories)
                 {
-                    yield return triggerServiceFactory.Create(serviceProvider);
+                    if (triggerServiceFactory is not null)
+                    {
+                        yield return ((ITriggerInstanceFactory)triggerServiceFactory).Create(serviceProvider);
+                    }
                 }
             }
         }

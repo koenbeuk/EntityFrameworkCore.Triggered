@@ -26,7 +26,7 @@ namespace EntityFrameworkCore.Triggered.IntegrationTests.CascadingSoftDeletes
                 Assert.Equal(3, result);
             }
 
-            scenario.Fact("1. Soft delete works on the depest level", () => {
+            scenario.Fact("1. Soft delete works on the deepest level", () => {
                 dbContext.Remove(level2);
                 var result = dbContext.SaveChanges();
 

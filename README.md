@@ -118,6 +118,13 @@ services.AddDbContext<ApplicationContext>(options => options.UseTriggers(trigger
 services.AddAssemblyTriggers();
 ```
 
+### DB Context Pooling
+When using DbContextPooling, Triggers need additional help in discovering the IServiceProvider that was used to obtain a Lease on the current DbContext. This library exposes an easy-to-use plugin to enable this additional complexity which requires a call to `AddTriggeredDbContextPool`.
+
+```csharp
+services.AddDbContextPool<ApplicationDbContext>(...); // Before
+services.AddTriggeredDbContextPool<ApplicationDbContext>(...); // After
+```
 
 ### Cascading changes (previously called Recursion)
 `BeforeSaveTrigger<TEntity>` supports cascading triggers. This is useful since it allows your triggers to subsequently modify the same DbContext entity graph and have it raise additional triggers. By default this behavior is turned on and protected from infinite loops by limiting the number of cascading cycles. If you don't like this behavior or want to change it, you can do so by:

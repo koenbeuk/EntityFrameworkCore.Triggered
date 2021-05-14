@@ -2,7 +2,6 @@
 using System.Linq;
 using BenchmarkDotNet;
 using BenchmarkDotNet.Attributes;
-using EntityFrameworkCore.Triggers;
 using Microsoft.Diagnostics.Runtime.Interop;
 using Microsoft.Diagnostics.Tracing.Analysis.GC;
 using Microsoft.EntityFrameworkCore;
@@ -28,15 +27,6 @@ namespace EntityFrameworkCore.Triggered.Benchmarks
                         .UseInMemoryDatabase(nameof(WithTriggeredDbContext))
                         .UseTriggers();
                 })
-                .AddDbContext<ApplicationContextWithTriggers>(options => {
-                    options
-                        .UseInMemoryDatabase(nameof(WithDbContextWithTriggers));
-                })
-                .AddDbContext<RamsesApplicationContext>(options => {
-                    options
-                        .UseInMemoryDatabase(nameof(RamsesApplicationContext));
-                })
-                .AddTriggers()
                 .BuildServiceProvider();
         }
 
@@ -108,22 +98,9 @@ namespace EntityFrameworkCore.Triggered.Benchmarks
         }
 
         [Benchmark]
-        public void WithDbContextWithTriggers()
-        {
-            Execute<ApplicationContextWithTriggers>();
-        }
-
-        [Benchmark]
         public void WithTriggeredDbContext()
         {
             Execute<TriggeredApplicationContext>();
-        }
-        
-
-        [Benchmark]
-        public void WithRamsesDbContext()
-        {
-            Execute<RamsesApplicationContext>();
         }
     }
 }

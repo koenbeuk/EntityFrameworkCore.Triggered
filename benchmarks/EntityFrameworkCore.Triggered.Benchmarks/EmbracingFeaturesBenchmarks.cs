@@ -2,7 +2,6 @@
 using System.Linq;
 using BenchmarkDotNet;
 using BenchmarkDotNet.Attributes;
-using EntityFrameworkCore.Triggers;
 using Microsoft.Diagnostics.Runtime.Interop;
 using Microsoft.Diagnostics.Tracing.Analysis.GC;
 using Microsoft.EntityFrameworkCore;
@@ -31,35 +30,8 @@ namespace EntityFrameworkCore.Triggered.Benchmarks
                             triggerOptions.AddTrigger<Triggers.SignStudentUpForMandatoryCourses>();
                         });
                 })
-                .AddDbContext<ApplicationContextWithTriggers>(options => {
-                    options
-                        .UseInMemoryDatabase(nameof(WithDbContextWithTriggers));
-                })
-                .AddDbContext<RamsesApplicationContext>(options => {
-                    options
-                        .UseInMemoryDatabase(nameof(RamsesApplicationContext));
-                })
-                .AddTriggers()
-                .AddSingleton(typeof(ITriggers<,>), typeof(Triggers<,>))
-                .AddSingleton(typeof(ITriggers<>), typeof(Triggers<>))
-                .AddSingleton(typeof(ITriggers), typeof(EntityFrameworkCore.Triggers.Triggers))
                 .BuildServiceProvider();
 
-            Triggers<Student, ApplicationContextWithTriggers>.GlobalInserting.Add(entry => {
-                entry.Entity.RegistrationDate = DateTimeOffset.Now;
-            });
-
-            Triggers<Student, ApplicationContextWithTriggers>.GlobalInserting.Add(entry => {
-                var mandatoryCourses = entry.Context.Courses.Where(x => x.IsMandatory).ToList();
-
-                foreach (var mandatoryCourse in mandatoryCourses)
-                {
-                    entry.Context.StudentCourses.Add(new StudentCourse {
-                        CourseId = mandatoryCourse.Id,
-                        StudentId = entry.Entity.Id
-                    });
-                }
-            });
         }
 
         [Params(50)]
@@ -130,44 +102,6 @@ namespace EntityFrameworkCore.Triggered.Benchmarks
         }
 
         [Benchmark]
-        public void WithDbContextWithTriggers()
-        {
-            // setup
-            {
-                using var scope = _serviceProvider.CreateScope();
-                using var context = scope.ServiceProvider.GetRequiredService<ApplicationContextWithTriggers>();
-
-                context.Database.EnsureDeleted();
-
-                context.Courses.Add(new Course { Id = Guid.NewGuid(), DisplayName = "Test", IsMandatory = true });
-                context.SaveChanges();
-            }
-
-            // execute
-            for (var outerBatch = 0; outerBatch < OuterBatches; outerBatch++)
-            {
-                using var scope = _serviceProvider.CreateScope();
-                using var context = scope.ServiceProvider.GetRequiredService<ApplicationContextWithTriggers>();
-
-                for (var innerBatch = 0; innerBatch < InnerBatches; innerBatch++)
-                {
-                    var student = new Student { Id = Guid.NewGuid(), DisplayName = "Test" };
-                    context.Add(student);
-                }
-
-                context.SaveChanges();
-            }
-
-            // validate
-            {
-                using var scope = _serviceProvider.CreateScope();
-                using var context = scope.ServiceProvider.GetRequiredService<ApplicationContextWithTriggers>();
-
-                Validate(context);
-            }
-        }
-
-        [Benchmark]
         public void WithTriggeredDbContext()
         {
             // setup
@@ -201,56 +135,6 @@ namespace EntityFrameworkCore.Triggered.Benchmarks
             {
                 using var scope = _serviceProvider.CreateScope();
                 using var context = scope.ServiceProvider.GetRequiredService<TriggeredApplicationContext>();
-
-                Validate(context);
-            }
-        }
-
-
-        [Benchmark]
-        public void WithRamsesDbContext()
-        {
-            // setup
-            {
-                using var scope = _serviceProvider.CreateScope();
-                using var context = scope.ServiceProvider.GetRequiredService<RamsesApplicationContext>();
-
-                context.Database.EnsureDeleted();
-
-                context.Courses.Add(new Course { Id = Guid.NewGuid(), DisplayName = "Test", IsMandatory = true });
-                context.SaveChanges();
-            }
-
-            // execute
-            for (var outerBatch = 0; outerBatch < OuterBatches; outerBatch++)
-            {
-                using var scope = _serviceProvider.CreateScope();
-                using var context = scope.ServiceProvider.GetRequiredService<RamsesApplicationContext>();
-
-                for (var innerBatch = 0; innerBatch < InnerBatches; innerBatch++)
-                {
-                    var student = new Student { Id = Guid.NewGuid(), DisplayName = "Test" };
-
-                    context.Add(student);
-
-                    var mandatoryCourses = context.Courses.Where(x => x.IsMandatory).ToList();
-
-                    foreach (var mandatoryCourse in mandatoryCourses)
-                    {
-                        context.StudentCourses.Add(new StudentCourse {
-                            CourseId = mandatoryCourse.Id,
-                            StudentId = student.Id
-                        });
-                    }
-                }
-
-                context.SaveChanges();
-            }
-
-            // validate
-            {
-                using var scope = _serviceProvider.CreateScope();
-                using var context = scope.ServiceProvider.GetRequiredService<RamsesApplicationContext>();
 
                 Validate(context);
             }

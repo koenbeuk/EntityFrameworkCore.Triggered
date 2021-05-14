@@ -9,7 +9,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EntityFrameworkCore.Triggered.IntegrationTests.CascadingSoftDeletes
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext
+#if EFCORETRIGGERED1
+        : TriggeredDbContext
+#else
+        : DbContext
+#endif
     {
         readonly string _databaseName;
 

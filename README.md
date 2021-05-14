@@ -15,7 +15,7 @@ Triggers for EF Core. Respond to changes in your DbContext before and after they
 1. Install the package from [NuGet](https://www.nuget.org/packages/EntityFrameworkCore.Triggered)
 2. Implement Triggers by implementing `IBeforeSaveTrigger<TEntity>` and `IAfterSaveTrigger<TEntity>`
 3. Register your triggers with your DbContext
-4. View our [samples](https://github.com/koenbeuk/EntityFrameworkCore.Triggered/tree/master/samples)
+4. View our [samples](https://github.com/koenbeuk/EntityFrameworkCore.Triggered/tree/master/samples) and [more samples](https://github.com/koenbeuk/EntityFrameworkCore.Triggered.Samples) and [a sample application](https://github.com/koenbeuk/EntityFrameworkCore.BookStoreSampleApp)
 5. Check out our [wiki](https://github.com/koenbeuk/EntityFrameworkCore.Triggered/wiki) for tips and tricks on getting started and being succesfull.
 
 > Since EntityFrameworkCore.Triggered 2.0, triggers will be invoked automatically, however this requires EFCore 5.0. If you're stuck with EFCore 3.1 then you can use [EntityFrameworkCore.Triggered V1](https://www.nuget.org/packages/EntityFrameworkCore.Triggered/1.1.0). This requires you to inherit from `TriggeredDbContext` or manual management of trigger sessions.
@@ -96,6 +96,9 @@ public class Startup
 }
 ```
 
+### Related articles
+[Triggers for Entity Framework Core](https://onthedrift.com/posts/efcore-triggered-part1/) - Introduces the idea of using EFCore triggers in your codebase
+
 ### Trigger discovery
 In the given example, we register triggers directly with our DbContext. This is the recommended approach starting from version 2.3 and 1.4 respectively. If you're on an older version then its recommend to register triggers with your applications DI container instead:
 
@@ -115,6 +118,13 @@ services.AddDbContext<ApplicationContext>(options => options.UseTriggers(trigger
 services.AddAssemblyTriggers();
 ```
 
+### DB Context Pooling
+When using DbContextPooling, Triggers need additional help in discovering the IServiceProvider that was used to obtain a Lease on the current DbContext. This library exposes an easy-to-use plugin to enable this additional complexity which requires a call to `AddTriggeredDbContextPool`.
+
+```csharp
+services.AddDbContextPool<ApplicationDbContext>(...); // Before
+services.AddTriggeredDbContextPool<ApplicationDbContext>(...); // After
+```
 
 ### Cascading changes (previously called Recursion)
 `BeforeSaveTrigger<TEntity>` supports cascading triggers. This is useful since it allows your triggers to subsequently modify the same DbContext entity graph and have it raise additional triggers. By default this behavior is turned on and protected from infinite loops by limiting the number of cascading cycles. If you don't like this behavior or want to change it, you can do so by:

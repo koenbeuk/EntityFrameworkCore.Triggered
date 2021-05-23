@@ -35,14 +35,15 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
             public Task BeforeSave(ITriggerContext<object> context, CancellationToken cancellationToken) => throw new NotImplementedException();
         }
 
-        class SampleTrigger3 : IBeforeSaveTrigger<object>
+        class SampleTrigger3<TDbContext> : IBeforeSaveTrigger<object>
+            where TDbContext : DbContext
         {
-            public SampleTrigger3(SampleDbContext3 dbContext)
+            public SampleTrigger3(TDbContext dbContext)
             {
                 DbContext = dbContext;
             }
 
-            public SampleDbContext3 DbContext { get; }
+            public TDbContext DbContext { get; }
 
             public Task BeforeSave(ITriggerContext<object> context, CancellationToken cancellationToken) => throw new NotImplementedException();
         }
@@ -53,7 +54,11 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
             {
                 optionsBuilder
                     .UseInMemoryDatabase(nameof(SampleDbContext3))
-                    .UseTriggers(triggerOptions => triggerOptions.AddTrigger<SampleTrigger3>());
+                    .UseTriggers(triggerOptions => 
+                        triggerOptions
+                            .AddTrigger<SampleTrigger3<SampleDbContext3>>()
+                            .AddTrigger<SampleTrigger3<DbContext>>()
+                    );
                 optionsBuilder.ConfigureWarnings(warningOptions => {
                     warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
                 });
@@ -110,6 +115,32 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
 
             Assert.NotNull(trigger);
             Assert.Equal(subject, trigger.TriggerFactory);
+        }
+
+        [Fact]
+        public void Resolve_FromHybridServices_GetsPasedTheConcreteDbContext()
+        {
+            using var dbContext = new SampleDbContext3();
+            var factory = dbContext.GetService<TriggerFactory>();
+            var serviceProvider = new HybridServiceProvider(dbContext.GetInfrastructure(), dbContext);
+            
+            var trigger = factory.Resolve(serviceProvider, typeof(IBeforeSaveTrigger<object>)).FirstOrDefault() as SampleTrigger3<SampleDbContext3>;
+
+            Assert.NotNull(trigger);
+            Assert.Equal(dbContext, trigger.DbContext);
+        }
+
+        [Fact]
+        public void Resolve_FromHybridServices_GetsPasedTheAbstractDbContext()
+        {
+            using var dbContext = new SampleDbContext3();
+            var factory = dbContext.GetService<TriggerFactory>();
+            var serviceProvider = new HybridServiceProvider(dbContext.GetInfrastructure(), dbContext);
+
+            var trigger = factory.Resolve(serviceProvider, typeof(IBeforeSaveTrigger<object>)).LastOrDefault() as SampleTrigger3<DbContext>;
+
+            Assert.NotNull(trigger);
+            Assert.Equal(dbContext, trigger.DbContext);
         }
     }
 }

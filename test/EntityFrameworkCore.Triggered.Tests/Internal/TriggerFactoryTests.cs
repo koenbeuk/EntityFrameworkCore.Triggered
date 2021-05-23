@@ -113,12 +113,13 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
         }
 
         [Fact]
-        public void Resolve_FromInternalServices_GetsPasedTheDbContext()
+        public void Resolve_FromHybridServices_GetsPasedTheDbContext()
         {
             using var dbContext = new SampleDbContext3();
             var factory = dbContext.GetService<TriggerFactory>();
+            var serviceProvider = new HybridServiceProvider(dbContext.GetInfrastructure(), dbContext);
             
-            var trigger = factory.Resolve(dbContext.GetInfrastructure(), typeof(IBeforeSaveTrigger<object>)).FirstOrDefault() as SampleTrigger3;
+            var trigger = factory.Resolve(serviceProvider, typeof(IBeforeSaveTrigger<object>)).FirstOrDefault() as SampleTrigger3;
 
             Assert.NotNull(trigger);
         }

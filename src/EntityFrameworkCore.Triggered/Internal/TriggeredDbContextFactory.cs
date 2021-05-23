@@ -31,7 +31,7 @@ namespace EntityFrameworkCore.Triggered.Internal
             var applicationTriggerServiceProviderAccessor = context.GetService<ApplicationTriggerServiceProviderAccessor>();
             if (applicationTriggerServiceProviderAccessor != null)
             {
-                applicationTriggerServiceProviderAccessor.SetTriggerServiceProvider(_serviceProvider);
+                applicationTriggerServiceProviderAccessor.SetTriggerServiceProvider(new HybridServiceProvider(_serviceProvider, context));
             }
 
             return context;

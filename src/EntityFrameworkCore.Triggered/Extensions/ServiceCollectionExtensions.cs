@@ -92,7 +92,7 @@ namespace Microsoft.Extensions.DependencyInjection
             where TContext : DbContext
             where TFactory : IDbContextFactory<TContext>
         {
-            serviceCollection.AddDbContextFactory<TContext>(options => {
+            serviceCollection.AddDbContextFactory<TContext, TFactory>(options => {
                 optionsAction?.Invoke(options);
                 options.UseTriggers();
             }, lifetime);

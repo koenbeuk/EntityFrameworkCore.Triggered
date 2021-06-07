@@ -1,7 +1,9 @@
-﻿using EntityFrameworkCore.Triggered.Tests.Stubs;
+﻿using System;
+using EntityFrameworkCore.Triggered.Tests.Stubs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
@@ -20,6 +22,15 @@ namespace EntityFrameworkCore.Triggered.Tests.Infrastructure
             {
             }
         }
+
+#if EFCORETRIGGERED2
+        class TestDbContextFactory : DbContextFactory<TestDbContext>
+        {
+            public TestDbContextFactory(IServiceProvider serviceProvider, DbContextOptions<TestDbContext> options, IDbContextFactorySource<TestDbContext> factorySource) : base(serviceProvider, options, factorySource)
+            {
+            }
+        }
+#endif
 
         [Fact]
         public void AddTriggeredDbContext_AddsTriggersAndCallsUsersAction()
@@ -131,6 +142,34 @@ namespace EntityFrameworkCore.Triggered.Tests.Infrastructure
             using var scope = serviceProvider.CreateScope();
 
             var contextFactory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<TestDbContext>>();
+            var context = contextFactory.CreateDbContext();
+
+            context.TestModels.Add(new TestModel());
+
+            context.SaveChanges();
+
+            var triggerStub = scope.ServiceProvider.GetRequiredService<IBeforeSaveTrigger<TestModel>>() as TriggerStub<TestModel>;
+            Assert.NotNull(triggerStub);
+            Assert.Equal(1, triggerStub.BeforeSaveInvocations.Count);
+        }
+
+        [Fact]
+        public void AddTriggeredDbContextFactory_WithCustomFactory_ReusesScopedServiceProvider()
+        {
+            var subject = new ServiceCollection();
+            subject.AddTriggeredDbContextFactory<TestDbContext, TestDbContextFactory>(options => {
+                options.UseInMemoryDatabase("test");
+                options.ConfigureWarnings(warningOptions => {
+                    warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
+                });
+            }).AddScoped<IBeforeSaveTrigger<TestModel>, TriggerStub<TestModel>>();
+
+            var serviceProvider = subject.BuildServiceProvider();
+
+            using var scope = serviceProvider.CreateScope();
+
+            var contextFactory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<TestDbContext>>();
+
             var context = contextFactory.CreateDbContext();
 
             context.TestModels.Add(new TestModel());

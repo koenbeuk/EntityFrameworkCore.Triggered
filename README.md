@@ -13,12 +13,12 @@ Triggers for EF Core. Respond to changes in your DbContext before and after they
 
 ## Getting started
 1. Install the package from [NuGet](https://www.nuget.org/packages/EntityFrameworkCore.Triggered)
-2. Implement Triggers by implementing `IBeforeSaveTrigger<TEntity>` and `IAfterSaveTrigger<TEntity>`
+2. Write triggers by implementing `IBeforeSaveTrigger<TEntity>` and `IAfterSaveTrigger<TEntity>`
 3. Register your triggers with your DbContext
 4. View our [samples](https://github.com/koenbeuk/EntityFrameworkCore.Triggered/tree/master/samples) and [more samples](https://github.com/koenbeuk/EntityFrameworkCore.Triggered.Samples) and [a sample application](https://github.com/koenbeuk/EntityFrameworkCore.BookStoreSampleApp)
-5. Check out our [wiki](https://github.com/koenbeuk/EntityFrameworkCore.Triggered/wiki) for tips and tricks on getting started and being succesfull.
+5. Check out our [wiki](https://github.com/koenbeuk/EntityFrameworkCore.Triggered/wiki) for tips and tricks on getting started and being successful.
 
-> Since EntityFrameworkCore.Triggered 2.0, triggers will be invoked automatically, however this requires EFCore 5.0. If you're stuck with EFCore 3.1 then you can use [EntityFrameworkCore.Triggered V1](https://www.nuget.org/packages/EntityFrameworkCore.Triggered/1.1.0). This requires you to inherit from `TriggeredDbContext` or manual management of trigger sessions.
+> Since EntityFrameworkCore.Triggered 2.0, triggers will be invoked automatically, however this requires EF Core 5.0. If you're stuck with EF Core 3.1 then you can use [EntityFrameworkCore.Triggered V1](https://www.nuget.org/packages/EntityFrameworkCore.Triggered/1.1.0). This requires you to inherit from `TriggeredDbContext` or handle manual management of trigger sessions.
 
 ### Example
 ```csharp
@@ -97,10 +97,10 @@ public class Startup
 ```
 
 ### Related articles
-[Triggers for Entity Framework Core](https://onthedrift.com/posts/efcore-triggered-part1/) - Introduces the idea of using EFCore triggers in your codebase
+[Triggers for Entity Framework Core](https://onthedrift.com/posts/efcore-triggered-part1/) - Introduces the idea of using EF Core triggers in your codebase
 
 ### Trigger discovery
-In the given example, we register triggers directly with our DbContext. This is the recommended approach starting from version 2.3 and 1.4 respectively. If you're on an older version then its recommend to register triggers with your applications DI container instead:
+In the given example, we register triggers directly with our DbContext. This is the recommended approach starting from version 2.3 and 1.4 respectively. If you're on an older version then it's recommended to register triggers with your application's DI container instead:
 
 ```csharp
     services
@@ -118,8 +118,8 @@ services.AddDbContext<ApplicationContext>(options => options.UseTriggers(trigger
 services.AddAssemblyTriggers();
 ```
 
-### DB Context Pooling
-When using DbContextPooling, Triggers need additional help in discovering the IServiceProvider that was used to obtain a Lease on the current DbContext. This library exposes an easy-to-use plugin to enable this additional complexity which requires a call to `AddTriggeredDbContextPool`.
+### DbContext pooling
+When using EF Core's [DbContext pooling](https://docs.microsoft.com/en-us/ef/core/performance/advanced-performance-topics?tabs=with-constant#dbcontext-pooling), Triggers internally needs to discover the `IServiceProvider` that was used to obtain a lease on the current DbContext. Thankfully, all that's complexity is hidden and all that's required is a call to `AddTriggeredDbContextPool`.
 
 ```csharp
 services.AddDbContextPool<ApplicationDbContext>(...); // Before
@@ -134,7 +134,7 @@ optionsBuilder.UseTriggers(triggerOptions => {
 })
 ```
 
-Currently there are 2 types of cascading strategies out of the box, with the support to providing your own:  `NoCascade` and `EntityAndType` (default). The former simply disables cascading whereas the latter cascades triggers for as long as the combination of the Entity and the change type is unique. `EntityAndType` is the recommended and default cascading strategy.
+Currently there are 2 types of cascading strategies out of the box: `NoCascade` and `EntityAndType` (default). The former simply disables cascading, whereas the latter cascades triggers for as long as the combination of the Entity and the change type is unique. `EntityAndType` is the recommended and default cascading strategy. You can also provide your own implemention.
 
 ### Inheritance
 Triggers support inheritance and sort execution of these triggers based on least concrete to most concrete. Given the following example:
@@ -145,17 +145,22 @@ interface ICat : IAnimal { }
 class Cat : Animal, ICat { }
 ```
 
-Triggers will be executed in that order: First those for `IAnimal`, then those for `Animal`, then those for `ICat` and finally `Cat` itself. If multiple triggers are registered for the same type then they will execute in order or registration with the DI container.
+In this example, triggers will be executed in the order: 
+* those for `IAnimal`, 
+* those for `Animal`
+* those for `ICat`, and finally 
+* `Cat` itself. 
+
+If multiple triggers are registered for the same type, they will execute in order they were registered with the DI container.
 
 ### Priorities
-In addition to inheritance
-and the order in which triggers are registered, a trigger can also implement the `ITriggerPriority` interface. This allows a trigger to configure a custom priority (default: 0). Triggers will then be executed in order of their priority (lower goes first). This means that a trigger for Cat can execute before a trigger for Animal, for as long as its priority is set to run earlier. A convenient set of priorities are exposed in the `CommonTriggerPriority` class
+In addition to inheritance and the order in which triggers are registered, a trigger can also implement the `ITriggerPriority` interface. This allows a trigger to configure a custom priority (default: 0). Triggers will then be executed in order of their priority (lower goes first). This means that a trigger for `Cat` can execute before a trigger for `Animal`, for as long as its priority is set to run earlier. A convenient set of priorities are exposed in the `CommonTriggerPriority` class.
 
 ### Error handling
-In some cases, you want to be triggered when a DbUpdateException occurs. For this purpose we have `IAfterSaveFailedTrigger<TEntity>`. This gets triggered for all entities as part of the change set when DbContext.SaveChanges raises a DbUpdateException. The handling method: `AfterSaveFailed` in turn gets called with the trigger context containing the entity as well as the exception. You may attempt to call `DbContext.SaveChanges` again from within this trigger. This will not raise triggers that are already raised and only raise triggers that have since become relevant (based on the cascading configuration). 
+In some cases, you want to be triggered when a `DbUpdateException` occurs. For this purpose we have `IAfterSaveFailedTrigger<TEntity>`. This gets triggered for all entities as part of the change set when DbContext.SaveChanges raises a DbUpdateException. The handling method: `AfterSaveFailed` in turn gets called with the trigger context containing the entity as well as the exception. You may attempt to call `DbContext.SaveChanges` again from within this trigger. This will not raise triggers that are already raised and only raise triggers that have since become relevant (based on the cascading configuration). 
 
 ### Lifecycle triggers
-Starting with version 2.1.0, we added support for Lifecycle triggers. These triggers are invoked once per trigger type per SaveChanges lifecyle and reside within the   `EntityFrameworkCore.Triggered.Lifecycles` namespace. These can be used to run something before/after all individual triggers have run. Consider the following example:
+Starting with version 2.1.0, we added support for "Lifecycle triggers". These triggers are invoked once per trigger type per `SaveChanges` lifecyle and reside within the   `EntityFrameworkCore.Triggered.Lifecycles` namespace. These can be used to run something before/after all individual triggers have run. Consider the following example:
 ```csharp
 public BulkReportTrigger : IAfterSaveTrigger<Email>, IAfterSaveCompletedTrigger {
     private List<string> _emailAddresses = new List<string>();
@@ -176,7 +181,7 @@ public BulkReportTrigger : IAfterSaveTrigger<Email>, IAfterSaveCompletedTrigger 
 ```
 
 ### Transactions
-Many database providers support the concept of a Transaction. By default when using SqlServer with EntityFrameworkCore, any call to SaveChanges will be wrapped in a transaction. Any changes made in `IBeforeSaveTrigger<TEntity>` will be included within the transaction and changes made in `IAfterSaveTrigger<TEntity>` will not. However, it is possible for the user to [explicitly control transactions](https://docs.microsoft.com/en-us/ef/core/saving/transactions). Triggers are extensible and one such extension are [Transactional Triggers](https://www.nuget.org/packages/EntityFrameworkCore.Triggered.Transactions/). In order to use this plugin you will have to implement a few steps:
+Many database providers support the concept of a Transaction. By default when using SqlServer with EntityFrameworkCore, any call to `SaveChanges` will be wrapped in a transaction. Any changes made in `IBeforeSaveTrigger<TEntity>` will be included within the transaction and changes made in `IAfterSaveTrigger<TEntity>` will not. However, it is possible for the user to [explicitly control transactions](https://docs.microsoft.com/en-us/ef/core/saving/transactions). Triggers are extensible and one such extension are [Transactional Triggers](https://www.nuget.org/packages/EntityFrameworkCore.Triggered.Transactions/). In order to use this plugin you will have to implement a few steps:
 ```csharp
 // OPTIONAL: Enable transactions when configuring triggers (Required ONLY when not using dependency injection)
 triggerOptions.UseTransactionTriggers();
@@ -202,8 +207,8 @@ await triggerSession.RaiseAfterCommitTriggers();
 In this example we were not able to inherit from TriggeredDbContext since we want to manually control the TriggerSession
 
 ### Custom trigger types
-By default we offer 3 trigger types: `IBeforeSaveTrigger`, `IAfterSaveTrigger` and `IAfterSaveFailedTrigger`. These will cover most cases. In addition we offer `IRaiseBeforeCommitTrigger` and `IRaiseAfterCommitTrigger` as an extension to further enhance your control of when triggers should run. We also offer support for custom triggers. Lets say we want to react to specific events happening in your context. We can do so by creating a new interface: IThisThingJustHappenedTrigger and implementing an extension method for ITriggerSession to invoke triggers of that type. Please take a look at how [Transactional triggers](https://github.com/koenbeuk/EntityFrameworkCore.Triggered/tree/master/src/EntityFrameworkCore.Triggered.Transactions) are implemented as an example.
+By default we offer 3 trigger types: `IBeforeSaveTrigger`, `IAfterSaveTrigger` and `IAfterSaveFailedTrigger`. These will cover most cases. In addition we offer `IRaiseBeforeCommitTrigger` and `IRaiseAfterCommitTrigger` as an extension to further enhance your control of when triggers should run. We also offer support for custom triggers. Let's say we want to react to specific events happening in your context. We can do so by creating a new interface `IThisThingJustHappenedTrigger` and implementing an extension method for `ITriggerSession` to invoke triggers of that type. Please take a look at how [Transactional triggers](https://github.com/koenbeuk/EntityFrameworkCore.Triggered/tree/master/src/EntityFrameworkCore.Triggered.Transactions) are implemented as an example.
 
 ### Similar products
-- [Ramses](https://github.com/JValck/Ramses): Lifecycle hooks for EFCore. A simple yet effective way of reacting to changes. Great for situations where you simply want to make sure that a property is set before saving to the database. Limited though in features as there is no dependency injection, no async support, no extensibility model and lifecycle hooks need to be implemented on the entity type itself.
+- [Ramses](https://github.com/JValck/Ramses): Lifecycle hooks for EF Core. A simple yet effective way of reacting to changes. Great for situations where you simply want to make sure that a property is set before saving to the database. Limited though in features as there is no dependency injection, no async support, no extensibility model and lifecycle hooks need to be implemented on the entity type itself.
 - [EntityFramework.Triggers](https://github.com/NickStrupat/EntityFramework.Triggers). Add triggers to your entities with insert, update, and delete events. There are three events for each: before, after, and upon failure. A fine alternative to EntityFrameworkCore.Triggered. It has been around for some time and has support for EF6 and boast a decent community. There are plenty of trigger types to opt into including the option to cancel SaveChanges from within a trigger. A big drawback however is that it does not support cascading triggers so that triggers can never be relied on to enforce a domain constraint.

@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 namespace EntityFrameworkCore.Triggered.Internal
 {
@@ -33,7 +30,7 @@ namespace EntityFrameworkCore.Triggered.Internal
             {
                 _fallbackApplicationServiceProvider = coreOptionsExtension.ApplicationServiceProvider;
             }
-            
+
             _scopedServiceProviderTransform = scopedServiceProviderTransform;
         }
 

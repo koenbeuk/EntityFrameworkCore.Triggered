@@ -1,17 +1,9 @@
-using BlazorTests.Data;
-using EntityFrameworkCore.Triggered;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace BlazorTests
 {
@@ -31,7 +23,7 @@ namespace BlazorTests
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddSingleton<EventAggregator>();
- 
+
             services.AddTriggeredDbContextFactory<ApplicationDbContext>(options => {
                 options
                     .UseSqlite("Data source=test.db")
@@ -67,8 +59,7 @@ namespace BlazorTests
 
             app.UseRouting();
 
-            app.UseEndpoints(endpoints =>
-            {
+            app.UseEndpoints(endpoints => {
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
             });

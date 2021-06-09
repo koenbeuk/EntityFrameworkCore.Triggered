@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace EntityFrameworkCore.Triggered.Internal
 {
@@ -73,8 +72,8 @@ namespace EntityFrameworkCore.Triggered.Internal
 
             return triggers
                 .Select((trigger, index) => (
-                    trigger, 
-                    defaultPriority: index, 
+                    trigger,
+                    defaultPriority: index,
                     customPriority: (trigger as ITriggerPriority)?.Priority ?? 0
                 ))
                 .OrderBy(x => x.customPriority)

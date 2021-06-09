@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using EntityFrameworkCore.Triggered;
@@ -23,7 +20,7 @@ namespace StudentManager.Triggers.Traits.Audited
         public Task BeforeSave(ITriggerContext<IAudited> context, CancellationToken cancellationToken)
         {
             var recordBuilder = new StringBuilder();
-            
+
             var changes = context.Entity.GetType()
                 .GetProperties()
                 .Select(property => (name: property.Name, oldValue: context.ChangeType != ChangeType.Added ? property.GetValue(context.UnmodifiedEntity) : null, newValue: property.GetValue(context.Entity)))

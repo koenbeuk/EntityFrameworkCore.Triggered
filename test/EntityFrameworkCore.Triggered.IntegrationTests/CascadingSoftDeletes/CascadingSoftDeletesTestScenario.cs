@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using EntityFrameworkCore.Triggered.IntegrationTests.CascadingSoftDeletes.Models;
+﻿using EntityFrameworkCore.Triggered.IntegrationTests.CascadingSoftDeletes.Models;
 using ScenarioTests;
 using Xunit;
 

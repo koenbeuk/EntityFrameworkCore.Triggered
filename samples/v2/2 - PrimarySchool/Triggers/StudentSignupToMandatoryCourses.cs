@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using EntityFrameworkCore.Triggered;
@@ -22,7 +19,7 @@ namespace PrimarySchool.Triggers
             var mandatoryCourses = _applicationContext.Courses
                 .Where(x => x.IsMandatory)
                 .ToList();
-            
+
             foreach (var mandatoryCourse in mandatoryCourses)
             {
                 var studentRegistration = _applicationContext.StudentCourses.Find(context.Entity.Id, mandatoryCourse.Id);

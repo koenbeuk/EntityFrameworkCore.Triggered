@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
 using EntityFrameworkCore.Triggered.Tests.Stubs;
@@ -401,7 +400,7 @@ namespace EntityFrameworkCore.Triggered.Tests
             // act
 
             testModel.Name = "test2";
-            
+
             subject.DiscoverChanges();
             dbContext.SaveChanges();
             subject.RaiseAfterSaveTriggers().GetAwaiter().GetResult();

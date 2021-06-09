@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Buffers;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace EntityFrameworkCore.Triggered.Internal
@@ -38,7 +36,7 @@ namespace EntityFrameworkCore.Triggered.Internal
 
             var entityType = entityEntry.Entity.GetType();
 
-            var triggerContextFactory = _cachedTriggerContextFactories.GetOrAdd(entityType, entityType => 
+            var triggerContextFactory = _cachedTriggerContextFactories.GetOrAdd(entityType, entityType =>
                 (Func<object, PropertyValues?, ChangeType, object>)typeof(TriggerContextFactory<>).MakeGenericType(entityType)
                     .GetMethod(nameof(TriggerContextFactory<object>.Activate))
                     .CreateDelegate(typeof(Func<object, PropertyValues?, ChangeType, object>)));

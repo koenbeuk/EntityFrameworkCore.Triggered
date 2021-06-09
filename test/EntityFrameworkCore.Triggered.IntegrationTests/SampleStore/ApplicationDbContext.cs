@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using EntityFrameworkCore.Triggered.IntegrationTests.SampleStore.Models;
+﻿using EntityFrameworkCore.Triggered.IntegrationTests.SampleStore.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace EntityFrameworkCore.Triggered.IntegrationTests.SampleStore

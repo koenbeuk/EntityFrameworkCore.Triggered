@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using EntityFrameworkCore.Triggered;
 using Microsoft.EntityFrameworkCore;
 
 namespace PrimarySchool
@@ -16,7 +11,7 @@ namespace PrimarySchool
 
         public DateTime RegistrationDate { get; set; }
     }
-        
+
     public class ApplicationDbContext : DbContext
     {
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

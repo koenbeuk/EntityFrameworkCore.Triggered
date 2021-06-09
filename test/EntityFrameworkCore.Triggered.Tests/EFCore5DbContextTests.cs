@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
-using EntityFrameworkCore.Triggered.Tests.Stubs;
 using EntityFrameworkCore.Triggered.Extensions;
-using Microsoft.Data.Sqlite;
+using EntityFrameworkCore.Triggered.Tests.Stubs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Xunit;
 
 namespace EntityFrameworkCore.Triggered.Tests

@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using EntityFrameworkCore.Triggered.Internal;
 using EntityFrameworkCore.Triggered.Internal.CascadeStrategies;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

@@ -1,6 +1,5 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using EntityFrameworkCore.Triggered.Extensions;
 
 namespace EntityFrameworkCore.Triggered.IntegrationTests.LifetimeTests.Triggers.Users
 {

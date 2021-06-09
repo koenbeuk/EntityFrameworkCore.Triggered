@@ -1,18 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using EntityFrameworkCore.Triggered.Transactions.Tests.Stubs;
 using EntityFrameworkCore.Triggered.Extensions;
+using EntityFrameworkCore.Triggered.Transactions.Tests.Stubs;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Xunit;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Xunit;
 
 namespace EntityFrameworkCore.Triggered.Transactions.Tests
 {
-    public class TriggeredDbContextTests 
+    public class TriggeredDbContextTests
     {
         class TestModel
         {
@@ -35,7 +30,7 @@ namespace EntityFrameworkCore.Triggered.Transactions.Tests
                 optionsBuilder.ConfigureWarnings(warningOptions => {
                     warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
                 });
-                
+
                 optionsBuilder.UseInMemoryDatabase("test");
                 optionsBuilder.UseTriggers(triggerOptions => {
                     triggerOptions
@@ -50,7 +45,7 @@ namespace EntityFrameworkCore.Triggered.Transactions.Tests
         {
             var dbContext = new TestDbContext();
             using var subject = dbContext.CreateTriggerSession();
-            
+
             dbContext.TestModels.Add(new TestModel {
                 Id = Guid.NewGuid(),
                 Name = "test1"

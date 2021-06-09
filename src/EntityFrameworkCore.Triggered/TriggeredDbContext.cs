@@ -46,7 +46,7 @@ namespace EntityFrameworkCore.Triggered
             base.OnConfiguring(optionsBuilder);
         }
 
-        public void SetTriggerServiceProvider(IServiceProvider? serviceProvider) 
+        public void SetTriggerServiceProvider(IServiceProvider? serviceProvider)
             => _triggerServiceProvider = serviceProvider;
 
         public override int SaveChanges(bool acceptAllChangesOnSuccess)
@@ -70,8 +70,8 @@ namespace EntityFrameworkCore.Triggered
                 {
                     _triggerSession = triggerService.Current;
                 }
-                else 
-                { 
+                else
+                {
                     _triggerSession = triggerService.CreateSession(this, _triggerServiceProvider);
                     createdTriggerSession = true;
                 }

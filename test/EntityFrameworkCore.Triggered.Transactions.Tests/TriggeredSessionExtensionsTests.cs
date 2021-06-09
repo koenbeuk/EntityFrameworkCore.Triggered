@@ -25,7 +25,7 @@ namespace EntityFrameworkCore.Triggered.Transactions.Tests
             protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
             {
                 base.OnConfiguring(optionsBuilder);
-                
+
                 optionsBuilder.ConfigureWarnings(warningOptions => {
                     warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
                 });

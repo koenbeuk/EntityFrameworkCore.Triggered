@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using EntityFrameworkCore.Triggered.Internal;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -25,7 +23,7 @@ namespace Microsoft.Extensions.DependencyInjection
             return instance;
         }
 
-        public static IServiceCollection AddTriggeredDbContext<TContext>(this IServiceCollection serviceCollection, Action<DbContextOptionsBuilder>? optionsAction = null, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ServiceLifetime optionsLifetime = ServiceLifetime.Scoped) 
+        public static IServiceCollection AddTriggeredDbContext<TContext>(this IServiceCollection serviceCollection, Action<DbContextOptionsBuilder>? optionsAction = null, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ServiceLifetime optionsLifetime = ServiceLifetime.Scoped)
             where TContext : DbContext
         {
             serviceCollection.AddDbContext<TContext>(options => {
@@ -36,7 +34,7 @@ namespace Microsoft.Extensions.DependencyInjection
             return serviceCollection;
         }
 
-        public static IServiceCollection AddTriggeredDbContextPool<TContext>(this IServiceCollection serviceCollection, Action<DbContextOptionsBuilder>? optionsAction = null, int poolSize = 128) 
+        public static IServiceCollection AddTriggeredDbContextPool<TContext>(this IServiceCollection serviceCollection, Action<DbContextOptionsBuilder>? optionsAction = null, int poolSize = 128)
             where TContext : DbContext
         {
             serviceCollection.AddDbContextPool<TContext>(options => {
@@ -67,7 +65,7 @@ namespace Microsoft.Extensions.DependencyInjection
             }, lifetime);
 
             var serviceDescriptor = serviceCollection.FirstOrDefault(x => x.ServiceType == typeof(IDbContextFactory<TContext>));
-            
+
             if (serviceDescriptor?.ImplementationType != null)
             {
                 var triggeredFactoryType = typeof(TriggeredDbContextFactory<,>).MakeGenericType(typeof(TContext), serviceDescriptor.ImplementationType);
@@ -84,7 +82,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     lifetime: ServiceLifetime.Scoped
                 ));
             }
-            
+
             return serviceCollection;
         }
 

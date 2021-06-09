@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using StudentManager.Traits;
 
 namespace StudentManager
@@ -44,7 +42,7 @@ namespace StudentManager
     public class Audit
     {
         public string Discriminator { get; set; }
-        
+
         public int Id { get; set; }
 
         public DateTimeOffset RecordDate { get; set; }

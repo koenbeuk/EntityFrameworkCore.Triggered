@@ -1,7 +1,5 @@
 using System;
 using System.Linq;
-using System.Threading.Tasks;
-using EntityFrameworkCore.Triggered;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -13,12 +11,12 @@ namespace PrimarySchool
         {
             var serviceProvider = new ServiceCollection()
                 .AddDbContext<ApplicationDbContext>(options => {
-                   options
-                      .UseInMemoryDatabase("PrimarySchool")
-                      .UseTriggers(triggerOptions => {
-                          triggerOptions.AddTrigger<Triggers.StudentSignupToMandatoryCourses>();
-                      });
-               })
+                    options
+                       .UseInMemoryDatabase("PrimarySchool")
+                       .UseTriggers(triggerOptions => {
+                           triggerOptions.AddTrigger<Triggers.StudentSignupToMandatoryCourses>();
+                       });
+                })
                .BuildServiceProvider();
 
             var serviceScope = serviceProvider.CreateScope();

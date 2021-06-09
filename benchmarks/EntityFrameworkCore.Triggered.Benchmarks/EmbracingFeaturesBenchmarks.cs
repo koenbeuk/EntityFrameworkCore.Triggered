@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Linq;
-using BenchmarkDotNet;
 using BenchmarkDotNet.Attributes;
-using Microsoft.Diagnostics.Runtime.Interop;
-using Microsoft.Diagnostics.Tracing.Analysis.GC;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 

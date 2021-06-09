@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using EntityFrameworkCore.Triggered.Internal.CascadeStrategies;
+﻿using EntityFrameworkCore.Triggered.Internal.CascadeStrategies;
 using EntityFrameworkCore.Triggered.Tests.Stubs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Xunit;
 
 namespace EntityFrameworkCore.Triggered.Tests

@@ -1,18 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using EntityFrameworkCore.Triggered.Internal;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
-using Xunit.Sdk;
 
 namespace EntityFrameworkCore.Triggered.Tests.Internal
 {
@@ -54,7 +49,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
             {
                 optionsBuilder
                     .UseInMemoryDatabase(nameof(SampleDbContext3))
-                    .UseTriggers(triggerOptions => 
+                    .UseTriggers(triggerOptions =>
                         triggerOptions
                             .AddTrigger<SampleTrigger3<SampleDbContext3>>()
                             .AddTrigger<SampleTrigger3<DbContext>>()
@@ -106,7 +101,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
                 .BuildServiceProvider();
 
             var subject = new TriggerFactory(serviceProvider);
-            
+
             var applicationServiceProvider = new ServiceCollection()
                 .AddSingleton(subject)
                 .BuildServiceProvider();
@@ -123,7 +118,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
             using var dbContext = new SampleDbContext3();
             var factory = dbContext.GetService<TriggerFactory>();
             var serviceProvider = new HybridServiceProvider(dbContext.GetInfrastructure(), dbContext);
-            
+
             var trigger = factory.Resolve(serviceProvider, typeof(IBeforeSaveTrigger<object>)).FirstOrDefault() as SampleTrigger3<SampleDbContext3>;
 
             Assert.NotNull(trigger);

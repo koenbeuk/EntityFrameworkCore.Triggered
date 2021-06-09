@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using EntityFrameworkCore.Triggered.Internal.CascadeStrategies;
 using Microsoft.EntityFrameworkCore;
@@ -142,7 +141,7 @@ namespace EntityFrameworkCore.Triggered.Internal
             }
         }
 
-        public void UncaptureChanges() 
+        public void UncaptureChanges()
             => _capturedChangeIndexes = null;
     }
 }

@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Xunit;
 
 namespace EntityFrameworkCore.Triggered.Tests
@@ -512,7 +511,7 @@ namespace EntityFrameworkCore.Triggered.Tests
 
             var subject = new TestDbContext(serviceProvider);
             var triggerServiceStub = (TriggerServiceStub)subject.GetService<ITriggerService>();
-                    
+
             subject.TestModels.Add(new TestModel {
                 Id = Guid.NewGuid(),
                 Name = "test1"

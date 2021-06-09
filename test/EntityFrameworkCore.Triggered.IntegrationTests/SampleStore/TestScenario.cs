@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using EntityFrameworkCore.Triggered.IntegrationTests.SampleStore.Models;
 using ScenarioTests;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace EntityFrameworkCore.Triggered.IntegrationTests.SampleStore
@@ -24,7 +18,7 @@ namespace EntityFrameworkCore.Triggered.IntegrationTests.SampleStore
             dbContext.Users.AddRange(Enumerable.Range(0, sampleUsersCount).Select(x => new User {
                 UserName = $"user{x}"
             }));
-             
+
             dbContext.SaveChanges();
 
             scenario.Fact("Database saved all users", () => {

@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using EntityFrameworkCore.Triggered.Internal;
 using EntityFrameworkCore.Triggered.Lifecycles;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace EntityFrameworkCore.Triggered

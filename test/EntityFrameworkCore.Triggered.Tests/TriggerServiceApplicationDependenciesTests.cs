@@ -44,7 +44,7 @@ namespace EntityFrameworkCore.Triggered.Tests
                 var dbContext = serviceScope.ServiceProvider.GetRequiredService<TestDbContext>();
                 var triggerStub = serviceScope.ServiceProvider.GetRequiredService<IBeforeSaveTrigger<TestModel>>() as TriggerStub<TestModel>;
                 Assert.Equal(0, triggerStub.BeforeSaveInvocations.Count);
-                
+
                 dbContext.Add(new TestModel { });
                 dbContext.SaveChanges();
             }

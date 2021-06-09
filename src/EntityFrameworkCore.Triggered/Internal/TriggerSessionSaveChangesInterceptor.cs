@@ -1,9 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.Design;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -62,7 +58,7 @@ namespace EntityFrameworkCore.Triggered.Internal
 #endif
 
             _parallelSaveChangesCount -= 1;
-            
+
             if (_parallelSaveChangesCount == 0)
             {
                 _triggerSession.Dispose();

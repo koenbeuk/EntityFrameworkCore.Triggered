@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using EntityFrameworkCore.Triggered.Extensions;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ScenarioTests;
 using Xunit;
@@ -40,7 +34,7 @@ namespace EntityFrameworkCore.Triggered.IntegrationTests.LifetimeTests
                 using var serviceScope = serviceProvider.CreateScope();
 
                 var dbContext = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                
+
                 for (var i = 0; i < usersPerIteration; i++)
                 {
                     dbContext.Users.Add(new User { });

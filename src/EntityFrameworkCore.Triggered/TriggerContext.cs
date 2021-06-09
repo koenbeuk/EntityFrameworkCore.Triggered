@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
+﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace EntityFrameworkCore.Triggered
 {
@@ -28,7 +27,7 @@ namespace EntityFrameworkCore.Triggered
             {
                 if (_type == ChangeType.Added)
                 {
-                    return null; 
+                    return null;
                 }
                 else
                 {

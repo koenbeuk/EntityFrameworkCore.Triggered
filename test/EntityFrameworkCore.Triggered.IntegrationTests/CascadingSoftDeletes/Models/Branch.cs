@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.VisualBasic;
 
 namespace EntityFrameworkCore.Triggered.IntegrationTests.CascadingSoftDeletes.Models
 {
@@ -15,6 +11,6 @@ namespace EntityFrameworkCore.Triggered.IntegrationTests.CascadingSoftDeletes.Mo
 
         public Branch Parent { get; set; }
         public ICollection<Branch> Children { get; set; }
-        
+
     }
 }

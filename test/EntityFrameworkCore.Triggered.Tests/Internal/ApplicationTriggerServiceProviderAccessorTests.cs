@@ -3,10 +3,7 @@ using EntityFrameworkCore.Triggered.Tests.Stubs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.InMemory.Internal;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
 namespace EntityFrameworkCore.Triggered.Tests.Internal
@@ -82,7 +79,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
 
             var subject = applicationServiceProvider.GetRequiredService<TestDbContext>().GetService<ApplicationTriggerServiceProviderAccessor>();
             subject.SetTriggerServiceProvider(applicationServiceProvider);
-            
+
             var triggerServiceProvider = subject.GetTriggerServiceProvider();
 
             Assert.Equal(applicationServiceProvider, triggerServiceProvider);

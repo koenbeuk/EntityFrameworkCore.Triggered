@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using EntityFrameworkCore.Triggered.Internal;
-using EntityFrameworkCore.Triggered.Tests.Stubs;
+﻿using EntityFrameworkCore.Triggered.Internal;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ScenarioTests;
@@ -36,7 +29,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
 
             ITriggerInstanceFactory subject = new TriggerInstanceFactory<SampleTrigger1>(null);
             var instance = subject.Create(serviceProvider);
-            
+
             scenario.Fact("Creates an instance on first request", () => {
                 Assert.NotNull(instance);
             });

@@ -9,8 +9,6 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 
 namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
 {
@@ -159,8 +157,7 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
                 triggerServiceOptions.MaxCascadeCycles = _maxCascadeCycles;
             });
 
-            var cascadeStrategyType = _cascadeBehavior switch
-            {
+            var cascadeStrategyType = _cascadeBehavior switch {
                 CascadeBehavior.None => typeof(NoCascadeStrategy),
                 CascadeBehavior.EntityAndType => typeof(EntityAndTypeCascadeStrategy),
                 _ => throw new InvalidOperationException("Unsupported cascading mode")

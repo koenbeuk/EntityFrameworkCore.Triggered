@@ -13,8 +13,10 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" Version="0.12.1" />
-    <PackageReference Include="EntityFrameworkCore.Triggered" Version="2.2.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="5.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\EntityFrameworkCore.Triggered\EntityFrameworkCore.Triggered.csproj" />
   </ItemGroup>
 
 </Project>

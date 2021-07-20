@@ -127,5 +127,15 @@ namespace EntityFrameworkCore.Triggered.Extensions.Tests
         [Fact]
         public Task SaveChanges_DiscoveredTriggerThroughDI_RaisesAllTriggerTypes()
             => SaveChanges_TriggeredAddedThroughDI_Template(x => x.AddAssemblyTriggers());
+
+        [Fact]
+        public void AddAssemblyTriggers_AbstractTrigger_GetsIgnored()
+        {
+            var serviceCollection = new ServiceCollection()
+                .AddAssemblyTriggers();
+
+            // Ensure that we did not register the AbstractTrigger
+            Assert.Empty(serviceCollection.Where(x => x.ImplementationType == typeof(AbstractTrigger)));
+        }
     }
 }

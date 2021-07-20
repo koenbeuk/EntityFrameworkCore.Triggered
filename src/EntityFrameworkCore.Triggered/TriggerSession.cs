@@ -22,6 +22,8 @@ namespace EntityFrameworkCore.Triggered
         readonly TriggerContextTracker _tracker;
         readonly ILogger<TriggerSession> _logger;
 
+        readonly EntityBagStateManager _entityBagStateManager = new();
+
         bool _raiseBeforeSaveTriggersCalled;
 
         public TriggerSession(ITriggerService triggerService, TriggerOptions options, ITriggerDiscoveryService triggerDiscoveryService, TriggerContextTracker tracker, ILogger<TriggerSession> logger)
@@ -86,7 +88,7 @@ namespace EntityFrameworkCore.Triggered
                             _logger.LogInformation("Invoking trigger: {trigger} as {triggerType}", triggerDescriptor.Trigger.GetType(), triggerDescriptor.TypeDescriptor.TriggerType);
                         }
 
-                        await triggerDescriptor.Invoke(triggerContextDescriptor.GetTriggerContext(), exception, cancellationToken).ConfigureAwait(false);
+                        await triggerDescriptor.Invoke(triggerContextDescriptor.GetTriggerContext(_entityBagStateManager), exception, cancellationToken).ConfigureAwait(false);
                     }
                 }
 

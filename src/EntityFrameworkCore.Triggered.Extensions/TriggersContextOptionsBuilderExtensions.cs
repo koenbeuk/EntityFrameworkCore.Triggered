@@ -26,7 +26,8 @@ namespace Microsoft.EntityFrameworkCore
 
             var assemblyTypes = assemblies
                 .SelectMany(x => x.GetTypes())
-                .Where(x => x.IsClass);
+                .Where(x => x.IsClass)
+                .Where(x => !x.IsAbstract);
 
             foreach (var assemblyType in assemblyTypes)
             {

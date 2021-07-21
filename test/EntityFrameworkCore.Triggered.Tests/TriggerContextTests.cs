@@ -105,5 +105,16 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
 
             Assert.Equal(ChangeType.Modified, subject.ChangeType);
         }
+
+        [Fact]
+        public void EntityBag_ConsistentlyReturnsTheSameInstance()
+        {
+            using var dbContext = new TestDbContext();
+            var sample1 = new TestModel();
+            var subject = new TriggerContext<object>(dbContext.Entry(sample1).Entity, dbContext.Entry(sample1).OriginalValues, ChangeType.Modified, new());
+
+            var expectedInstance = subject.EntityBag;
+            Assert.Equal(expectedInstance, subject.EntityBag);
+        }
     }
 }

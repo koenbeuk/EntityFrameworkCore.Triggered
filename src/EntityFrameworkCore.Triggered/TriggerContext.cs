@@ -44,6 +44,6 @@ namespace EntityFrameworkCore.Triggered
             }
         }
 
-        public IDictionary<string, object> Bag => _entityBagStateManager.GetForEntity(_entity);
+        public IDictionary<object, object> EntityBag => _entityBagStateManager.GetForEntity(_entity);
     }
 }

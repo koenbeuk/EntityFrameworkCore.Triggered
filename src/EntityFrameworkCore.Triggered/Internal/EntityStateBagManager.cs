@@ -6,13 +6,13 @@ namespace EntityFrameworkCore.Triggered.Internal
 {
     public sealed class EntityBagStateManager
     {
-        private readonly Dictionary<object, IDictionary<string, object>> _resolvedBags = new();
+        private readonly Dictionary<object, IDictionary<object, object>> _resolvedBags = new();
 
-        public IDictionary<string, object> GetForEntity(object entity)
+        public IDictionary<object, object> GetForEntity(object entity)
         {
             if (!_resolvedBags.TryGetValue(entity, out var bag))
             {
-                bag = new Dictionary<string, object>();
+                bag = new Dictionary<object, object>();
                 _resolvedBags.Add(entity, bag);
             }
 

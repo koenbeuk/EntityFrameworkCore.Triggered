@@ -11,7 +11,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Stubs
 
         public ITriggerSession Current { get; set; }
 
-        public TriggerConfiguration Configuration { get; set; }
+        public TriggerSessionConfiguration Configuration { get; set; }
 
         public ITriggerSession CreateSession(DbContext context, IServiceProvider serviceProvider)
         {
@@ -22,6 +22,6 @@ namespace EntityFrameworkCore.Triggered.Tests.Stubs
             return LastSession;
         }
 
-        public ITriggerSession CreateSession(DbContext context, TriggerConfiguration configuration, IServiceProvider serviceProvider = null) => throw new NotImplementedException();
+        public ITriggerSession CreateSession(DbContext context, TriggerSessionConfiguration configuration, IServiceProvider serviceProvider = null) => throw new NotImplementedException();
     }
 }

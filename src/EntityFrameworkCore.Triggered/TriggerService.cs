@@ -16,7 +16,7 @@ namespace EntityFrameworkCore.Triggered
         readonly ITriggerDiscoveryService _triggerDiscoveryService;
         readonly ICascadeStrategy _cascadingStrategy;
         readonly ILoggerFactory _loggerFactory;
-        readonly TriggerConfiguration _defaultConfiguration;
+        readonly TriggerSessionConfiguration _defaultConfiguration;
 
         ITriggerSession? _currentTriggerSession;
 
@@ -25,7 +25,7 @@ namespace EntityFrameworkCore.Triggered
             _triggerDiscoveryService = triggerDiscoveryService ?? throw new ArgumentNullException(nameof(triggerDiscoveryService));
             _cascadingStrategy = cascadingStrategy ?? throw new ArgumentNullException(nameof(cascadingStrategy));
             _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
-            _defaultConfiguration = new TriggerConfiguration(false, triggerOptions.Value.MaxCascadeCycles);
+            _defaultConfiguration = new TriggerSessionConfiguration(false, triggerOptions.Value.MaxCascadeCycles);
             
             Configuration = _defaultConfiguration;
         }
@@ -36,12 +36,12 @@ namespace EntityFrameworkCore.Triggered
             set => _currentTriggerSession = value;
         }
 
-        public TriggerConfiguration Configuration { get; set; }
+        public TriggerSessionConfiguration Configuration { get; set; }
 
         public ITriggerSession CreateSession(DbContext context, IServiceProvider? serviceProvider)
             => CreateSession(context, Configuration, serviceProvider);
 
-        public ITriggerSession CreateSession(DbContext context, TriggerConfiguration configuration, IServiceProvider? serviceProvider)
+        public ITriggerSession CreateSession(DbContext context, TriggerSessionConfiguration configuration, IServiceProvider? serviceProvider)
         {
             if (context is null)
             {

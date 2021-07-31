@@ -34,7 +34,7 @@ namespace EntityFrameworkCore.Triggered.Extensions
         /// <summary>
         /// Creates a <c>ITriggerSession</c> that can be used to manually invoke triggers
         /// </summary>
-        public static ITriggerSession CreateTriggerSession(this DbContext dbContext, Func<TriggerConfiguration, TriggerConfiguration> configurator, IServiceProvider? serviceProvider = null)
+        public static ITriggerSession CreateTriggerSession(this DbContext dbContext, Func<TriggerSessionConfiguration, TriggerSessionConfiguration> configurator, IServiceProvider? serviceProvider = null)
         {
             var triggerService = GetTriggerService(dbContext);
             var configuration = configurator(triggerService.Configuration);
@@ -46,7 +46,7 @@ namespace EntityFrameworkCore.Triggered.Extensions
         /// <summary>
         /// Creates a new <c>ITriggerSession</c> that can be used to manually invoke triggers. Throws if a TriggerSession is already active
         /// </summary>
-        public static ITriggerSession CreateNewTriggerSession(this DbContext dbContext, Func<TriggerConfiguration, TriggerConfiguration>? configurator = null, IServiceProvider? serviceProvider = null)
+        public static ITriggerSession CreateNewTriggerSession(this DbContext dbContext, Func<TriggerSessionConfiguration, TriggerSessionConfiguration>? configurator = null, IServiceProvider? serviceProvider = null)
         {
             var triggerService = GetTriggerService(dbContext);
             if (triggerService.Current is not null)

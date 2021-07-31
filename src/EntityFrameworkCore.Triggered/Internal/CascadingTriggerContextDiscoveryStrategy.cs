@@ -26,7 +26,7 @@ namespace EntityFrameworkCore.Triggered.Internal
             _skipDetectedChanges = skipDetectedChanges;
         }
 
-        public IEnumerable<IEnumerable<TriggerContextDescriptor>> Discover(TriggerConfiguration configuration, TriggerContextTracker tracker, ILogger logger)
+        public IEnumerable<IEnumerable<TriggerContextDescriptor>> Discover(TriggerSessionConfiguration configuration, TriggerContextTracker tracker, ILogger logger)
         {
             var maxCascadingCycles = configuration.MaxCascadeCycles;
             _discoveryStarted(logger, _name, maxCascadingCycles, null);

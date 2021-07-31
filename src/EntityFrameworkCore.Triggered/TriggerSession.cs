@@ -17,14 +17,14 @@ namespace EntityFrameworkCore.Triggered
         static ITriggerContextDiscoveryStrategy? _afterSaveFailedTriggerContextDiscoveryStrategy;
 
         readonly ITriggerService _triggerService;
-        readonly TriggerConfiguration _configuration;
+        readonly TriggerSessionConfiguration _configuration;
         readonly ITriggerDiscoveryService _triggerDiscoveryService;
         readonly TriggerContextTracker _tracker;
         readonly ILogger<TriggerSession> _logger;
 
         bool _raiseBeforeSaveTriggersCalled;
 
-        public TriggerSession(ITriggerService triggerService, TriggerConfiguration configuration, ITriggerDiscoveryService triggerDiscoveryService, TriggerContextTracker tracker, ILogger<TriggerSession> logger)
+        public TriggerSession(ITriggerService triggerService, TriggerSessionConfiguration configuration, ITriggerDiscoveryService triggerDiscoveryService, TriggerContextTracker tracker, ILogger<TriggerSession> logger)
         {
             _triggerService = triggerService ?? throw new ArgumentNullException(nameof(triggerService));
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));

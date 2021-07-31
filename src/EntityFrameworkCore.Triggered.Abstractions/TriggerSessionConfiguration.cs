@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace EntityFrameworkCore.Triggered
 {
-    public record TriggerConfiguration
+    public record TriggerSessionConfiguration
     {
-        public TriggerConfiguration(bool disabled, int maxCascadeCycles)
+        public TriggerSessionConfiguration(bool disabled, int maxCascadeCycles)
         {
             Disabled = disabled;
             MaxCascadeCycles = maxCascadeCycles;

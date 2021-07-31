@@ -44,11 +44,11 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
             var subject = new NonCascadingTriggerContextDiscoveryStrategy("test");
             var triggerContextTracker = new TriggerContextTracker(dbContext.ChangeTracker, new EntityAndTypeCascadeStrategy());
             triggerContextTracker.DiscoverChanges().Count();
-            var initialContextDescriptors = subject.Discover(new TriggerOptions { }, triggerContextTracker, new NullLogger<object>()).ToList();
+            var initialContextDescriptors = subject.Discover(new(false, 0), triggerContextTracker, new NullLogger<object>()).ToList();
 
             dbContext.Add(new TestModel { });
 
-            var contextDescriptors = subject.Discover(new TriggerOptions { }, triggerContextTracker, new NullLogger<object>()).ToList();
+            var contextDescriptors = subject.Discover(new(false, 0), triggerContextTracker, new NullLogger<object>()).ToList();
 
             Assert.Equal(initialContextDescriptors, contextDescriptors);
         }

@@ -12,19 +12,22 @@ namespace EntityFrameworkCore.Triggered
 {
     public class TriggerService : ITriggerService, IResettableService
     {
+
         readonly ITriggerDiscoveryService _triggerDiscoveryService;
         readonly ICascadeStrategy _cascadingStrategy;
         readonly ILoggerFactory _loggerFactory;
-        readonly TriggerOptions _options;
+        readonly TriggerConfiguration _defaultConfiguration;
 
         ITriggerSession? _currentTriggerSession;
 
-        public TriggerService(ITriggerDiscoveryService triggerDiscoveryService, ICascadeStrategy cascadingStrategy, ILoggerFactory loggerFactory, IOptionsSnapshot<TriggerOptions> triggerOptionsSnapshot)
+        public TriggerService(ITriggerDiscoveryService triggerDiscoveryService, ICascadeStrategy cascadingStrategy, ILoggerFactory loggerFactory, IOptions<TriggerOptions> triggerOptions)
         {
             _triggerDiscoveryService = triggerDiscoveryService ?? throw new ArgumentNullException(nameof(triggerDiscoveryService));
             _cascadingStrategy = cascadingStrategy ?? throw new ArgumentNullException(nameof(cascadingStrategy));
             _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
-            _options = triggerOptionsSnapshot.Value;
+            _defaultConfiguration = new TriggerConfiguration(false, triggerOptions.Value.MaxCascadeCycles);
+            
+            Configuration = _defaultConfiguration;
         }
 
         public ITriggerSession? Current
@@ -32,6 +35,8 @@ namespace EntityFrameworkCore.Triggered
             get => _currentTriggerSession;
             set => _currentTriggerSession = value;
         }
+
+        public TriggerConfiguration Configuration { get; set; }
 
         public ITriggerSession CreateSession(DbContext context, IServiceProvider? serviceProvider)
         {
@@ -47,7 +52,7 @@ namespace EntityFrameworkCore.Triggered
                 _triggerDiscoveryService.ServiceProvider = serviceProvider;
             }
 
-            var triggerSession = new TriggerSession(this, _options, _triggerDiscoveryService, triggerContextTracker, _loggerFactory.CreateLogger<TriggerSession>());
+            var triggerSession = new TriggerSession(this, Configuration, _triggerDiscoveryService, triggerContextTracker, _loggerFactory.CreateLogger<TriggerSession>());
 
             _currentTriggerSession = triggerSession;
 
@@ -61,6 +66,8 @@ namespace EntityFrameworkCore.Triggered
                 _currentTriggerSession.Dispose();
                 _currentTriggerSession = null;
             }
+
+            Configuration = _defaultConfiguration;
         }
 
         public Task ResetStateAsync(CancellationToken cancellationToken = default)

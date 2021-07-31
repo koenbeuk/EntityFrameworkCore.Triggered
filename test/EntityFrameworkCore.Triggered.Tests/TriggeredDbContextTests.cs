@@ -539,5 +539,29 @@ namespace EntityFrameworkCore.Triggered.Tests
 
             Assert.Equal(1, triggerServiceStub.LastSession.DisposeCalls);
         }
+
+        [Fact]
+        public async Task SaveChangesAsync_DisabledConfiguration_Noop()
+        {
+            // arrange
+            var serviceProvider = new ServiceCollection().BuildServiceProvider();
+
+            var subject = new TestDbContext(serviceProvider, false);
+            var triggerService = subject.GetService<ITriggerService>();
+            triggerService.Configuration = triggerService.Configuration with {
+                Disabled = true
+            };
+
+            subject.TestModels.Add(new TestModel {
+                Id = Guid.NewGuid(),
+                Name = "test1"
+            });
+
+            // act
+            await subject.SaveChangesAsync();
+
+            // assert
+            Assert.Empty(subject.TriggerStub.BeforeSaveInvocations);
+        }
     }
 }

@@ -1,4 +1,7 @@
-﻿using EntityFrameworkCore.Triggered.Extensions;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using EntityFrameworkCore.Triggered.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -10,13 +13,34 @@ namespace EntityFrameworkCore.Triggered.Tests.Extensions
     {
         class TestModel { public int Id { get; set; } public string Name { get; set; } }
 
+        class SampleTrigger : IBeforeSaveTrigger<TestModel>
+        {
+            public int BeforeSaveCalls { get; set; }
+
+            public Task BeforeSave(ITriggerContext<TestModel> context, CancellationToken cancellationToken)
+            {
+                BeforeSaveCalls += 1;
+                return Task.CompletedTask;
+            }
+        }
+
         class TestDbContext : DbContext
         {
+            public bool UseTriggers { get; set; } = true;
+
             public DbSet<TestModel> TestModels { get; set; }
+
+            public SampleTrigger SampleTrigger { get; } = new();
 
             protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
             {
-                optionsBuilder.UseInMemoryDatabase("test").UseTriggers();
+                optionsBuilder.UseInMemoryDatabase("test");
+                if (UseTriggers)
+                {
+                    optionsBuilder.UseTriggers(triggerOptions => {
+                        triggerOptions.AddTrigger(SampleTrigger);
+                    });
+                }
 
                 optionsBuilder.ConfigureWarnings(warningOptions => {
                     warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
@@ -25,13 +49,91 @@ namespace EntityFrameworkCore.Triggered.Tests.Extensions
         }
 
         [Fact]
+        public void GetTriggerService_ValidDbContext_ReturnsSession()
+        {
+            using var context = new TestDbContext();
+
+            var triggerService = DbContextExtensions.GetTriggerService(context);
+
+            Assert.NotNull(triggerService);
+        }
+
+
+        [Fact]
+        public void GetTriggerService_NonTriggeredDbContext_ReturnsSession()
+        {
+            using var context = new TestDbContext { UseTriggers = false };
+
+            Assert.Throws<InvalidOperationException>(() =>
+                DbContextExtensions.GetTriggerService(context));
+        }
+
+        [Fact]
         public void CreateTriggerSession_ValidDbContext_CreatesNewSession()
         {
-            var context = new TestDbContext();
+            using var context = new TestDbContext();
             var triggerSession = DbContextExtensions.CreateTriggerSession(context);
 
             Assert.NotNull(triggerSession);
             Assert.NotNull(context.GetService<ITriggerService>()?.Current);
+        }
+
+        [Fact]
+        public void SaveChangesWithoutTriggers_DoesNotRaiseTrigger()
+        {
+            // arrange
+            using var context = new TestDbContext();
+            context.TestModels.Add(new TestModel { });
+
+            // act
+            context.SaveChangesWithoutTriggers();
+
+            // assert
+            Assert.Equal(0, context.SampleTrigger.BeforeSaveCalls);
+        }
+
+        [Fact]
+        public void SaveChangesWithoutTriggers_RestoresConfiguration()
+        {
+            // arrange
+            using var context = new TestDbContext();
+            context.TestModels.Add(new TestModel { });
+            var expectedConfiguration = context.GetTriggerService().Configuration;
+
+            // act
+            context.SaveChangesWithoutTriggers();
+
+            // assert
+            Assert.Same(expectedConfiguration, context.GetTriggerService().Configuration);
+        }
+
+        [Fact]
+        public async Task SaveChangesAsyncWithoutTriggers_DoesNotRaiseTrigger()
+        {
+            // arrange
+            using var context = new TestDbContext();
+            context.TestModels.Add(new TestModel { });
+
+            // act
+            await context.SaveChangesWithoutTriggersAsync();
+
+            // assert
+            Assert.Equal(0, context.SampleTrigger.BeforeSaveCalls);
+        }
+
+        [Fact]
+        public async Task SaveChangesAsyncWithoutTriggers_RestoresConfiguration()
+        {
+            // arrange
+            using var context = new TestDbContext();
+            context.TestModels.Add(new TestModel { });
+            var expectedConfiguration = context.GetTriggerService().Configuration;
+
+            // act
+            await context.SaveChangesWithoutTriggersAsync();
+
+            // assert
+            Assert.Same(expectedConfiguration, context.GetTriggerService().Configuration);
         }
     }
 }

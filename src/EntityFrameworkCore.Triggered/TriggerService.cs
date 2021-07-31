@@ -39,6 +39,9 @@ namespace EntityFrameworkCore.Triggered
         public TriggerConfiguration Configuration { get; set; }
 
         public ITriggerSession CreateSession(DbContext context, IServiceProvider? serviceProvider)
+            => CreateSession(context, Configuration, serviceProvider);
+
+        public ITriggerSession CreateSession(DbContext context, TriggerConfiguration configuration, IServiceProvider? serviceProvider)
         {
             if (context is null)
             {
@@ -52,7 +55,7 @@ namespace EntityFrameworkCore.Triggered
                 _triggerDiscoveryService.ServiceProvider = serviceProvider;
             }
 
-            var triggerSession = new TriggerSession(this, Configuration, _triggerDiscoveryService, triggerContextTracker, _loggerFactory.CreateLogger<TriggerSession>());
+            var triggerSession = new TriggerSession(this, configuration, _triggerDiscoveryService, triggerContextTracker, _loggerFactory.CreateLogger<TriggerSession>());
 
             _currentTriggerSession = triggerSession;
 

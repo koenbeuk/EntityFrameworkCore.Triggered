@@ -21,5 +21,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Stubs
             Current = LastSession;
             return LastSession;
         }
+
+        public ITriggerSession CreateSession(DbContext context, TriggerConfiguration configuration, IServiceProvider serviceProvider = null) => throw new NotImplementedException();
     }
 }

@@ -135,5 +135,21 @@ namespace EntityFrameworkCore.Triggered.Tests.Extensions
             // assert
             Assert.Same(expectedConfiguration, context.GetTriggerService().Configuration);
         }
+
+
+        [Fact]
+        public void CreateNewTriggerSession_ExistingSession_Throws()
+        {
+            // arrange
+            using var context = new TestDbContext();
+            context.TestModels.Add(new TestModel { });
+            context.CreateNewTriggerSession();
+
+            // act
+            Assert.Throws<InvalidOperationException>(() =>
+                context.CreateNewTriggerSession());
+        }
+
+
     }
 }

@@ -32,23 +32,43 @@ namespace EntityFrameworkCore.Triggered.Extensions
         }
 
         /// <summary>
+        /// Creates a <c>ITriggerSession</c> that can be used to manually invoke triggers
+        /// </summary>
+        public static ITriggerSession CreateTriggerSession(this DbContext dbContext, Func<TriggerConfiguration, TriggerConfiguration> configurator, IServiceProvider? serviceProvider = null)
+        {
+            var triggerService = GetTriggerService(dbContext);
+            var configuration = configurator(triggerService.Configuration);
+
+            return triggerService.CreateSession(dbContext, configuration, serviceProvider);
+        }
+
+
+        /// <summary>
+        /// Creates a new <c>ITriggerSession</c> that can be used to manually invoke triggers. Throws if a TriggerSession is already active
+        /// </summary>
+        public static ITriggerSession CreateNewTriggerSession(this DbContext dbContext, Func<TriggerConfiguration, TriggerConfiguration>? configurator = null, IServiceProvider? serviceProvider = null)
+        {
+            var triggerService = GetTriggerService(dbContext);
+            if (triggerService.Current is not null)
+            {
+                throw new InvalidOperationException("A triggerSession has already been created");
+            }
+
+            var configuration = configurator?.Invoke(triggerService.Configuration) ?? triggerService.Configuration;
+
+            return triggerService.CreateSession(dbContext, configuration, serviceProvider);
+        }
+
+        /// <summary>
         /// Calls dbContext.SaveChanges without invoking triggers
         /// </summary>
         public static int SaveChangesWithoutTriggers(this DbContext dbContext, bool acceptAllChangesOnSuccess = true)
         {
-            var triggerService = GetTriggerService(dbContext);
-            var initialConfiguration = triggerService.Configuration;
+            CreateNewTriggerSession(dbContext, configuration => configuration with {
+                Disabled = true
+            });
 
-            try
-            {
-                triggerService.Configuration = initialConfiguration with { Disabled = true };
-
-                return dbContext.SaveChanges(acceptAllChangesOnSuccess);
-            }
-            finally
-            {
-                triggerService.Configuration = initialConfiguration;
-            }
+            return dbContext.SaveChanges(acceptAllChangesOnSuccess);
         }
 
         /// <summary>
@@ -62,19 +82,11 @@ namespace EntityFrameworkCore.Triggered.Extensions
         /// </summary>
         public static Task<int> SaveChangesWithoutTriggersAsync(this DbContext dbContext, bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
         {
-            var triggerService = GetTriggerService(dbContext);
-            var initialConfiguration = triggerService.Configuration;
+            CreateNewTriggerSession(dbContext, configuration => configuration with {
+                Disabled = true
+            });
 
-            try
-            {
-                triggerService.Configuration = initialConfiguration with { Disabled = true };
-
-                return dbContext.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
-            }
-            finally
-            {
-                triggerService.Configuration = initialConfiguration;
-            }
+            return dbContext.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
         }
     }
 }

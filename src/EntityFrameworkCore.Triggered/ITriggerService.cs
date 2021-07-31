@@ -9,6 +9,8 @@ namespace EntityFrameworkCore.Triggered
 
         ITriggerSession CreateSession(DbContext context, IServiceProvider? serviceProvider = null);
 
+        ITriggerSession CreateSession(DbContext context, TriggerConfiguration configuration, IServiceProvider? serviceProvider = null);
+
         ITriggerSession? Current { get; set; }
     }
 }

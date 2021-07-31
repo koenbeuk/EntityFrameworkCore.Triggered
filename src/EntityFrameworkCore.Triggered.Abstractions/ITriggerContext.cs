@@ -14,6 +14,6 @@ namespace EntityFrameworkCore.Triggered
         /// <summary>
         /// Gets or sets a key/value collection that can be used to share data within the scope of this Entity
         /// </summary>
-        IDictionary<object, object> EntityBag { get; }
+        IDictionary<object, object> Items { get; }
     }
 }

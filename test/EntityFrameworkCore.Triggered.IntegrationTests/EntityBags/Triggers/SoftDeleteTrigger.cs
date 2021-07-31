@@ -22,7 +22,7 @@ namespace EntityFrameworkCore.Triggered.IntegrationTests.EntityBags.Triggers
         {
             if (context.ChangeType is ChangeType.Deleted)
             {
-                context.EntityBag[IsSoftDeleted] = true;
+                context.Items[IsSoftDeleted] = true;
                 context.Entity.DeletedOn = DateTime.UtcNow;
 
                 _dbContext.Entry(context.Entity).State = Microsoft.EntityFrameworkCore.EntityState.Modified;

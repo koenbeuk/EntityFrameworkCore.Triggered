@@ -113,8 +113,8 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
             var sample1 = new TestModel();
             var subject = new TriggerContext<object>(dbContext.Entry(sample1).Entity, dbContext.Entry(sample1).OriginalValues, ChangeType.Modified, new());
 
-            var expectedInstance = subject.EntityBag;
-            Assert.Equal(expectedInstance, subject.EntityBag);
+            var expectedInstance = subject.Items;
+            Assert.Equal(expectedInstance, subject.Items);
         }
     }
 }

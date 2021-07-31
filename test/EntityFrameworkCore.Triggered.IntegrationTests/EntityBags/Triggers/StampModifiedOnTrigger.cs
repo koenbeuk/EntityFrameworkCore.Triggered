@@ -13,7 +13,7 @@ namespace EntityFrameworkCore.Triggered.IntegrationTests.EntityBags.Triggers
         {
             if (context.ChangeType is ChangeType.Modified)
             {
-                if (!context.EntityBag.ContainsKey(SoftDeleteTrigger.IsSoftDeleted))
+                if (!context.Items.ContainsKey(SoftDeleteTrigger.IsSoftDeleted))
                 {
                     context.Entity.ModifiedOn = DateTime.UtcNow;
                 }

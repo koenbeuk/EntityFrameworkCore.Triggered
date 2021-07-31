@@ -48,6 +48,11 @@ namespace EntityFrameworkCore.Triggered
                 throw new ArgumentNullException(nameof(triggerContextDiscoveryStrategy));
             }
 
+            if (_configuration.Disabled)
+            {
+                return;
+            }
+
             cancellationToken.ThrowIfCancellationRequested();
 
             var triggerContextDescriptorBatches = triggerContextDiscoveryStrategy.Discover(_configuration, _tracker, _logger);

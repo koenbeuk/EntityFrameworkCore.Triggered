@@ -412,5 +412,30 @@ namespace EntityFrameworkCore.Triggered.Tests
             Assert.Equal("test1", _capturedTriggerContext.UnmodifiedEntity.Name);
             Assert.Equal("test2", _capturedTriggerContext.Entity.Name);
         }
+
+        [Fact]
+        public async Task RaiseTriggers_DisabledConfiguration_Noop()
+        {
+            // arrange
+            using var context = new TestDbContext();
+
+            var triggerService = context.GetService<ITriggerService>();
+            triggerService.Configuration = triggerService.Configuration with {
+                Disabled = true
+            };
+
+            var subject = triggerService.CreateSession(context);
+
+            context.TestModels.Add(new TestModel {
+                Id = 1,
+                Name = "test1"
+            });
+
+            // act
+            await subject.RaiseBeforeSaveTriggers();
+
+            // assert
+            Assert.Equal(0, context.TriggerStub.BeforeSaveInvocations.Count);
+        }
     }
 }

@@ -48,7 +48,7 @@ namespace EntityFrameworkCore.Triggered
 
         public void SetTriggerServiceProvider(IServiceProvider? serviceProvider)
             => _triggerServiceProvider = serviceProvider;
-
+        
         public override int SaveChanges(bool acceptAllChangesOnSuccess)
         {
             bool RaiseAfterSavFailedTriggers(Exception exception)
@@ -62,11 +62,11 @@ namespace EntityFrameworkCore.Triggered
 
             var createdTriggerSession = false;
 
-            if (_triggerSession == null)
+            if (_triggerSession is null)
             {
                 var triggerService = this.GetService<ITriggerService>() ?? throw new InvalidOperationException("Triggers are not configured");
 
-                if (triggerService.Current != null)
+                if (triggerService.Current is not null)
                 {
                     _triggerSession = triggerService.Current;
                 }

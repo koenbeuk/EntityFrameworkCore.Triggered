@@ -11,6 +11,8 @@ namespace EntityFrameworkCore.Triggered.Tests.Stubs
 
         public ITriggerSession Current { get; set; }
 
+        public TriggerConfiguration Configuration { get; set; }
+
         public ITriggerSession CreateSession(DbContext context, IServiceProvider serviceProvider)
         {
             CreateSessionCalls += 1;

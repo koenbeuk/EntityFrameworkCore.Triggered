@@ -17,17 +17,17 @@ namespace EntityFrameworkCore.Triggered
         static ITriggerContextDiscoveryStrategy? _afterSaveFailedTriggerContextDiscoveryStrategy;
 
         readonly ITriggerService _triggerService;
-        readonly TriggerOptions _options;
+        readonly TriggerConfiguration _configuration;
         readonly ITriggerDiscoveryService _triggerDiscoveryService;
         readonly TriggerContextTracker _tracker;
         readonly ILogger<TriggerSession> _logger;
 
         bool _raiseBeforeSaveTriggersCalled;
 
-        public TriggerSession(ITriggerService triggerService, TriggerOptions options, ITriggerDiscoveryService triggerDiscoveryService, TriggerContextTracker tracker, ILogger<TriggerSession> logger)
+        public TriggerSession(ITriggerService triggerService, TriggerConfiguration configuration, ITriggerDiscoveryService triggerDiscoveryService, TriggerContextTracker tracker, ILogger<TriggerSession> logger)
         {
             _triggerService = triggerService ?? throw new ArgumentNullException(nameof(triggerService));
-            _options = options ?? throw new ArgumentNullException(nameof(options));
+            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             _triggerDiscoveryService = triggerDiscoveryService ?? throw new ArgumentNullException(nameof(triggerDiscoveryService));
             _tracker = tracker ?? throw new ArgumentNullException(nameof(tracker));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -50,7 +50,7 @@ namespace EntityFrameworkCore.Triggered
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            var triggerContextDescriptorBatches = triggerContextDiscoveryStrategy.Discover(_options, _tracker, _logger);
+            var triggerContextDescriptorBatches = triggerContextDiscoveryStrategy.Discover(_configuration, _tracker, _logger);
             foreach (var triggerContextDescriptorBatch in triggerContextDescriptorBatches)
             {
                 List<(TriggerContextDescriptor triggerContextDescriptor, TriggerDescriptor triggerDescriptor)>? triggerInvocations = null;

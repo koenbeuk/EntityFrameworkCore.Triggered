@@ -8,6 +8,9 @@ namespace EntityFrameworkCore.Triggered.Extensions
 {
     public static class DbContextExtensions
     {
+        /// <summary>
+        /// Gets the <c>ITriggerService</c> that is used to create trigger sessions.Allows for just in time configuration
+        /// </summary>
         public static ITriggerService GetTriggerService(this DbContext dbContext)
         {
             if (dbContext is null)
@@ -18,6 +21,9 @@ namespace EntityFrameworkCore.Triggered.Extensions
             return dbContext.GetService<ITriggerService>() ?? throw new InvalidOperationException("Triggers are not configured for this DbContext");
         }
 
+        /// <summary>
+        /// Gets or creates a <c>ITriggerSession</c> that can be used to manually invoke triggers
+        /// </summary>
         public static ITriggerSession CreateTriggerSession(this DbContext dbContext, IServiceProvider? serviceProvider = null)
         {
             var triggerService = GetTriggerService(dbContext);
@@ -25,6 +31,9 @@ namespace EntityFrameworkCore.Triggered.Extensions
             return triggerService.CreateSession(dbContext, serviceProvider);
         }
 
+        /// <summary>
+        /// Calls dbContext.SaveChanges without invoking triggers
+        /// </summary>
         public static int SaveChangesWithoutTriggers(this DbContext dbContext, bool acceptAllChangesOnSuccess = true)
         {
             var triggerService = GetTriggerService(dbContext);
@@ -42,9 +51,15 @@ namespace EntityFrameworkCore.Triggered.Extensions
             }
         }
 
+        /// <summary>
+        /// Calls dbContext.SaveChanges without invoking triggers
+        /// </summary>
         public static Task<int> SaveChangesWithoutTriggersAsync(this DbContext dbContext, CancellationToken cancellationToken = default)
             => SaveChangesWithoutTriggersAsync(dbContext, true, cancellationToken);
 
+        /// <summary>
+        /// Calls dbContext.SaveChanges without invoking triggers
+        /// </summary>
         public static Task<int> SaveChangesWithoutTriggersAsync(this DbContext dbContext, bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
         {
             var triggerService = GetTriggerService(dbContext);

@@ -44,6 +44,7 @@ class StudentSignupTrigger  : IBeforeSaveTrigger<Student> {
 
 class SendEmailTrigger : IAfterSaveTrigger<Email> {
     readonly IEmailService _emailService;
+    readonly ApplicationDbContext _applicationDbContext;
     public StudentTrigger (ApplicationDbContext applicationDbContext, IEmailService emailservice) {
         _applicationDbContext = applicationDbContext;
         _emailService = emailService;

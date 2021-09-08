@@ -25,7 +25,7 @@ namespace StudentManager
             services.AddSingleton<EmailService>();
 
             services
-                .AddTriggeredDbContextPool<ApplicationDbContext>(options => {
+                .AddDbContext<ApplicationDbContext>(options => {
                     options
                         .UseSqlite("Data source=test.db")
                         .UseTriggers(triggerOptions => {
@@ -37,6 +37,8 @@ namespace StudentManager
                             triggerOptions.AddTrigger<Triggers.Students.AssignRegistrationDate>();
                             triggerOptions.AddTrigger<Triggers.Students.SignupToMandatoryCourses>();
                         });
+
+                    options.EnableSensitiveDataLogging(true);
                 })
                 .AddHttpContextAccessor();
         }

@@ -99,6 +99,7 @@ public class Startup
 
 ### Related articles
 [Triggers for Entity Framework Core](https://onthedrift.com/posts/efcore-triggered-part1/) - Introduces the idea of using EF Core triggers in your codebase
+[Youtube presentation](https://youtu.be/Gjys0Yebobk?t=671) - Interview by the EF Core team
 
 ### Trigger discovery
 In the given example, we register triggers directly with our DbContext. This is the recommended approach starting from version 2.3 and 1.4 respectively. If you're on an older version then it's recommended to register triggers with your application's DI container instead:

@@ -99,6 +99,7 @@ public class Startup
 
 ### Related articles
 [Triggers for Entity Framework Core](https://onthedrift.com/posts/efcore-triggered-part1/) - Introduces the idea of using EF Core triggers in your codebase
+
 [Youtube presentation](https://youtu.be/Gjys0Yebobk?t=671) - Interview by the EF Core team
 
 ### Trigger discovery

@@ -20,6 +20,8 @@
     <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
     <AssemblyOriginatorKeyFile>../../EntityFrameworkCore.Triggered.snk</AssemblyOriginatorKeyFile>
     <EmbedUntrackedSources>True</EmbedUntrackedSources>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591;CS1573</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">

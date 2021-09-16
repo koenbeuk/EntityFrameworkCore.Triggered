@@ -158,6 +158,6 @@ namespace Microsoft.Extensions.DependencyInjection
 #endif
             return serviceCollection;
         }
+#endif
     }
 }
-#endif

@@ -2,6 +2,10 @@
   <Import Project="..\Directory.Build.props" />
   
   <PropertyGroup>
+    <DefineConstants>EFCORETRIGGERED3</DefineConstants>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition=" '$(EFCoreTriggeredVersion)' == '2' ">
     <DefineConstants>EFCORETRIGGERED2</DefineConstants>
   </PropertyGroup>
 

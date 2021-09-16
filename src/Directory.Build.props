@@ -2,6 +2,11 @@
   <Import Project="..\Directory.Build.props" />
   
   <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <DefineConstants>EFCORETRIGGERED3</DefineConstants>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition=" '$(EFCoreTriggeredVersion)' == '2' ">
     <TargetFramework>netstandard2.1</TargetFramework>
     <DefineConstants>EFCORETRIGGERED2</DefineConstants>
   </PropertyGroup>

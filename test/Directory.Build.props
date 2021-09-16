@@ -13,4 +13,10 @@
     <DefineConstants>EFCORETRIGGERED1</DefineConstants>
   </PropertyGroup>
 
+  <!-- Previous versions have shared issues -->
+  <PropertyGroup Condition=" '$(EFCoreTriggeredVersion)' == '1' or '$(EFCoreTriggeredVersion)' == '2'">
+    <EFCorePackageVersion>5.0.5</EFCorePackageVersion>
+    <MicrosoftExtensionsVersion>5.0.1</MicrosoftExtensionsVersion>
+  </PropertyGroup>
+
 </Project>

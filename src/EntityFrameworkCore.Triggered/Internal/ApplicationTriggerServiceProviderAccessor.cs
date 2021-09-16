@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -23,7 +24,7 @@ namespace EntityFrameworkCore.Triggered.Internal
             }
 
             var dbContextOptions = internalServiceProvider.GetRequiredService<IDbContextOptions>();
-            var coreOptionsExtension = dbContextOptions.FindExtension<CoreOptionsExtension>();
+            var coreOptionsExtension = dbContextOptions.FindExtension<CoreOptionsExtension>() ?? throw new InvalidOperationException("No coreOptionsExtension configured");
 
             _internalServiceProvider = internalServiceProvider;
             if (scopedServiceProviderTransform == null)
@@ -56,6 +57,7 @@ namespace EntityFrameworkCore.Triggered.Internal
                 {
                     var dbContextOptions = _internalServiceProvider.GetRequiredService<IDbContextOptions>();
                     var coreOptionsExtension = dbContextOptions.FindExtension<CoreOptionsExtension>();
+                    Debug.Assert(coreOptionsExtension is not null);
                     var serviceProvider = coreOptionsExtension.ApplicationServiceProvider ?? _internalServiceProvider;
 
                     _applicationScopedServiceProvider = _scopedServiceProviderTransform(serviceProvider);

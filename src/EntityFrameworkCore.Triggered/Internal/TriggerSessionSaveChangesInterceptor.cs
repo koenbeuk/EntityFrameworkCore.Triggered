@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace EntityFrameworkCore.Triggered.Internal
 {
-#if EFCORETRIGGERED2
+#if EFCORETRIGGERED2 || EFCORETRIGGERED3
 #pragma warning disable CS0618 // Type or member is obsolete (TriggeredDbContext with EFCore5)
     public class TriggerSessionSaveChangesInterceptor : ISaveChangesInterceptor
     {
@@ -34,6 +34,11 @@ namespace EntityFrameworkCore.Triggered.Internal
 
             if (_triggerSession == null)
             {
+                if (eventData.Context is null)
+                {
+                    throw new InvalidOperationException("Expected a context");
+                }
+
                 var triggerService = eventData.Context.GetService<ITriggerService>() ?? throw new InvalidOperationException("Triggers are not configured");
 
                 if (triggerService.Current != null)
@@ -74,7 +79,7 @@ namespace EntityFrameworkCore.Triggered.Internal
                 EnlistTriggerSession(eventData);
                 Debug.Assert(_triggerSession != null);
 
-                var defaultAutoDetectChangesEnabled = eventData.Context.ChangeTracker.AutoDetectChangesEnabled;
+                var defaultAutoDetectChangesEnabled = eventData.Context!.ChangeTracker.AutoDetectChangesEnabled;
 
                 try
                 {
@@ -104,7 +109,7 @@ namespace EntityFrameworkCore.Triggered.Internal
                 EnlistTriggerSession(eventData);
                 Debug.Assert(_triggerSession != null);
 
-                var defaultAutoDetectChangesEnabled = eventData.Context.ChangeTracker.AutoDetectChangesEnabled;
+                var defaultAutoDetectChangesEnabled = eventData.Context!.ChangeTracker.AutoDetectChangesEnabled;
 
                 try
                 {

@@ -23,7 +23,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Infrastructure
             }
         }
 
-#if EFCORETRIGGERED2
+#if EFCORETRIGGERED2 || EFCORETRIGGERED3
         class TestDbContextFactory : DbContextFactory<TestDbContext>
         {
             public TestDbContextFactory(IServiceProvider serviceProvider, DbContextOptions<TestDbContext> options, IDbContextFactorySource<TestDbContext> factorySource) : base(serviceProvider, options, factorySource)
@@ -125,7 +125,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Infrastructure
         }
 
 
-#if EFCORETRIGGERED2
+#if EFCORETRIGGERED2 || EFCORETRIGGERED3
         [Fact]
         public void AddTriggeredDbContextFactory_ReusesScopedServiceProvider()
         {

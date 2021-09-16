@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
@@ -11,11 +12,13 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
 
         public static IEnumerable<Type> EnumerateTypeHierarchy(Type type)
         {
-            do
+            Type? nextType = type;
+
+            while(nextType is not null)
             {
-                yield return type;
-                type = type.BaseType;
-            } while (type != null);
+                yield return nextType;
+                nextType = nextType.BaseType;
+            } while (nextType != null);
         }
     }
 }

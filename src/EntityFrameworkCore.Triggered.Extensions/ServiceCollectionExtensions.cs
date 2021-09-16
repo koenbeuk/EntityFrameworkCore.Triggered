@@ -34,7 +34,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 foreach (var customTrigger in customTriggers)
                 {
-                    services.TryAdd(new ServiceDescriptor(customTrigger, sp => sp.GetService(triggerImplementationType), ServiceLifetime.Transient)); ;
+                    services.TryAdd(new ServiceDescriptor(customTrigger, sp => sp.GetRequiredService(triggerImplementationType), ServiceLifetime.Transient)); ;
                 }
             }
         }
@@ -96,7 +96,7 @@ namespace Microsoft.Extensions.DependencyInjection
                         registered = true;
                     }
 
-                    services.TryAdd(new ServiceDescriptor(triggerType, sp => sp.GetService(assemblyType), ServiceLifetime.Transient));
+                    services.TryAdd(new ServiceDescriptor(triggerType, sp => sp.GetRequiredService(assemblyType), ServiceLifetime.Transient));
                 }
             }
 

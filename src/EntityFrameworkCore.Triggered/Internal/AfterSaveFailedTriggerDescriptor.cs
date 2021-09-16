@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -13,6 +14,7 @@ namespace EntityFrameworkCore.Triggered.Internal
         {
             var triggerType = typeof(IAfterSaveFailedTrigger<>).MakeGenericType(entityType);
             var triggerMethod = triggerType.GetMethod(nameof(IAfterSaveFailedTrigger<object>.AfterSaveFailed));
+            Debug.Assert(triggerMethod is not null);
 
             _triggerType = triggerType;
             _invocationDelegate = TriggerTypeDescriptorHelpers.GetWeakDelegateWithException(triggerType, entityType, triggerMethod);

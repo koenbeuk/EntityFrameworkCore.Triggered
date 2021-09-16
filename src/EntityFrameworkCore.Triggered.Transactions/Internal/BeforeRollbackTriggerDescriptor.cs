@@ -15,6 +15,7 @@ namespace EntityFrameworkCore.Triggered.Transactions.Internal
         {
             var triggerType = typeof(IBeforeRollbackTrigger<>).MakeGenericType(entityType);
             var triggerMethod = triggerType.GetMethod(nameof(IBeforeRollbackTrigger<object>.BeforeRollback));
+            Debug.Assert(triggerMethod is not null);
 
             _triggerType = triggerType;
             _invocationDelegate = TriggerTypeDescriptorHelpers.GetWeakDelegate(triggerType, entityType, triggerMethod);

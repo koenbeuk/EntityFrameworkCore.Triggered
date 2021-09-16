@@ -14,6 +14,7 @@ namespace EntityFrameworkCore.Triggered.Internal
         {
             var triggerType = typeof(IAfterSaveTrigger<>).MakeGenericType(entityType);
             var triggerMethod = triggerType.GetMethod(nameof(IAfterSaveTrigger<object>.AfterSave));
+            Debug.Assert(triggerMethod is not null);
 
             _triggerType = triggerType;
             _invocationDelegate = TriggerTypeDescriptorHelpers.GetWeakDelegate(triggerType, entityType, triggerMethod);

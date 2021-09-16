@@ -10,7 +10,7 @@ using Xunit;
 
 namespace EntityFrameworkCore.Triggered.Tests
 {
-#if EFCORETRIGGERED2
+#if EFCORETRIGGERED2 || EFCORETRIGGERED3
     public class EFCore5DbContextTests
     {
         public class TestModel

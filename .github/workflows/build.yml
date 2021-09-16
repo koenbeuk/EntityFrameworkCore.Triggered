@@ -32,6 +32,7 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: 6.0.x
+          include-prerelease: True
       - name: Install dependencies
         run: dotnet restore EntityFrameworkCore.Triggered.sln -p:Configuration=ReleaseV1
       - name: Build
@@ -61,6 +62,7 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: 6.0.x
+          include-prerelease: True
       - name: Install dependencies
         run: dotnet restore EntityFrameworkCore.Triggered.sln -p:Configuration=Release
       - name: Build
@@ -90,6 +92,7 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: 6.0.x
+          include-prerelease: True
       - name: Install dependencies
         run: dotnet restore EntityFrameworkCore.Triggered.Samples.slnf
       - name: Build

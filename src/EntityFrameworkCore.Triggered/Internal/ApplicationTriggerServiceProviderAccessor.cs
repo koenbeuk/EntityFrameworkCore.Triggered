@@ -57,8 +57,7 @@ namespace EntityFrameworkCore.Triggered.Internal
                 {
                     var dbContextOptions = _internalServiceProvider.GetRequiredService<IDbContextOptions>();
                     var coreOptionsExtension = dbContextOptions.FindExtension<CoreOptionsExtension>();
-                    Debug.Assert(coreOptionsExtension is not null);
-                    var serviceProvider = coreOptionsExtension.ApplicationServiceProvider ?? _internalServiceProvider;
+                    var serviceProvider = coreOptionsExtension!.ApplicationServiceProvider ?? _internalServiceProvider;
 
                     _applicationScopedServiceProvider = _scopedServiceProviderTransform(serviceProvider);
                 }

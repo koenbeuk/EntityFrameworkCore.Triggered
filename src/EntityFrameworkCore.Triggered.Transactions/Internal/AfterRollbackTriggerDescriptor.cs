@@ -15,10 +15,9 @@ namespace EntityFrameworkCore.Triggered.Transactions.Internal
         {
             var triggerType = typeof(IAfterRollbackTrigger<>).MakeGenericType(entityType);
             var triggerMethod = triggerType.GetMethod(nameof(IAfterRollbackTrigger<object>.AfterRollback));
-            Debug.Assert(triggerMethod is not null);
 
             _triggerType = triggerType;
-            _invocationDelegate = TriggerTypeDescriptorHelpers.GetWeakDelegate(triggerType, entityType, triggerMethod);
+            _invocationDelegate = TriggerTypeDescriptorHelpers.GetWeakDelegate(triggerType, entityType, triggerMethod!);
         }
 
         public Type TriggerType => _triggerType;

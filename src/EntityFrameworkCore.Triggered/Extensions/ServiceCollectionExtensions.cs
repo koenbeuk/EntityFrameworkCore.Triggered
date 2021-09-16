@@ -143,6 +143,10 @@ namespace Microsoft.Extensions.DependencyInjection
                     lifetime: ServiceLifetime.Scoped
                 ));
             }
+            else if (serviceDescriptor?.ImplementationFactory != null)
+            {
+                throw new NotImplementedException();
+            }
 
             return serviceCollection;
         }

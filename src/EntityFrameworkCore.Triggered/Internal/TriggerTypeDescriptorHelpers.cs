@@ -15,9 +15,7 @@ namespace EntityFrameworkCore.Triggered.Internal
             var triggerContextType = typeof(ITriggerContext<>).MakeGenericType(entityType);
 
             var genericHelper = typeof(TriggerTypeDescriptorHelpers).GetMethod(nameof(TriggerTypeDescriptorHelpers.GetWeakDelegateHelper), BindingFlags.Static | BindingFlags.NonPublic);
-            Debug.Assert(genericHelper is not null);
-            var constructedHelper = genericHelper.MakeGenericMethod(triggerType, triggerContextType);
-            Debug.Assert(constructedHelper is not null);
+            var constructedHelper = genericHelper!.MakeGenericMethod(triggerType, triggerContextType);
 
             return (Func<object, object, CancellationToken, Task>)constructedHelper.Invoke(null, new object[] { method })!;
         }
@@ -27,9 +25,7 @@ namespace EntityFrameworkCore.Triggered.Internal
             var triggerContextType = typeof(ITriggerContext<>).MakeGenericType(entityType);
 
             var genericHelper = typeof(TriggerTypeDescriptorHelpers).GetMethod(nameof(TriggerTypeDescriptorHelpers.GetWeakDelegateHelperWithException), BindingFlags.Static | BindingFlags.NonPublic);
-            Debug.Assert(genericHelper is not null);
-            var constructedHelper = genericHelper.MakeGenericMethod(triggerType, triggerContextType);
-            Debug.Assert(constructedHelper is not null);
+            var constructedHelper = genericHelper!.MakeGenericMethod(triggerType, triggerContextType);
 
             return (Func<object, object, Exception?, CancellationToken, Task>)constructedHelper.Invoke(null, new object[] { method })!;
         }

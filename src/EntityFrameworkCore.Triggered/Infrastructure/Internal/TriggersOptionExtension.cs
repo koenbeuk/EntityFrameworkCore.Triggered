@@ -84,8 +84,8 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
 
             public override bool ShouldUseSameServiceProvider(DbContextOptionsExtensionInfo other)
                 => other is ExtensionInfo otherInfo
-                    && Extension._triggers == otherInfo.Extension._triggers
-                    && Extension._triggers == otherInfo.Extension._triggerTypes
+                    && Enumerable.SequenceEqual(Extension._triggers ?? Enumerable.Empty<ValueTuple<object, ServiceLifetime>>(), otherInfo.Extension._triggers ?? Enumerable.Empty<ValueTuple<object, ServiceLifetime>>())
+                    && Enumerable.SequenceEqual(Extension._triggerTypes ?? Enumerable.Empty<Type>(), otherInfo.Extension._triggerTypes ?? Enumerable.Empty<Type>())
                     && Extension._maxCascadeCycles == otherInfo.Extension._maxCascadeCycles
                     && Extension._cascadeBehavior == otherInfo.Extension._cascadeBehavior
                     && Extension._serviceProviderTransform == otherInfo.Extension._serviceProviderTransform;

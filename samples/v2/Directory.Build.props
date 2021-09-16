@@ -1,5 +1,6 @@
 <Project>
   <PropertyGroup>
+    <Configurations>Debug;Release;DebugV1;ReleaseV1;DebugV2;ReleaseV2</Configurations>
     <EFCorePackageVersion Condition=" '$(EFCorePackageVersion)'=='' ">5.0.0</EFCorePackageVersion>
     <EFCoreTriggeredPackageVersion Condition=" '$(EFCoreTriggeredPackageVersion )'=='' ">2.3.2</EFCoreTriggeredPackageVersion>
   </PropertyGroup>

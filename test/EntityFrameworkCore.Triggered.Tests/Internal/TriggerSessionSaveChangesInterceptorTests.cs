@@ -10,7 +10,7 @@ using Xunit;
 
 namespace EntityFrameworkCore.Triggered.Tests.Internal
 {
-#if EFCORETRIGGERED2
+#if EFCORETRIGGERED2 || EFCORETRIGGERED3
     public class TriggerSessionSaveChangesInterceptorTests
     {
         public class TestModel

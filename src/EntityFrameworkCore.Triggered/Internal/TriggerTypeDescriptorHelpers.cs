@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,9 +15,9 @@ namespace EntityFrameworkCore.Triggered.Internal
             var triggerContextType = typeof(ITriggerContext<>).MakeGenericType(entityType);
 
             var genericHelper = typeof(TriggerTypeDescriptorHelpers).GetMethod(nameof(TriggerTypeDescriptorHelpers.GetWeakDelegateHelper), BindingFlags.Static | BindingFlags.NonPublic);
-            var constructedHelper = genericHelper.MakeGenericMethod(triggerType, triggerContextType);
+            var constructedHelper = genericHelper!.MakeGenericMethod(triggerType, triggerContextType);
 
-            return (Func<object, object, CancellationToken, Task>)constructedHelper.Invoke(null, new object[] { method });
+            return (Func<object, object, CancellationToken, Task>)constructedHelper.Invoke(null, new object[] { method })!;
         }
 
         public static Func<object, object, Exception?, CancellationToken, Task> GetWeakDelegateWithException(Type triggerType, Type entityType, MethodInfo method)
@@ -24,9 +25,9 @@ namespace EntityFrameworkCore.Triggered.Internal
             var triggerContextType = typeof(ITriggerContext<>).MakeGenericType(entityType);
 
             var genericHelper = typeof(TriggerTypeDescriptorHelpers).GetMethod(nameof(TriggerTypeDescriptorHelpers.GetWeakDelegateHelperWithException), BindingFlags.Static | BindingFlags.NonPublic);
-            var constructedHelper = genericHelper.MakeGenericMethod(triggerType, triggerContextType);
+            var constructedHelper = genericHelper!.MakeGenericMethod(triggerType, triggerContextType);
 
-            return (Func<object, object, Exception?, CancellationToken, Task>)constructedHelper.Invoke(null, new object[] { method });
+            return (Func<object, object, Exception?, CancellationToken, Task>)constructedHelper.Invoke(null, new object[] { method })!;
         }
 
         static Func<object, object, CancellationToken, Task> GetWeakDelegateHelper<TTriggerType, TTriggerContext>(MethodInfo method)

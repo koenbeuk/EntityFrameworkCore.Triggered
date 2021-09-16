@@ -16,7 +16,7 @@ namespace EntityFrameworkCore.Triggered.Internal
             var triggerMethod = triggerType.GetMethod(nameof(IBeforeSaveTrigger<object>.BeforeSave));
 
             _triggerType = triggerType;
-            _invocationDelegate = TriggerTypeDescriptorHelpers.GetWeakDelegate(triggerType, entityType, triggerMethod);
+            _invocationDelegate = TriggerTypeDescriptorHelpers.GetWeakDelegate(triggerType, entityType, triggerMethod!);
         }
 
         public Type TriggerType => _triggerType;

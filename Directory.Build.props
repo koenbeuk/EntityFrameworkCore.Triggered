@@ -5,7 +5,7 @@
     <LangVersion>9.0</LangVersion>
     <Nullable>enable</Nullable>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
-    <Configurations>Debug;DebugV1;Release;ReleaseV1</Configurations>
+    <Configurations>Debug;Release;DebugV1;ReleaseV1;DebugV2;ReleaseV2</Configurations>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -18,13 +18,21 @@
   </PropertyGroup>
  
   <PropertyGroup>
+    <EFCoreTriggeredVersion>3</EFCoreTriggeredVersion>
+    <EFCorePackageVersion>6.0.0-rc.1.21452.10</EFCorePackageVersion>
+    <MicrosoftExtensionsVersion>6.0.0-rc.1.21451.13</MicrosoftExtensionsVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)' == 'DebugV2' Or '$(Configuration)' == 'ReleaseV2' ">
     <EFCoreTriggeredVersion>2</EFCoreTriggeredVersion>
     <EFCorePackageVersion>5.0.0</EFCorePackageVersion>
-  </PropertyGroup> 
-
+    <MicrosoftExtensionsVersion>5.0.0</MicrosoftExtensionsVersion>
+  </PropertyGroup>
+  
   <PropertyGroup Condition=" '$(Configuration)' == 'DebugV1' Or '$(Configuration)' == 'ReleaseV1' ">
     <EFCoreTriggeredVersion>1</EFCoreTriggeredVersion>
     <EFCorePackageVersion>3.1.0</EFCorePackageVersion>
+    <MicrosoftExtensionsVersion>3.1.0</MicrosoftExtensionsVersion>
   </PropertyGroup>
   
   <Target Name="Debug">  

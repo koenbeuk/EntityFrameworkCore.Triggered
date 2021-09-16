@@ -38,8 +38,8 @@ namespace EntityFrameworkCore.Triggered.Internal
 
             var triggerContextFactory = _cachedTriggerContextFactories.GetOrAdd(entityType, entityType =>
                 (Func<object, PropertyValues?, ChangeType, EntityBagStateManager, object >)typeof(TriggerContextFactory<>).MakeGenericType(entityType)
-                    .GetMethod(nameof(TriggerContextFactory<object>.Activate))
-                    .CreateDelegate(typeof(Func<object, PropertyValues?, ChangeType, EntityBagStateManager, object>)));
+                    !.GetMethod(nameof(TriggerContextFactory<object>.Activate))
+                    !.CreateDelegate(typeof(Func<object, PropertyValues?, ChangeType, EntityBagStateManager, object>)));
 
             return triggerContextFactory(entityEntry.Entity, originalValues, changeType, entityBagStateManager);
         }

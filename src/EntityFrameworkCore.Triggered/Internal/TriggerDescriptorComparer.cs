@@ -5,7 +5,7 @@ namespace EntityFrameworkCore.Triggered.Internal
 {
     public sealed class TriggerDescriptorComparer : IComparer<TriggerDescriptor>
     {
-        public int Compare(TriggerDescriptor x, TriggerDescriptor y)
+        public int Compare(TriggerDescriptor? x, TriggerDescriptor? y)
         {
             if (x is null)
             {

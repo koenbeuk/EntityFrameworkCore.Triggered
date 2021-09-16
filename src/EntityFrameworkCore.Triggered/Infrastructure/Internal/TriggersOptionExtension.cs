@@ -16,7 +16,6 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
     {
         sealed class ExtensionInfo : DbContextOptionsExtensionInfo
         {
-            private int? _serviceProviderHash;
             private string? _logFragment;
             public ExtensionInfo(IDbContextOptionsExtension extension) : base(extension)
             {
@@ -36,43 +35,7 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
                 }
             }
 
-            public override long GetServiceProviderHashCode()
-            {
-                if (_serviceProviderHash == null)
-                {
-                    var hashCode = nameof(TriggersOptionExtension).GetHashCode();
-
-                    var extension = (TriggersOptionExtension)Extension;
-
-                    if (extension._triggers != null)
-                    {
-                        foreach (var trigger in extension._triggers)
-                        {
-                            hashCode ^= trigger.GetHashCode();
-                        }
-                    }
-
-                    if (extension._triggerTypes != null)
-                    {
-                        foreach (var triggerType in extension._triggerTypes)
-                        {
-                            hashCode ^= triggerType.GetHashCode();
-                        }
-                    }
-
-                    hashCode ^= extension._maxCascadeCycles.GetHashCode();
-                    hashCode ^= extension._cascadeBehavior.GetHashCode();
-
-                    if (extension._serviceProviderTransform != null)
-                    {
-                        hashCode ^= extension._serviceProviderTransform.GetHashCode();
-                    }
-
-                    _serviceProviderHash = hashCode;
-                }
-
-                return _serviceProviderHash.Value;
-            }
+            public new TriggersOptionExtension Extension => (TriggersOptionExtension)base.Extension;
 
             public override void PopulateDebugInfo(IDictionary<string, string> debugInfo)
             {
@@ -81,11 +44,85 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
                     throw new ArgumentNullException(nameof(debugInfo));
                 }
 
-                debugInfo["Triggers:TriggersCount"] = (((TriggersOptionExtension)Extension)._triggers?.Count() ?? 0).ToString();
-                debugInfo["Triggers:TriggerTypesCount"] = (((TriggersOptionExtension)Extension)._triggerTypes?.Count() ?? 0).ToString();
-                debugInfo["Triggers:MaxCascadeCycles"] = ((TriggersOptionExtension)Extension)._maxCascadeCycles.ToString();
-                debugInfo["Triggers:CascadeBehavior"] = ((TriggersOptionExtension)Extension)._cascadeBehavior.ToString();
+                debugInfo["Triggers:TriggersCount"] = (Extension._triggers?.Count() ?? 0).ToString();
+                debugInfo["Triggers:TriggerTypesCount"] = (Extension._triggerTypes?.Count() ?? 0).ToString();
+                debugInfo["Triggers:MaxCascadeCycles"] = Extension._maxCascadeCycles.ToString();
+                debugInfo["Triggers:CascadeBehavior"] = Extension._cascadeBehavior.ToString();
             }
+
+#if EFCORETRIGGERED3
+            public override int GetServiceProviderHashCode()
+            {
+                var hashCode = new HashCode();
+
+                if (Extension._triggers != null)
+                {
+                    foreach (var trigger in Extension._triggers)
+                    {
+                        hashCode.Add(trigger);
+                    }
+                }
+
+                if (Extension._triggerTypes != null)
+                {
+                    foreach (var triggerType in Extension._triggerTypes)
+                    {
+                        hashCode.Add(triggerType);
+                    }
+                }
+
+                hashCode.Add(Extension._maxCascadeCycles);
+                hashCode.Add(Extension._cascadeBehavior);
+
+                if (Extension._serviceProviderTransform != null)
+                {
+                    hashCode.Add(Extension._serviceProviderTransform);
+                }
+
+                return hashCode.ToHashCode();
+            }
+
+            public override bool ShouldUseSameServiceProvider(DbContextOptionsExtensionInfo other)
+                => other is ExtensionInfo otherInfo
+                    && Enumerable.SequenceEqual(Extension._triggers ?? Enumerable.Empty<ValueTuple<object, ServiceLifetime>>(), otherInfo.Extension._triggers ?? Enumerable.Empty<ValueTuple<object, ServiceLifetime>>())
+                    && Enumerable.SequenceEqual(Extension._triggerTypes ?? Enumerable.Empty<Type>(), otherInfo.Extension._triggerTypes ?? Enumerable.Empty<Type>())
+                    && Extension._maxCascadeCycles == otherInfo.Extension._maxCascadeCycles
+                    && Extension._cascadeBehavior == otherInfo.Extension._cascadeBehavior
+                    && Extension._serviceProviderTransform == otherInfo.Extension._serviceProviderTransform;
+#else
+            public override long GetServiceProviderHashCode()
+            {
+                var hashCode = nameof(TriggersOptionExtension).GetHashCode();
+
+                var extension = (TriggersOptionExtension)Extension;
+
+                if (extension._triggers != null)
+                {
+                    foreach (var trigger in extension._triggers)
+                    {
+                        hashCode ^= trigger.GetHashCode();
+                    }
+                }
+
+                if (extension._triggerTypes != null)
+                {
+                    foreach (var triggerType in extension._triggerTypes)
+                    {
+                        hashCode ^= triggerType.GetHashCode();
+                    }
+                }
+
+                hashCode ^= extension._maxCascadeCycles.GetHashCode();
+                hashCode ^= extension._cascadeBehavior.GetHashCode();
+
+                if (extension._serviceProviderTransform != null)
+                {
+                    hashCode ^= extension._serviceProviderTransform.GetHashCode();
+                }
+
+                return hashCode;
+            }
+#endif
         }
 
         private ExtensionInfo? _info;
@@ -148,7 +185,7 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
 
             services.AddScoped<TriggerFactory>();
 
-#if EFCORETRIGGERED2
+#if EFCORETRIGGERED2 || EFCORETRIGGERED3
             services.TryAddScoped<IInterceptor, TriggerSessionSaveChangesInterceptor>();
 #endif
 
@@ -192,7 +229,7 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
                                 triggerInstanceFactoryBuilder =
                                     Expression.Lambda<Func<object?, object>>(
                                             Expression.New(
-                                                typeof(TriggerInstanceFactory<>).MakeGenericType(triggerServiceType).GetConstructor(new[] { typeof(object) }),
+                                                typeof(TriggerInstanceFactory<>).MakeGenericType(triggerServiceType).GetConstructor(new[] { typeof(object) })!,
                                                 instanceParamExpression
                                             ),
                                             instanceParamExpression

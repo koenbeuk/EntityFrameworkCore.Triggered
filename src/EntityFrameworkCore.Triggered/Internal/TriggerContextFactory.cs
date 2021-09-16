@@ -18,7 +18,7 @@ namespace EntityFrameworkCore.Triggered.Internal
 
             return Expression.Lambda<Func<object, PropertyValues?, ChangeType, EntityBagStateManager, TriggerContext<TEntityType>>>(
                 Expression.New(
-                    typeof(TriggerContext<>).MakeGenericType(typeof(TEntityType)).GetConstructor(new[] { typeof(object), typeof(PropertyValues), typeof(ChangeType), typeof(EntityBagStateManager) }),
+                    typeof(TriggerContext<>).MakeGenericType(typeof(TEntityType)).GetConstructor(new[] { typeof(object), typeof(PropertyValues), typeof(ChangeType), typeof(EntityBagStateManager) })!,
                     entityParamExpression,
                     originalValuesParamExpression,
                     changeTypeParamExpression,

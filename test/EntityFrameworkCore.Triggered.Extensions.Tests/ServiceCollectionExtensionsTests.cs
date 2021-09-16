@@ -31,7 +31,7 @@ namespace EntityFrameworkCore.Triggered.Extensions.Tests
         }
 
         public class TestDbContext :
-#if EFCORETRIGGERED2
+#if EFCORETRIGGERED2 || EFCORETRIGGERED3
             DbContext
 #else
             TriggeredDbContext

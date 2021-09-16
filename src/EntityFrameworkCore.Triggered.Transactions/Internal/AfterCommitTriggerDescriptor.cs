@@ -17,7 +17,7 @@ namespace EntityFrameworkCore.Triggered.Transactions.Internal
             var triggerMethod = triggerType.GetMethod(nameof(IAfterCommitTrigger<object>.AfterCommit));
 
             _triggerType = triggerType;
-            _invocationDelegate = TriggerTypeDescriptorHelpers.GetWeakDelegate(triggerType, entityType, triggerMethod);
+            _invocationDelegate = TriggerTypeDescriptorHelpers.GetWeakDelegate(triggerType, entityType, triggerMethod!);
         }
 
         public Type TriggerType => _triggerType;

@@ -127,6 +127,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             var serviceDescriptor = serviceCollection.FirstOrDefault(x => x.ServiceType == typeof(IDbContextFactory<TContext>));
 
+#if EFCORETRIGGERED2
             if (serviceDescriptor?.ImplementationType != null)
             {
                 var triggeredFactoryType = typeof(TriggeredDbContextFactory<,>).MakeGenericType(typeof(TContext), serviceDescriptor.ImplementationType);
@@ -143,13 +144,20 @@ namespace Microsoft.Extensions.DependencyInjection
                     lifetime: ServiceLifetime.Scoped
                 ));
             }
-            else if (serviceDescriptor?.ImplementationFactory != null)
+#elif EFCORETRIGGERED3
+            if (serviceDescriptor?.ImplementationFactory != null)
             {
-                throw new NotImplementedException();
-            }
+                var triggeredFactoryType = typeof(TriggeredDbContextFactory<>).MakeGenericType(typeof(TContext));
 
+                serviceCollection.Replace(ServiceDescriptor.Describe(
+                    serviceType: typeof(IDbContextFactory<TContext>),
+                    implementationFactory: serviceProvider => ActivatorUtilities.CreateInstance(serviceProvider, triggeredFactoryType, serviceDescriptor.ImplementationFactory),
+                    lifetime: ServiceLifetime.Scoped
+                ));
+            }
+#endif
             return serviceCollection;
         }
-#endif
     }
 }
+#endif

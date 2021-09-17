@@ -39,15 +39,15 @@ jobs:
           dotnet-version: 6.0.x
           include-prerelease: True
       - name: Install dependencies
-        run: dotnet restore EntityFrameworkCore.Triggered.sln -p:Configuration={{ matrix.configuration }}
+        run: dotnet restore EntityFrameworkCore.Triggered.sln -p:Configuration=${{ matrix.configuration }}
       - name: Build
-        run: dotnet build --configuration {{ matrix.configuration }} --no-restore EntityFrameworkCore.Triggered.sln
+        run: dotnet build --configuration ${{ matrix.configuration }} --no-restore EntityFrameworkCore.Triggered.sln
       - name: Test
-        run: dotnet test --configuration {{ matrix.configuration }} --verbosity normal EntityFrameworkCore.Triggered.sln
+        run: dotnet test --configuration ${{ matrix.configuration }} --verbosity normal EntityFrameworkCore.Triggered.sln
       - name: Pack
         if: matrix.os == 'ubuntu-latest'
         run: | 
-          dotnet pack -v normal --configuration {{ matrix.configuration }} --include-symbols --include-source -p:PackageVersion=v{{ matrix.version }}-pre-$GITHUB_RUN_ID -o nupkg EntityFrameworkCore.Triggered.Core.slnf
+          dotnet pack -v normal --configuration ${{ matrix.configuration }} --include-symbols --include-source -p:PackageVersion=v${{ matrix.version }}-pre-$GITHUB_RUN_ID -o nupkg EntityFrameworkCore.Triggered.Core.slnf
       - name: Upload Artifact
         if: matrix.os == 'ubuntu-latest'
         uses: actions/upload-artifact@v2

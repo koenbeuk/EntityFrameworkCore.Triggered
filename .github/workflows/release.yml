@@ -1,7 +1,4 @@
-# Credits due: by https://dusted.codes/github-actions-for-dotnet-core-nuget-packages#branch-and-pull-request-trigger
-
 name: Release
-
 on:
   release:
     types:
@@ -28,13 +25,15 @@ jobs:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 5.0.x
+          dotnet-version: 6.0.x
+          include-prerelease: True
       - name: Create Release NuGet package
         run: |
           arrTag=(${GITHUB_REF//\// })
           VERSION="${arrTag[2]}"
           echo Version: $VERSION
           CONFIGURATION=$([ "${VERSION:0:2}" == "v1" ] && echo "ReleaseV1" || echo "Release")
+          CONFIGURATION=$([ "${VERSION:0:2}" == "v2" ] && echo "ReleaseV2" || echo $CONFIGURATION)
           VERSION="${VERSION//v}"
           echo Clean Version: $VERSION
           echo Configuration: $CONFIGURATION
@@ -45,9 +44,9 @@ jobs:
           do
             dotnet nuget push $f --source $GITHUB_FEED --api-key ${{github.token}} --skip-duplicate --no-symbols true
           done
-      - name: Push to NuGet Feed
-        run: |
-          for f in ./nupkg/*.nupkg
-          do
-            dotnet nuget push $f --source $NUGET_FEED --skip-duplicate --api-key $NUGET_KEY
-          done
+      # - name: Push to NuGet Feed
+      #   run: |
+      #     for f in ./nupkg/*.nupkg
+      #     do
+      #       dotnet nuget push $f --source $NUGET_FEED --skip-duplicate --api-key $NUGET_KEY
+      #     done

@@ -1,7 +1,4 @@
-# Credits due: by https://dusted.codes/github-actions-for-dotnet-core-nuget-packages#branch-and-pull-request-trigger
-
 name: Build
-
 on:
   push:
   pull_request:
@@ -20,40 +17,18 @@ env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   
 jobs:
-  build-v1:
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-    runs-on:  ${{ matrix.os }}
-
-    steps:
-      - uses: actions/checkout@v2
-      - name: Setup .NET Core
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: 6.0.x
-          include-prerelease: True
-      - name: Install dependencies
-        run: dotnet restore EntityFrameworkCore.Triggered.sln -p:Configuration=ReleaseV1
-      - name: Build
-        run: dotnet build --configuration ReleaseV1 --no-restore EntityFrameworkCore.Triggered.sln
-      - name: Test
-        run: dotnet test --configuration ReleaseV1 --verbosity normal EntityFrameworkCore.Triggered.sln
-      - name: Pack
-        if: matrix.os == 'ubuntu-latest'
-        run: | 
-          dotnet pack -v normal -c ReleaseV1 --include-symbols --include-source -p:PackageVersion=$GITHUB_RUN_ID -o nupkg EntityFrameworkCore.Triggered.Core-v1.slnf
-      - name: Upload Artifact
-        if: matrix.os == 'ubuntu-latest'
-        uses: actions/upload-artifact@v2
-        with:
-          name: nupkg
-          path: ./nupkg/*.nupkg
-  
   build:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
+        version: [1, 2, 3]
+        include:
+          - version: 1
+            configuration: ReleaseV1
+          - version: 2
+            configuration: ReleaseV2
+          - version: 3  
+            configuration: Release
     runs-on:  ${{ matrix.os }}
 
     steps:
@@ -64,22 +39,22 @@ jobs:
           dotnet-version: 6.0.x
           include-prerelease: True
       - name: Install dependencies
-        run: dotnet restore EntityFrameworkCore.Triggered.sln -p:Configuration=Release
+        run: dotnet restore EntityFrameworkCore.Triggered.sln -p:Configuration={{ matrix.configuration }}
       - name: Build
-        run: dotnet build --configuration Release --no-restore EntityFrameworkCore.Triggered.sln
+        run: dotnet build --configuration {{ matrix.configuration }} --no-restore EntityFrameworkCore.Triggered.sln
       - name: Test
-        run: dotnet test --configuration Release --verbosity normal EntityFrameworkCore.Triggered.sln
+        run: dotnet test --configuration {{ matrix.configuration }} --verbosity normal EntityFrameworkCore.Triggered.sln
       - name: Pack
         if: matrix.os == 'ubuntu-latest'
         run: | 
-          dotnet pack -v normal -c Release --include-symbols --include-source -p:PackageVersion=2.0.0-pre-$GITHUB_RUN_ID -o nupkg EntityFrameworkCore.Triggered.Core.slnf
+          dotnet pack -v normal --configuration {{ matrix.configuration }} --include-symbols --include-source -p:PackageVersion=v{{ matrix.version }}-pre-$GITHUB_RUN_ID -o nupkg EntityFrameworkCore.Triggered.Core.slnf
       - name: Upload Artifact
         if: matrix.os == 'ubuntu-latest'
         uses: actions/upload-artifact@v2
         with:
           name: nupkg
           path: ./nupkg/*.nupkg
-  
+
   build-samples:
     strategy:
       matrix:

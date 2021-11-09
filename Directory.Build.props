@@ -19,8 +19,8 @@
  
   <PropertyGroup>
     <EFCoreTriggeredVersion>3</EFCoreTriggeredVersion>
-    <EFCorePackageVersion>6.0.0-rc.1.21452.10</EFCorePackageVersion>
-    <MicrosoftExtensionsVersion>6.0.0-rc.1.21451.13</MicrosoftExtensionsVersion>
+    <EFCorePackageVersion>6.0.0</EFCorePackageVersion>
+    <MicrosoftExtensionsVersion>6.0.0</MicrosoftExtensionsVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)' == 'DebugV2' Or '$(Configuration)' == 'ReleaseV2' ">

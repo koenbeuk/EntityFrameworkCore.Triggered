@@ -20,7 +20,7 @@ Triggers for EF Core. Respond to changes in your DbContext before and after they
 
 > Since EntityFrameworkCore.Triggered 2.0, triggers will be invoked automatically, however this requires EF Core 5.0. If you're stuck with EF Core 3.1 then you can use [EntityFrameworkCore.Triggered V1](https://www.nuget.org/packages/EntityFrameworkCore.Triggered/1.4.0). This requires you to inherit from `TriggeredDbContext` or handle manual management of trigger sessions.
 
-> [EntityFrameworkCore.Triggered V3](https://www.nuget.org/packages/EntityFrameworkCore.Triggered/3.0.0-beta.2) is now available for those targeting EF Core 6 or later
+> [EntityFrameworkCore.Triggered V3](https://www.nuget.org/packages/EntityFrameworkCore.Triggered/3.0.0) is now available for those targeting EF Core 6 or later
 
 ### Example
 ```csharp

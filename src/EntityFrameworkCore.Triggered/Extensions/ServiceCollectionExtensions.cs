@@ -79,7 +79,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 serviceCollection.Replace(ServiceDescriptor.Describe(
                     serviceType: typeof(IDbContextFactory<TContext>),
                     implementationFactory: serviceProvider => ActivatorUtilities.CreateInstance(serviceProvider, triggeredFactoryType, serviceProvider.GetRequiredService(serviceDescriptor.ImplementationType), serviceProvider),
-                    lifetime: ServiceLifetime.Scoped
+                    lifetime: lifetime
                 ));
             }
 
@@ -110,7 +110,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 serviceCollection.Replace(ServiceDescriptor.Describe(
                     serviceType: typeof(IDbContextFactory<TContext>),
                     implementationFactory: serviceProvider => ActivatorUtilities.CreateInstance(serviceProvider, triggeredFactoryType, serviceProvider.GetRequiredService(serviceDescriptor.ImplementationType), serviceProvider),
-                    lifetime: ServiceLifetime.Scoped
+                    lifetime: lifetime
                 ));
             }
 

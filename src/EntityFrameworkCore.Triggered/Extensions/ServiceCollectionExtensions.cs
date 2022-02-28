@@ -48,7 +48,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 serviceCollection.Replace(ServiceDescriptor.Describe(
                     serviceType: typeof(TContext),
                     implementationFactory: serviceProvider => SetApplicationTriggerServiceProviderAccessor(serviceDescriptor.ImplementationFactory(serviceProvider), serviceProvider),
-                    lifetime: ServiceLifetime.Scoped
+                    lifetime: ServiceLifetime.Transient
                 ));
             }
 

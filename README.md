@@ -198,6 +198,8 @@ var triggerSession = triggerService.CreateSession(context); // A trigger session
 try {
     await context.SaveChangesAsync();
     await triggerSession.RaiseBeforeCommitTriggers();    
+    await context.CommitAsync();
+    await triggerSession.RaiseAfterCommitTriggers();
 }
 catch {
     await triggerSession.RaiseBeforeRollbackTriggers();
@@ -205,9 +207,6 @@ catch {
     await triggerSession.RaiseAfterRollbackTriggers();	
     throw;
 }
-
-await context.CommitAsync();
-await triggerSession.RaiseAfterCommitTriggers();
 ```
 In this example we were not able to inherit from TriggeredDbContext since we want to manually control the TriggerSession
 

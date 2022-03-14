@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace StudentManager
 {
@@ -16,7 +17,9 @@ namespace StudentManager
             _serviceProvider = serviceProvider;
         }
 
-        public IFoo Get() => new FooA();
+        public IFoo Get() => true 
+            ? _serviceProvider.GetService<FooA>() 
+            : _serviceProvider.GetService<FooB>();
     }
 
     public interface IFoo

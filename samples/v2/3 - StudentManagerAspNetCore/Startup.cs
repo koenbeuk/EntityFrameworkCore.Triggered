@@ -25,9 +25,11 @@ namespace StudentManager
             services.AddSingleton<EmailService>();
 
             services.AddScoped<FooFactory>();
+            services.AddScoped<FooA>();
+            services.AddScoped<FooB>();
 
             services
-                .AddDbContextPool<ApplicationDbContext>(options => {
+                .AddTriggeredDbContextPool<ApplicationDbContext>(options => {
                     options
                         .UseSqlite("Data source=test.db")
                         .UseTriggers(triggerOptions => {

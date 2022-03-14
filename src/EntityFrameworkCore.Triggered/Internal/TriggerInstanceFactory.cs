@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace EntityFrameworkCore.Triggered.Internal
@@ -9,7 +12,7 @@ namespace EntityFrameworkCore.Triggered.Internal
         object Create(IServiceProvider serviceProvider);
     }
 
-    public interface ITriggerInstanceFactory<out TTriggerType> : ITriggerInstanceFactory
+    public interface ITriggerInstanceFactory<out TTriggerType> : ITriggerInstanceFactory, IResettableService
     {
 
     }
@@ -39,6 +42,17 @@ namespace EntityFrameworkCore.Triggered.Internal
 
             _instance = _internalFactory(serviceProvider, null);
             return _instance;
+        }
+
+        public void ResetState()
+        {
+            _instance = null;
+        }
+
+        public Task ResetStateAsync(CancellationToken cancellationToken = default)
+        {
+            ResetState();
+            return Task.CompletedTask;
         }
     }
 }

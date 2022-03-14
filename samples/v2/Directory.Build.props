@@ -1,7 +1,7 @@
 <Project>
   <PropertyGroup>
     <Configurations>Debug;Release;DebugV1;ReleaseV1;DebugV2;ReleaseV2</Configurations>
-    <EFCorePackageVersion Condition=" '$(EFCorePackageVersion)'=='' ">5.0.0</EFCorePackageVersion>
-    <EFCoreTriggeredPackageVersion Condition=" '$(EFCoreTriggeredPackageVersion )'=='' ">2.3.2</EFCoreTriggeredPackageVersion>
+    <EFCorePackageVersion Condition=" '$(EFCorePackageVersion)'=='' ">6.0.0</EFCorePackageVersion>
+    <EFCoreTriggeredPackageVersion Condition=" '$(EFCoreTriggeredPackageVersion )'=='' ">3.0.0</EFCoreTriggeredPackageVersion>
   </PropertyGroup>
 </Project>

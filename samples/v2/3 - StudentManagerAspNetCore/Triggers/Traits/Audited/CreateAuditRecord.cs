@@ -11,14 +11,19 @@ namespace StudentManager.Triggers.Traits.Audited
     public class CreateAuditRecord : IBeforeSaveTrigger<IAudited>
     {
         private readonly ApplicationDbContext _applicationContext;
+        readonly FooFactory _fooFactory;
 
-        public CreateAuditRecord(ApplicationDbContext applicationContext)
+        public CreateAuditRecord(ApplicationDbContext applicationContext,
+            FooFactory fooFactory)
         {
             _applicationContext = applicationContext;
+            _fooFactory = fooFactory;
         }
 
         public Task BeforeSave(ITriggerContext<IAudited> context, CancellationToken cancellationToken)
         {
+            var foo = _fooFactory.Get();
+
             var recordBuilder = new StringBuilder();
 
             var changes = context.Entity.GetType()

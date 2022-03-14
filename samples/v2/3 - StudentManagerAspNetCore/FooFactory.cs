@@ -13,11 +13,11 @@ namespace StudentManager
 
         public FooFactory(IServiceProvider serviceProvider)
         {
-            // Somehow this seems to get the IsRootProvider=true instance...
             _serviceProvider = serviceProvider;
         }
 
         public IFoo Get() => true 
+            // Will fail here on second execution, as the provider is already disposed...
             ? _serviceProvider.GetService<FooA>() 
             : _serviceProvider.GetService<FooB>();
     }

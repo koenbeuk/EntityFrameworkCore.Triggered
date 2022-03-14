@@ -33,13 +33,17 @@ namespace StudentManager
                     options
                         .UseSqlite("Data source=test.db")
                         .UseTriggers(triggerOptions => {
-                            triggerOptions.AddTrigger<Triggers.Traits.Audited.CreateAuditRecord>();
-                            triggerOptions.AddTrigger<Triggers.Traits.SoftDelete.EnsureSoftDelete>();
-                            triggerOptions.AddTrigger<Triggers.Courses.AutoSignupStudents>();
-                            triggerOptions.AddTrigger<Triggers.StudentCourses.BlockRemovalWhenCourseIsMandatory>();
-                            triggerOptions.AddTrigger<Triggers.StudentCourses.SendWelcomingEmail>();
-                            triggerOptions.AddTrigger<Triggers.Students.AssignRegistrationDate>();
-                            triggerOptions.AddTrigger<Triggers.Students.SignupToMandatoryCourses>();
+                            // !! This registers triggers as scoped and things break (see FooFactory)
+                            triggerOptions.AddAssemblyTriggers(typeof(Startup).Assembly);
+
+                            // !! Below registers them as Transient and things are ok
+                            //triggerOptions.AddTrigger<Triggers.Traits.Audited.CreateAuditRecord>();
+                            //triggerOptions.AddTrigger<Triggers.Traits.SoftDelete.EnsureSoftDelete>();
+                            //triggerOptions.AddTrigger<Triggers.Courses.AutoSignupStudents>();
+                            //triggerOptions.AddTrigger<Triggers.StudentCourses.BlockRemovalWhenCourseIsMandatory>();
+                            //triggerOptions.AddTrigger<Triggers.StudentCourses.SendWelcomingEmail>();
+                            //triggerOptions.AddTrigger<Triggers.Students.AssignRegistrationDate>();
+                            //triggerOptions.AddTrigger<Triggers.Students.SignupToMandatoryCourses>();
                         });
 
                     options.EnableSensitiveDataLogging(true);

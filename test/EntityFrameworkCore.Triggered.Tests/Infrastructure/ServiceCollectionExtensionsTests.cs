@@ -124,6 +124,26 @@ namespace EntityFrameworkCore.Triggered.Tests.Infrastructure
             Assert.Equal(1, triggerStub.BeforeSaveInvocations.Count);
         }
 
+        [Fact]
+        public void AddTriggeredDbContextPool_SupportsAScopedLifetime()
+        {
+            var subject = new ServiceCollection();
+            subject.AddTriggeredDbContextPool<TestDbContext>(options => {
+                options.UseInMemoryDatabase("test");
+                options.ConfigureWarnings(warningOptions => {
+                    warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
+                });
+            });
+
+            var serviceProvider = subject.BuildServiceProvider();
+
+            using var scope = serviceProvider.CreateScope();
+
+            var context1 = scope.ServiceProvider.GetRequiredService<TestDbContext>();
+            var context2 = scope.ServiceProvider.GetRequiredService<TestDbContext>();
+
+            Assert.Equal(context1, context1);
+        }
 
 #if EFCORETRIGGERED2 || EFCORETRIGGERED3
         [Fact]

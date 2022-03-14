@@ -37,7 +37,7 @@ namespace EntityFrameworkCore.Triggered.Internal
 
         public void SetTriggerServiceProvider(IServiceProvider serviceProvider)
         {
-            if (_applicationScopedServiceProvider != null)
+            if (_applicationScopedServiceProvider is not null && _applicationScopedServiceProvider != serviceProvider)
             {
                 throw new InvalidOperationException("Can only set applicationScopedServiceProvider once");
             }

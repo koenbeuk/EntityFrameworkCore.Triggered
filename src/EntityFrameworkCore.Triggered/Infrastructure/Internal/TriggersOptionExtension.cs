@@ -239,6 +239,7 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
 
                             var triggerTypeImplementationFactoryType = typeof(ITriggerInstanceFactory<>).MakeGenericType(triggerTypeImplementation);
                             services.Add(new ServiceDescriptor(triggerTypeImplementationFactoryType, _ => triggerInstanceFactoryBuilder(triggerServiceInstance), lifetime));
+                            services.AddScoped(typeof(IResettableService), serviceProvider => serviceProvider.GetRequiredService(triggerTypeImplementationFactoryType));
                         }
                     }
                 }

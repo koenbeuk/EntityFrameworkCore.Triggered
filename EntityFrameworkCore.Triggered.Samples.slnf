@@ -7,7 +7,6 @@
       "samples\\3 - StudentManagerAspNetCore\\3 - StudentManagerAspNetCore.csproj",
       "samples\\4 - BlazorTests\\4 - BlazorTests.csproj",
       "src\\EntityFrameworkCore.Triggered.Abstractions\\EntityFrameworkCore.Triggered.Abstractions.csproj",
-      "src\\EntityFrameworkCore.Triggered.AspNetCore\\EntityFrameworkCore.Triggered.AspNetCore.csproj",
       "src\\EntityFrameworkCore.Triggered.Transactions.Abstractions\\EntityFrameworkCore.Triggered.Transactions.Abstractions.csproj",
       "src\\EntityFrameworkCore.Triggered.Transactions\\EntityFrameworkCore.Triggered.Transactions.csproj",
       "src\\EntityFrameworkCore.Triggered\\EntityFrameworkCore.Triggered.csproj"

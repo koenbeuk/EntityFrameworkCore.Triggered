@@ -8,7 +8,6 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace EntityFrameworkCore.Triggered.Internal
 {
-#if EFCORETRIGGERED2 || EFCORETRIGGERED3
 #pragma warning disable CS0618 // Type or member is obsolete (TriggeredDbContext with EFCore5)
     public class TriggerSessionSaveChangesInterceptor : ISaveChangesInterceptor
     {
@@ -190,5 +189,4 @@ namespace EntityFrameworkCore.Triggered.Internal
         }
     }
 #pragma warning restore CS0618 // Type or member is obsolete
-#endif
 }

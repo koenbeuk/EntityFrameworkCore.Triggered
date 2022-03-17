@@ -30,12 +30,7 @@ namespace EntityFrameworkCore.Triggered.Extensions.Tests
             public int Id { get; set; }
         }
 
-        public class TestDbContext :
-#if EFCORETRIGGERED2 || EFCORETRIGGERED3
-            DbContext
-#else
-            TriggeredDbContext
-#endif
+        public class TestDbContext : DbContext
         {
             public TestDbContext(DbContextOptions options)
                 : base(options)

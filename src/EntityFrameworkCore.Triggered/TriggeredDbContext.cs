@@ -7,9 +7,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 namespace EntityFrameworkCore.Triggered
 {
 
-#if EFCORETRIGGERED2 || EFCORETRIGGERED3
     [Obsolete("With the release of EntityFrameworkCore 5 and SaveChangesInterceptor, we no longer need to derive our DbContext from TriggeredDbContext")]
-#endif
     public abstract class TriggeredDbContext : DbContext
     {
         IServiceProvider? _triggerServiceProvider;

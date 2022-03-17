@@ -55,7 +55,6 @@ namespace Microsoft.Extensions.DependencyInjection
             return serviceCollection;
         }
 
-#if EFCORETRIGGERED2 || EFCORETRIGGERED3
         public static IServiceCollection AddTriggeredDbContextFactory<TContext>(this IServiceCollection serviceCollection, Action<DbContextOptionsBuilder>? optionsAction = null, ServiceLifetime lifetime = ServiceLifetime.Singleton)
             where TContext : DbContext
         {
@@ -127,7 +126,6 @@ namespace Microsoft.Extensions.DependencyInjection
 
             var serviceDescriptor = serviceCollection.FirstOrDefault(x => x.ServiceType == typeof(IDbContextFactory<TContext>));
 
-#if EFCORETRIGGERED2
             if (serviceDescriptor?.ImplementationType != null)
             {
                 var triggeredFactoryType = typeof(TriggeredDbContextFactory<,>).MakeGenericType(typeof(TContext), serviceDescriptor.ImplementationType);
@@ -144,7 +142,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     lifetime: ServiceLifetime.Scoped
                 ));
             }
-#elif EFCORETRIGGERED3
+            
             if (serviceDescriptor?.ImplementationFactory != null)
             {
                 var triggeredFactoryType = typeof(TriggeredDbContextFactory<>).MakeGenericType(typeof(TContext));
@@ -155,9 +153,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     lifetime: ServiceLifetime.Scoped
                 ));
             }
-#endif
             return serviceCollection;
         }
-#endif
     }
 }

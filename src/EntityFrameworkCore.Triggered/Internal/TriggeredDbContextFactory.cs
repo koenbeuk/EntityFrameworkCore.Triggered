@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace EntityFrameworkCore.Triggered.Internal
 {
-#if EFCORETRIGGERED2 || EFCORETRIGGERED3
     public sealed class TriggeredDbContextFactory<TContext, TFactory> : IDbContextFactory<TContext>
         where TContext : DbContext
         where TFactory : IDbContextFactory<TContext>
@@ -61,6 +60,4 @@ namespace EntityFrameworkCore.Triggered.Internal
             return context;
         }
     }
-
-#endif
 }

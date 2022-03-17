@@ -2,12 +2,7 @@
 
 namespace EntityFrameworkCore.Triggered.IntegrationTests.LifetimeTests
 {
-    public class ApplicationDbContext
-#if EFCORETRIGGERED1
-        : TriggeredDbContext
-#else
-        : DbContext
-#endif
+    public class ApplicationDbContext : DbContext
     {
         public ApplicationDbContext(DbContextOptions options) : base(options)
         {

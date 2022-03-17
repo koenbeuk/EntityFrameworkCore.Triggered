@@ -9,8 +9,6 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
-#if EFCORETRIGGERED2 || EFCORETRIGGERED3
-
 namespace EntityFrameworkCore.Triggered.Tests
 {
     public class TriggeredDbContextFactoryTests
@@ -78,5 +76,3 @@ namespace EntityFrameworkCore.Triggered.Tests
         }
     }
 }
-
-#endif

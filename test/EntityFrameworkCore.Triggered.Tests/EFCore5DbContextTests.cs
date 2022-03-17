@@ -10,8 +10,7 @@ using Xunit;
 
 namespace EntityFrameworkCore.Triggered.Tests
 {
-#if EFCORETRIGGERED2 || EFCORETRIGGERED3
-    public class EFCore5DbContextTests
+    public class EFCoreDbContextTests
     {
         public class TestModel
         {
@@ -189,5 +188,4 @@ namespace EntityFrameworkCore.Triggered.Tests
             Assert.Equal(1, triggerServiceStub.LastSession.CaptureDiscoveredChangesCalls);
         }
     }
-#endif
 }

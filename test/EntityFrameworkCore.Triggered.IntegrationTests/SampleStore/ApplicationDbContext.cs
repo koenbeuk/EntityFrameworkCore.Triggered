@@ -3,12 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EntityFrameworkCore.Triggered.IntegrationTests.SampleStore
 {
-    public class ApplicationDbContext
-#if EFCORETRIGGERED1
-        : TriggeredDbContext
-#else
-        : DbContext
-#endif
+    public class ApplicationDbContext : DbContext
     {
         readonly string _databaseName;
 

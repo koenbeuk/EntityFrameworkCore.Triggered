@@ -10,7 +10,6 @@ using Xunit;
 
 namespace EntityFrameworkCore.Triggered.Tests.Internal
 {
-#if EFCORETRIGGERED2 || EFCORETRIGGERED3
     public class TriggerSessionSaveChangesInterceptorTests
     {
         public class TestModel
@@ -315,5 +314,4 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
             Assert.Equal(1, triggerServiceStub.LastSession.RaiseAfterSaveFailedTriggersCalls);
         }
     }
-#endif
 }

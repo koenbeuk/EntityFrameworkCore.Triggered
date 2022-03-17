@@ -1,6 +1,0 @@
-<Project>
-  <PropertyGroup>
-    <Configurations>Debug;Release;DebugV1;ReleaseV1;DebugV2;ReleaseV2</Configurations>
-    <EFCoreTriggeredPackageVersion Condition=" '$(EFCoreTriggeredPackageVersion )'=='' ">1.4.0</EFCoreTriggeredPackageVersion >
-  </PropertyGroup>
-</Project>

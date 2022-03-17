@@ -49,8 +49,6 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
             });
         }
 
-
-#if EFCORETRIGGERED3
         [Fact]
         public void CantOverrideDbContext()
         {
@@ -67,23 +65,5 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
 
             Assert.Equal(dbContext1, result);
         }
-#else
-        [Fact]
-        public void CanOverrideDbContext()
-        {
-            var dbContext1 = new ConcreteCustomDbContext();
-            var dbContext2 = new ConcreteCustomDbContext();
-
-            var serviceProvider = new ServiceCollection()
-                .AddSingleton(dbContext2)
-                .BuildServiceProvider();
-
-            var subject = new HybridServiceProvider(serviceProvider, dbContext1);
-
-            var result = subject.GetRequiredService<ConcreteCustomDbContext>();
-
-            Assert.Equal(dbContext2, result);
-        }
-#endif
     }
 }

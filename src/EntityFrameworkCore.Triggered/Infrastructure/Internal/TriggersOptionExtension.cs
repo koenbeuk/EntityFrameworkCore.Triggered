@@ -50,7 +50,6 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
                 debugInfo["Triggers:CascadeBehavior"] = Extension._cascadeBehavior.ToString();
             }
 
-#if EFCORETRIGGERED3
             public override int GetServiceProviderHashCode()
             {
                 var hashCode = new HashCode();
@@ -89,40 +88,6 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
                     && Extension._maxCascadeCycles == otherInfo.Extension._maxCascadeCycles
                     && Extension._cascadeBehavior == otherInfo.Extension._cascadeBehavior
                     && Extension._serviceProviderTransform == otherInfo.Extension._serviceProviderTransform;
-#else
-            public override long GetServiceProviderHashCode()
-            {
-                var hashCode = nameof(TriggersOptionExtension).GetHashCode();
-
-                var extension = (TriggersOptionExtension)Extension;
-
-                if (extension._triggers != null)
-                {
-                    foreach (var trigger in extension._triggers)
-                    {
-                        hashCode ^= trigger.GetHashCode();
-                    }
-                }
-
-                if (extension._triggerTypes != null)
-                {
-                    foreach (var triggerType in extension._triggerTypes)
-                    {
-                        hashCode ^= triggerType.GetHashCode();
-                    }
-                }
-
-                hashCode ^= extension._maxCascadeCycles.GetHashCode();
-                hashCode ^= extension._cascadeBehavior.GetHashCode();
-
-                if (extension._serviceProviderTransform != null)
-                {
-                    hashCode ^= extension._serviceProviderTransform.GetHashCode();
-                }
-
-                return hashCode;
-            }
-#endif
         }
 
         private ExtensionInfo? _info;
@@ -185,10 +150,7 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
 
             services.AddScoped<TriggerFactory>();
 
-#if EFCORETRIGGERED2 || EFCORETRIGGERED3
             services.TryAddScoped<IInterceptor, TriggerSessionSaveChangesInterceptor>();
-#endif
-
 
             services.Configure<TriggerOptions>(triggerServiceOptions => {
                 triggerServiceOptions.MaxCascadeCycles = _maxCascadeCycles;

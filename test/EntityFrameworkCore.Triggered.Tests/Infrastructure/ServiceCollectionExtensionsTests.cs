@@ -143,6 +143,27 @@ namespace EntityFrameworkCore.Triggered.Tests.Infrastructure
             Assert.Equal(context1, context1);
         }
 
+        [Fact]
+        public void AddTriggeredDbContextPool_SupportAContractType()
+        {
+            var subject = new ServiceCollection();
+            subject.AddTriggeredDbContextPool<DbContext, TestDbContext>(options => {
+                options.UseInMemoryDatabase("test");
+                options.ConfigureWarnings(warningOptions => {
+                    warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
+                });
+            });
+
+            var serviceProvider = subject.BuildServiceProvider();
+
+            using var scope = serviceProvider.CreateScope();
+
+            var context1 = scope.ServiceProvider.GetRequiredService<DbContext>();
+            var context2 = scope.ServiceProvider.GetRequiredService<TestDbContext>();
+
+            Assert.Equal(context1, context1);
+        }
+
 #if EFCORETRIGGERED2 || EFCORETRIGGERED3
         [Fact]
         public void AddTriggeredDbContextFactory_ReusesScopedServiceProvider()

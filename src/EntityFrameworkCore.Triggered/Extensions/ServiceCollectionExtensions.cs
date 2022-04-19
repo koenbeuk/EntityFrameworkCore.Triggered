@@ -34,10 +34,31 @@ namespace Microsoft.Extensions.DependencyInjection
             return serviceCollection;
         }
 
-        public static IServiceCollection AddTriggeredDbContextPool<TContext>(this IServiceCollection serviceCollection, Action<DbContextOptionsBuilder>? optionsAction = null, int poolSize = 128)
+        public static IServiceCollection AddTriggeredDbContextPool<TContext>(this IServiceCollection serviceCollection, Action<DbContextOptionsBuilder>? optionsAction = null, int poolSize = 1024)
             where TContext : DbContext
         {
             serviceCollection.AddDbContextPool<TContext>(options => {
+                optionsAction?.Invoke(options);
+                options.UseTriggers();
+            }, poolSize);
+
+            var serviceDescriptor = serviceCollection.FirstOrDefault(x => x.ServiceType == typeof(TContext));
+            if (serviceDescriptor?.ImplementationFactory != null)
+            {
+                serviceCollection.Replace(ServiceDescriptor.Describe(
+                    serviceType: typeof(TContext),
+                    implementationFactory: serviceProvider => SetApplicationTriggerServiceProviderAccessor(serviceDescriptor.ImplementationFactory(serviceProvider), serviceProvider),
+                    lifetime: ServiceLifetime.Transient
+                ));
+            }
+
+            return serviceCollection;
+        }
+
+        public static IServiceCollection AddTriggeredDbContextPool<TContext, TImplementation>(this IServiceCollection serviceCollection, Action<DbContextOptionsBuilder>? optionsAction = null, int poolSize = 1024)
+            where TContext : class where TImplementation : DbContext, TContext
+        {
+            serviceCollection.AddDbContextPool<TContext, TImplementation>(options => {
                 optionsAction?.Invoke(options);
                 options.UseTriggers();
             }, poolSize);

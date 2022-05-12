@@ -91,13 +91,15 @@ namespace EntityFrameworkCore.Triggered.Extensions.Tests
 
         protected async Task SaveChanges_TriggeredAddedThroughDI_Template(Func<IServiceCollection, IServiceCollection> transform)
         {
-            var serviceProvider = transform(new ServiceCollection()
+            var services = transform(new ServiceCollection()
                 .AddTriggeredDbContext<TestDbContext>(options => {
                     options.UseInMemoryDatabase("test");
                     options.ConfigureWarnings(warningOptions => {
                         warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
                     });
-                }))
+                }));
+
+            var serviceProvider = services
                 .BuildServiceProvider();
 
             using var dbContext = serviceProvider.GetRequiredService<TestDbContext>();
@@ -131,6 +133,104 @@ namespace EntityFrameworkCore.Triggered.Extensions.Tests
 
             // Ensure that we did not register the AbstractTrigger
             Assert.Empty(serviceCollection.Where(x => x.ImplementationType == typeof(AbstractTrigger)));
+        }
+
+        [Theory]
+        [MemberData(nameof(Lifetimes))]
+        public void AddTrigger_Multiple_AddsRegistrationForAll(ServiceLifetime lifetime)
+        {
+            var serviceCollection = new ServiceCollection()
+                .AddTrigger<SampleTrigger>(lifetime)
+                .AddTrigger<Trigger<object>>(lifetime);
+
+            Assert.Equal(9, serviceCollection.Count);
+        }
+
+        [Theory]
+        [MemberData(nameof(Lifetimes))]
+        public void AddAssemblyTriggers_Multiple_AddsRegistrationForAll(ServiceLifetime lifetime)
+        {
+            var serviceCollection = new ServiceCollection()
+                .AddTrigger<SampleTrigger>(lifetime)
+                .AddAssemblyTriggers(typeof(Trigger<object>).Assembly);
+
+            Assert.Equal(9, serviceCollection.Count);
+        }
+
+        [Fact]
+        public void AddTriggerInstance_DoesNotDoubleRegister()
+        {
+            var trigger = new SampleTrigger();
+
+            var serviceCollection = new ServiceCollection()
+                .AddTrigger(trigger)
+                .AddTrigger(trigger);
+
+            Assert.Single(serviceCollection, x => x.ImplementationInstance == trigger);
+        }
+
+        [Theory]
+        [MemberData(nameof(Lifetimes))]
+        public void AddTrigger_DoesNotDoubleRegister(ServiceLifetime lifetime)
+        {
+            var serviceCollection = new ServiceCollection()
+                .AddTrigger<SampleTrigger>(lifetime)
+                .AddTrigger<SampleTrigger>(lifetime);
+
+            Assert.Single(serviceCollection, x => x.ServiceType == typeof(SampleTrigger));
+        }
+
+        [Theory]
+        [MemberData(nameof(Lifetimes))]
+        public void AddTrigger_DoesNotDoubleRegister2(ServiceLifetime lifetime)
+        {
+            var serviceCollection = new ServiceCollection()
+                .AddAssemblyTriggers(lifetime)
+                .AddTrigger<SampleTrigger>(lifetime);
+
+            Assert.Single(serviceCollection, x => x.ServiceType == typeof(SampleTrigger));
+        }
+
+        [Theory]
+        [MemberData(nameof(Lifetimes))]
+        public void AddAssemblyTrigger_DoesNotDoubleRegister(ServiceLifetime lifetime)
+        {
+            var serviceCollection = new ServiceCollection()
+                .AddAssemblyTriggers(lifetime)
+                .AddAssemblyTriggers(lifetime);
+
+            Assert.Single(serviceCollection, x => x.ServiceType == typeof(SampleTrigger));
+        }
+
+        [Theory]
+        [MemberData(nameof(Lifetimes))]
+        public void AddAssemblyTrigger_DoesNotDoubleRegister2(ServiceLifetime lifetime)
+        {
+            var serviceCollection = new ServiceCollection()
+                .AddTrigger<SampleTrigger>(lifetime)
+                .AddAssemblyTriggers(lifetime);
+
+            Assert.Single(serviceCollection, x => x.ServiceType == typeof(SampleTrigger));
+        }
+
+        [Fact]
+        public void AddTrigger_WhenExplicitlyRegisteredAsAService_OnlyAddsTheTriggerTypeRegistrations()
+        {
+            var serviceCollection = new ServiceCollection()
+                .AddSingleton<SampleTrigger>()
+                .AddTrigger<SampleTrigger>();
+
+            Assert.Equal(5, serviceCollection.Count);
+        }
+
+        [Fact]
+        public void AddAssemblyTriggers_WhenExplicitlyRegisteredAsAService_OnlyAddsTheTriggerTypeRegistrations()
+        {
+            var serviceCollection = new ServiceCollection()
+                .AddSingleton<SampleTrigger>()
+                .AddAssemblyTriggers();
+
+            Assert.Equal(5, serviceCollection.Count);
         }
     }
 }

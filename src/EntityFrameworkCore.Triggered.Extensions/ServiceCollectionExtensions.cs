@@ -34,7 +34,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 foreach (var customTrigger in customTriggers)
                 {
-                    services.TryAdd(new ServiceDescriptor(customTrigger, sp => sp.GetRequiredService(triggerImplementationType), ServiceLifetime.Transient)); ;
+                    services.Add(new ServiceDescriptor(customTrigger, sp => sp.GetRequiredService(triggerImplementationType), ServiceLifetime.Transient)); ;
                 }
             }
         }
@@ -42,7 +42,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddTrigger<TTrigger>(this IServiceCollection services, ServiceLifetime lifetime = ServiceLifetime.Scoped)
             where TTrigger : class
         {
-            services.Add(new ServiceDescriptor(typeof(TTrigger), typeof(TTrigger), lifetime));
+            services.TryAdd(new ServiceDescriptor(typeof(TTrigger), typeof(TTrigger), lifetime));
 
             RegisterTriggerTypes(typeof(TTrigger), services);
 
@@ -51,7 +51,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IServiceCollection AddTrigger(this IServiceCollection services, object triggerInstance)
         {
-            services.AddSingleton(triggerInstance);
+            services.TryAddSingleton(triggerInstance);
 
             RegisterTriggerTypes(triggerInstance.GetType(), services);
 
@@ -91,7 +91,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 {
                     if (!registered)
                     {
-                        services.Add(new ServiceDescriptor(assemblyType, assemblyType, lifetime));
+                        services.TryAdd(new ServiceDescriptor(assemblyType, assemblyType, lifetime));
 
                         registered = true;
                     }

@@ -201,7 +201,7 @@ namespace EntityFrameworkCore.Triggered
                 _afterSaveFailedTriggerContextDiscoveryStrategy = new NonCascadingTriggerContextDiscoveryStrategy("AfterSaveFailed");
             }
 
-            return RaiseTriggers(typeof(IAfterSaveFailedTrigger<>), exception, _afterSaveFailedTriggerContextDiscoveryStrategy, entityType => new AfterSaveFailedTriggerDescriptor(entityType, exception), cancellationToken);
+            return RaiseTriggers(typeof(IAfterSaveFailedTrigger<>), exception, _afterSaveFailedTriggerContextDiscoveryStrategy, entityType => new AfterSaveFailedTriggerDescriptor(entityType), cancellationToken);
         }
 
         public async Task RaiseAfterSaveFailedCompletedTriggers(Exception exception, CancellationToken cancellationToken)

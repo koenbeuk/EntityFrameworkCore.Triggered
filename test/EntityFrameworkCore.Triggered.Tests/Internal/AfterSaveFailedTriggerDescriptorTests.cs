@@ -14,7 +14,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
         {
             var entityType = typeof(string);
             var exception = new Exception();
-            var subject = new AfterSaveFailedTriggerDescriptor(entityType, exception);
+            var subject = new AfterSaveFailedTriggerDescriptor(entityType);
 
             Assert.Equal(typeof(IAfterSaveFailedTrigger<string>), subject.TriggerType);
         }
@@ -25,7 +25,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
             var entityType = typeof(string);
             var exception = new Exception();
             var triggerStub = new TriggerStub<string>();
-            var subject = new AfterSaveFailedTriggerDescriptor(entityType, exception);
+            var subject = new AfterSaveFailedTriggerDescriptor(entityType);
 
             await subject.Invoke(triggerStub, new TriggerContextStub<string>(), exception, default);
 

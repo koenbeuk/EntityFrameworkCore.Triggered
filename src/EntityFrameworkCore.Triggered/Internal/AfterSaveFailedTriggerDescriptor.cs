@@ -10,7 +10,7 @@ namespace EntityFrameworkCore.Triggered.Internal
         readonly Func<object, object, Exception?, CancellationToken, Task> _invocationDelegate;
         readonly Type _triggerType;
 
-        public AfterSaveFailedTriggerDescriptor(Type entityType, Exception exception)
+        public AfterSaveFailedTriggerDescriptor(Type entityType)
         {
             var triggerType = typeof(IAfterSaveFailedTrigger<>).MakeGenericType(entityType);
             var triggerMethod = triggerType.GetMethod(nameof(IAfterSaveFailedTrigger<object>.AfterSaveFailed));

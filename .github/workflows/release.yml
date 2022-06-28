@@ -33,7 +33,7 @@ jobs:
           echo Version: $VERSION
           CONFIGURATION=$([ "${VERSION:0:2}" == "v1" ] && echo "ReleaseV1" || echo "Release")
           CONFIGURATION=$([ "${VERSION:0:2}" == "v2" ] && echo "ReleaseV2" || echo $CONFIGURATION)
-          VERSION="${VERSION//v}"
+          VERSION="${VERSION:1}"
           echo Clean Version: $VERSION
           echo Configuration: $CONFIGURATION
           dotnet pack -v normal -c $CONFIGURATION --include-symbols --include-source -p:PackageVersion=$VERSION -o nupkg EntityFrameworkCore.Triggered.Core.slnf

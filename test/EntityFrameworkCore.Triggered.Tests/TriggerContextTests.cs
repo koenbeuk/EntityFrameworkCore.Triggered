@@ -27,7 +27,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
         {
             using var dbContext = new TestDbContext();
             var sample1 = new TestModel() { Id = 1 };
-            var subject = new TriggerContext<object>(dbContext.Entry(sample1).Entity, dbContext.Entry(sample1).OriginalValues, ChangeType.Added, new());
+            var subject = new TriggerContext<object>(dbContext.Entry(sample1), dbContext.Entry(sample1).OriginalValues, ChangeType.Added, new());
 
             Assert.Null(subject.UnmodifiedEntity);
         }
@@ -37,7 +37,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
         {
             using var dbContext = new TestDbContext();
             var sample1 = new TestModel();
-            var subject = new TriggerContext<object>(dbContext.Entry(sample1).Entity, dbContext.Entry(sample1).OriginalValues, ChangeType.Deleted, new());
+            var subject = new TriggerContext<object>(dbContext.Entry(sample1), dbContext.Entry(sample1).OriginalValues, ChangeType.Deleted, new());
 
             Assert.NotNull(subject.UnmodifiedEntity);
         }
@@ -47,7 +47,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
         {
             using var dbContext = new TestDbContext();
             var sample1 = new TestModel();
-            var subject = new TriggerContext<object>(dbContext.Entry(sample1).Entity, dbContext.Entry(sample1).OriginalValues, ChangeType.Modified, new());
+            var subject = new TriggerContext<object>(dbContext.Entry(sample1), dbContext.Entry(sample1).OriginalValues, ChangeType.Modified, new());
 
             Assert.NotNull(subject.UnmodifiedEntity);
         }
@@ -60,7 +60,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
             dbContext.Add(sample1);
             dbContext.SaveChanges();
 
-            var subject = new TriggerContext<TestModel>(dbContext.Entry(sample1).Entity, dbContext.Entry(sample1).OriginalValues, ChangeType.Modified, new());
+            var subject = new TriggerContext<TestModel>(dbContext.Entry(sample1), dbContext.Entry(sample1).OriginalValues, ChangeType.Modified, new());
             sample1.Name = "test2";
 
             Assert.NotNull(subject.UnmodifiedEntity);
@@ -77,7 +77,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
             dbContext.Add(sample1);
             dbContext.SaveChanges();
 
-            var subject = new TriggerContext<TestModel>(dbContext.Entry(sample1).Entity, dbContext.Entry(sample1).OriginalValues.Clone(), ChangeType.Modified, new());
+            var subject = new TriggerContext<TestModel>(dbContext.Entry(sample1), dbContext.Entry(sample1).OriginalValues.Clone(), ChangeType.Modified, new());
             sample1.Name = "test2";
 
             dbContext.SaveChanges();
@@ -91,7 +91,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
         {
             using var dbContext = new TestDbContext();
             var sample1 = new TestModel();
-            var subject = new TriggerContext<object>(dbContext.Entry(sample1).Entity, dbContext.Entry(sample1).OriginalValues, default, new());
+            var subject = new TriggerContext<object>(dbContext.Entry(sample1), dbContext.Entry(sample1).OriginalValues, default, new());
 
             Assert.NotNull(subject.Entity);
         }
@@ -101,7 +101,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
         {
             using var dbContext = new TestDbContext();
             var sample1 = new TestModel();
-            var subject = new TriggerContext<object>(dbContext.Entry(sample1).Entity, dbContext.Entry(sample1).OriginalValues, ChangeType.Modified, new());
+            var subject = new TriggerContext<object>(dbContext.Entry(sample1), dbContext.Entry(sample1).OriginalValues, ChangeType.Modified, new());
 
             Assert.Equal(ChangeType.Modified, subject.ChangeType);
         }
@@ -111,7 +111,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
         {
             using var dbContext = new TestDbContext();
             var sample1 = new TestModel();
-            var subject = new TriggerContext<object>(dbContext.Entry(sample1).Entity, dbContext.Entry(sample1).OriginalValues, ChangeType.Modified, new());
+            var subject = new TriggerContext<object>(dbContext.Entry(sample1), dbContext.Entry(sample1).OriginalValues, ChangeType.Modified, new());
 
             var expectedInstance = subject.Items;
             Assert.Equal(expectedInstance, subject.Items);

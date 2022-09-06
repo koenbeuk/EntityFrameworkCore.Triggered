@@ -6,7 +6,7 @@ namespace EntityFrameworkCore.Triggered.Internal
 {
     public readonly struct TriggerContextDescriptor
     {
-        static readonly ConcurrentDictionary<Type, Func<object, PropertyValues?, ChangeType, EntityBagStateManager, object>> _cachedTriggerContextFactories = new();
+        static readonly ConcurrentDictionary<Type, Func<EntityEntry, PropertyValues?, ChangeType, EntityBagStateManager, object>> _cachedTriggerContextFactories = new();
 
         readonly EntityEntry _entityEntry;
         readonly ChangeType _changeType;
@@ -37,11 +37,11 @@ namespace EntityFrameworkCore.Triggered.Internal
             var entityType = entityEntry.Entity.GetType();
 
             var triggerContextFactory = _cachedTriggerContextFactories.GetOrAdd(entityType, entityType =>
-                (Func<object, PropertyValues?, ChangeType, EntityBagStateManager, object >)typeof(TriggerContextFactory<>).MakeGenericType(entityType)
+                (Func<EntityEntry, PropertyValues?, ChangeType, EntityBagStateManager, object >)typeof(TriggerContextFactory<>).MakeGenericType(entityType)
                     !.GetMethod(nameof(TriggerContextFactory<object>.Activate))
-                    !.CreateDelegate(typeof(Func<object, PropertyValues?, ChangeType, EntityBagStateManager, object>)));
+                    !.CreateDelegate(typeof(Func<EntityEntry, PropertyValues?, ChangeType, EntityBagStateManager, object>)));
 
-            return triggerContextFactory(entityEntry.Entity, originalValues, changeType, entityBagStateManager);
+            return triggerContextFactory(entityEntry, originalValues, changeType, entityBagStateManager);
         }
     }
 }

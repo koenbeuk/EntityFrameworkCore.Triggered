@@ -53,30 +53,30 @@ namespace EntityFrameworkCore.Triggered.Tests
             => context.Database.GetService<ITriggerService>().CreateSession(context);
 
         [Fact]
-        public async Task RaiseBeforeSaveTriggers_RaisesNothingOnNoChanges()
+        public void RaiseBeforeSaveTriggers_RaisesNothingOnNoChanges()
         {
             using var context = new TestDbContext();
             var subject = CreateSubject(context);
 
-            await subject.RaiseBeforeSaveTriggers();
+            subject.RaiseBeforeSaveTriggers();
 
             Assert.Empty(context.TriggerStub.BeforeSaveInvocations);
         }
 
         [Fact]
-        public async Task RaiseAfterSaveTriggers_RaisesNothingOnNoChanges()
+        public void RaiseAfterSaveTriggers_RaisesNothingOnNoChanges()
         {
             using var context = new TestDbContext();
             var subject = CreateSubject(context);
 
             subject.DiscoverChanges();
-            await subject.RaiseAfterSaveTriggers();
+            subject.RaiseAfterSaveTriggers();
 
             Assert.Empty(context.TriggerStub.AfterSaveInvocations);
         }
 
         [Fact]
-        public async Task RaiseBeforeSaveTriggers_RaisesOnceOnSimpleAddition()
+        public void RaiseBeforeSaveTriggers_RaisesOnceOnSimpleAddition()
         {
             using var context = new TestDbContext();
             var subject = CreateSubject(context);
@@ -86,13 +86,13 @@ namespace EntityFrameworkCore.Triggered.Tests
                 Name = "test1"
             });
 
-            await subject.RaiseBeforeSaveTriggers();
+            subject.RaiseBeforeSaveTriggers();
 
             Assert.Equal(1, context.TriggerStub.BeforeSaveInvocations.Count);
         }
 
         [Fact]
-        public async Task RaiseAfterSaveTriggers_WithoutCallToRaiseBeforeSaveTriggers_Throws()
+        public void RaiseAfterSaveTriggers_WithoutCallToRaiseBeforeSaveTriggers_Throws()
         {
             using var context = new TestDbContext();
             var subject = CreateSubject(context);
@@ -102,11 +102,11 @@ namespace EntityFrameworkCore.Triggered.Tests
                 Name = "test1"
             });
 
-            await Assert.ThrowsAsync<InvalidOperationException>(() => subject.RaiseAfterSaveTriggers());
+            Assert.Throws<InvalidOperationException>(() => subject.RaiseAfterSaveTriggers());
         }
 
         [Fact]
-        public async Task RaiseAfterSaveTriggers_RaisesOnceOnSimpleAddition()
+        public void RaiseAfterSaveTriggers_RaisesOnceOnSimpleAddition()
         {
             using var context = new TestDbContext();
             var subject = CreateSubject(context);
@@ -117,7 +117,7 @@ namespace EntityFrameworkCore.Triggered.Tests
             });
 
             subject.DiscoverChanges();
-            await subject.RaiseAfterSaveTriggers();
+            subject.RaiseAfterSaveTriggers();
 
             Assert.Equal(1, context.TriggerStub.AfterSaveInvocations.Count);
         }
@@ -135,7 +135,7 @@ namespace EntityFrameworkCore.Triggered.Tests
 
             var cancellationTokenSource = new CancellationTokenSource();
             cancellationTokenSource.Cancel();
-            await Assert.ThrowsAsync<OperationCanceledException>(async () => await subject.RaiseBeforeSaveTriggers(cancellationTokenSource.Token));
+            await Assert.ThrowsAsync<OperationCanceledException>(async () => await subject.RaiseBeforeSaveAsyncTriggers(cancellationTokenSource.Token));
         }
 
         [Fact]
@@ -154,21 +154,20 @@ namespace EntityFrameworkCore.Triggered.Tests
             var cancellationTokenSource = new CancellationTokenSource();
             cancellationTokenSource.Cancel();
 
-            await Assert.ThrowsAsync<OperationCanceledException>(async () => await subject.RaiseAfterSaveTriggers(cancellationTokenSource.Token));
+            await Assert.ThrowsAsync<OperationCanceledException>(async () => await subject.RaiseAfterSaveAsyncTriggers(cancellationTokenSource.Token));
         }
 
         [Fact]
-        public async Task RaiseBeforeSaveTriggers_CascadingCall_SkipsDiscoveredChanges()
+        public void RaiseBeforeSaveTriggers_CascadingCall_SkipsDiscoveredChanges()
         {
             using var context = new TestDbContext();
             var subject = CreateSubject(context);
 
-            context.TriggerStub.BeforeSaveHandler = (_1, _2) => {
-                if (context.TriggerStub.BeforeSaveInvocations.Count > 1)
+            context.TriggerStub.BeforeSaveHandler = _ => {
+                if (context.TriggerStub.BeforeSaveInvocations.Count <= 1)
                 {
-                    return Task.CompletedTask;
+                    subject.RaiseBeforeSaveTriggers(default);
                 }
-                return subject.RaiseBeforeSaveTriggers(default);
             };
 
             context.TestModels.Add(new TestModel {
@@ -177,13 +176,13 @@ namespace EntityFrameworkCore.Triggered.Tests
             });
 
             subject.DiscoverChanges();
-            await subject.RaiseBeforeSaveTriggers();
+            subject.RaiseBeforeSaveTriggers();
 
             Assert.NotEmpty(context.TriggerStub.BeforeSaveInvocations);
         }
 
         [Fact]
-        public async Task RaiseBeforeSaveTriggers_SkipDetectedChangesAsTrue_ExcludesDetectedChanges()
+        public void RaiseBeforeSaveTriggers_SkipDetectedChangesAsTrue_ExcludesDetectedChanges()
         {
             using var context = new TestDbContext();
             var subject = CreateSubject(context);
@@ -194,13 +193,13 @@ namespace EntityFrameworkCore.Triggered.Tests
             });
 
             subject.DiscoverChanges();
-            await subject.RaiseBeforeSaveTriggers(true);
+            subject.RaiseBeforeSaveTriggers(true);
 
             Assert.Empty(context.TriggerStub.BeforeSaveInvocations);
         }
 
         [Fact]
-        public async Task RaiseBeforeSaveTriggers_SkipDetectedChangesAsFalse_IncludesDetectedChanges()
+        public void RaiseBeforeSaveTriggers_SkipDetectedChangesAsFalse_IncludesDetectedChanges()
         {
             using var context = new TestDbContext();
             var subject = CreateSubject(context);
@@ -211,7 +210,7 @@ namespace EntityFrameworkCore.Triggered.Tests
             });
 
             subject.DiscoverChanges();
-            await subject.RaiseBeforeSaveTriggers();
+            subject.RaiseBeforeSaveTriggers();
 
             Assert.NotEmpty(context.TriggerStub.BeforeSaveInvocations);
         }
@@ -223,17 +222,15 @@ namespace EntityFrameworkCore.Triggered.Tests
 
             var earlyTrigger = new TriggerStub<TestModel> {
                 Priority = CommonTriggerPriority.Early,
-                BeforeSaveHandler = (context, _) => {
+                BeforeSaveHandler = context => {
                     capturedInvocations.Add(("Early", context));
-                    return Task.CompletedTask;
                 }
             };
 
             var lateTrigger = new TriggerStub<TestModel> {
                 Priority = CommonTriggerPriority.Late,
-                BeforeSaveHandler = (context, _) => {
+                BeforeSaveHandler = context => {
                     capturedInvocations.Add(("Late", context));
-                    return Task.CompletedTask;
                 }
             };
 
@@ -272,12 +269,11 @@ namespace EntityFrameworkCore.Triggered.Tests
 
             var trigger = new TriggerStub<TestModel> {
                 Priority = CommonTriggerPriority.Early,
-                BeforeSaveHandler = (context, _) => {
+                BeforeSaveHandler = context => {
                     if (context.Entity.Id == 1)
                     {
                         dbContext.TestModels.Add(new TestModel { Id = 2 });
                     }
-                    return Task.CompletedTask;
                 }
             };
 
@@ -303,7 +299,7 @@ namespace EntityFrameworkCore.Triggered.Tests
         }
 
         [Fact]
-        public async Task RaiseAfterSaveFailedTriggers_OnException_RaisesSubsequentTriggers()
+        public void RaiseAfterSaveFailedTriggers_OnException_RaisesSubsequentTriggers()
         {
             using var context = new TestDbContext();
             var subject = CreateSubject(context);
@@ -314,25 +310,23 @@ namespace EntityFrameworkCore.Triggered.Tests
             });
 
             subject.DiscoverChanges();
-            await subject.RaiseAfterSaveFailedTriggers(new Exception());
+            subject.RaiseAfterSaveFailedTriggers(new Exception());
 
             Assert.Equal(1, context.TriggerStub.AfterSaveFailedInvocations.Count);
         }
 
         [Fact]
-        public async Task RaiseBeforeSaveTriggers_OnExceptionAndRecall_SkipsPreviousTriggers()
+        public void RaiseBeforeSaveTriggers_OnExceptionAndRecall_SkipsPreviousTriggers()
         {
             var firstTrigger = new TriggerStub<TestModel> { };
             var secondTrigger = new TriggerStub<TestModel> { };
             var lastTrigger = new TriggerStub<TestModel> { };
 
-            secondTrigger.BeforeSaveHandler = (ctx, _) => {
+            secondTrigger.BeforeSaveHandler = ctx => {
                 if (secondTrigger.BeforeSaveInvocations.Count == 0)
                 {
                     throw new Exception("oh oh!");
                 }
-
-                return Task.CompletedTask;
             };
 
             var serviceProvider = new ServiceCollection()
@@ -355,11 +349,11 @@ namespace EntityFrameworkCore.Triggered.Tests
 
             try
             {
-                await subject.RaiseBeforeSaveTriggers();
+                subject.RaiseBeforeSaveTriggers();
             }
             catch
             {
-                await subject.RaiseBeforeSaveTriggers();
+                subject.RaiseBeforeSaveTriggers();
             }
 
             Assert.Equal(1, firstTrigger.BeforeSaveInvocations.Count);
@@ -373,9 +367,8 @@ namespace EntityFrameworkCore.Triggered.Tests
             ITriggerContext<TestModel> _capturedTriggerContext = null;
 
             var trigger = new TriggerStub<TestModel> {
-                AfterSaveHandler = (context, _) => {
+                AfterSaveHandler = context => {
                     _capturedTriggerContext = context;
-                    return Task.CompletedTask;
                 }
             };
 
@@ -403,7 +396,7 @@ namespace EntityFrameworkCore.Triggered.Tests
 
             subject.DiscoverChanges();
             dbContext.SaveChanges();
-            subject.RaiseAfterSaveTriggers().GetAwaiter().GetResult();
+            subject.RaiseAfterSaveTriggers();
 
             // assert
 
@@ -414,7 +407,7 @@ namespace EntityFrameworkCore.Triggered.Tests
         }
 
         [Fact]
-        public async Task RaiseTriggers_DisabledConfiguration_Noop()
+        public void RaiseTriggers_DisabledConfiguration_Noop()
         {
             // arrange
             using var context = new TestDbContext();
@@ -432,7 +425,7 @@ namespace EntityFrameworkCore.Triggered.Tests
             });
 
             // act
-            await subject.RaiseBeforeSaveTriggers();
+            subject.RaiseBeforeSaveTriggers();
 
             // assert
             Assert.Equal(0, context.TriggerStub.BeforeSaveInvocations.Count);

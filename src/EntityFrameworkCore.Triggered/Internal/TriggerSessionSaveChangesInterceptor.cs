@@ -73,29 +73,24 @@ namespace EntityFrameworkCore.Triggered.Internal
 
         public InterceptionResult<int> SavingChanges(DbContextEventData eventData, InterceptionResult<int> result)
         {
-            if (!(eventData.Context is TriggeredDbContext))
+            EnlistTriggerSession(eventData);
+            Debug.Assert(_triggerSession != null);
+
+            var defaultAutoDetectChangesEnabled = eventData.Context!.ChangeTracker.AutoDetectChangesEnabled;
+
+            try
             {
-                EnlistTriggerSession(eventData);
-                Debug.Assert(_triggerSession != null);
 
-                var defaultAutoDetectChangesEnabled = eventData.Context!.ChangeTracker.AutoDetectChangesEnabled;
+                eventData.Context.ChangeTracker.AutoDetectChangesEnabled = false;
 
-                try
-                {
-
-                    eventData.Context.ChangeTracker.AutoDetectChangesEnabled = false;
-
-                    _triggerSession.RaiseBeforeSaveStartingTriggers().GetAwaiter().GetResult();
-                    _triggerSession.RaiseBeforeSaveTriggers().GetAwaiter().GetResult();
-                    _triggerSession.CaptureDiscoveredChanges();
-                    _triggerSession.RaiseBeforeSaveCompletedTriggers().GetAwaiter().GetResult();
-                }
-                finally
-                {
-                    eventData.Context.ChangeTracker.AutoDetectChangesEnabled = defaultAutoDetectChangesEnabled;
-                }
-
-                return result;
+                _triggerSession.RaiseBeforeSaveStartingTriggers();
+                _triggerSession.RaiseBeforeSaveTriggers();
+                _triggerSession.CaptureDiscoveredChanges();
+                _triggerSession.RaiseBeforeSaveCompletedTriggers();
+            }
+            finally
+            {
+                eventData.Context.ChangeTracker.AutoDetectChangesEnabled = defaultAutoDetectChangesEnabled;
             }
 
             return result;
@@ -103,26 +98,29 @@ namespace EntityFrameworkCore.Triggered.Internal
 
         public async ValueTask<InterceptionResult<int>> SavingChangesAsync(DbContextEventData eventData, InterceptionResult<int> result, CancellationToken cancellationToken = default)
         {
-            if (!(eventData.Context is TriggeredDbContext))
+            EnlistTriggerSession(eventData);
+            Debug.Assert(_triggerSession != null);
+
+            var defaultAutoDetectChangesEnabled = eventData.Context!.ChangeTracker.AutoDetectChangesEnabled;
+
+            try
             {
-                EnlistTriggerSession(eventData);
-                Debug.Assert(_triggerSession != null);
+                eventData.Context.ChangeTracker.AutoDetectChangesEnabled = false;
 
-                var defaultAutoDetectChangesEnabled = eventData.Context!.ChangeTracker.AutoDetectChangesEnabled;
+                _triggerSession.RaiseBeforeSaveStartingTriggers();
+                await _triggerSession.RaiseBeforeSaveStartingAsyncTriggers(cancellationToken).ConfigureAwait(false);
 
-                try
-                {
-                    eventData.Context.ChangeTracker.AutoDetectChangesEnabled = false;
+                _triggerSession.RaiseBeforeSaveTriggers();
+                await _triggerSession.RaiseBeforeSaveAsyncTriggers(cancellationToken).ConfigureAwait(false);
 
-                    await _triggerSession.RaiseBeforeSaveStartingTriggers(cancellationToken).ConfigureAwait(false);
-                    await _triggerSession.RaiseBeforeSaveTriggers(cancellationToken).ConfigureAwait(false);
-                    _triggerSession.CaptureDiscoveredChanges();
-                    await _triggerSession.RaiseBeforeSaveCompletedTriggers(cancellationToken).ConfigureAwait(false);
-                }
-                finally
-                {
-                    eventData.Context.ChangeTracker.AutoDetectChangesEnabled = defaultAutoDetectChangesEnabled;
-                }
+                _triggerSession.CaptureDiscoveredChanges();
+
+                _triggerSession.RaiseBeforeSaveCompletedTriggers();
+                await _triggerSession.RaiseBeforeSaveCompletedAsyncTriggers(cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                eventData.Context.ChangeTracker.AutoDetectChangesEnabled = defaultAutoDetectChangesEnabled;
             }
 
             return result;
@@ -130,62 +128,60 @@ namespace EntityFrameworkCore.Triggered.Internal
 
         public int SavedChanges(SaveChangesCompletedEventData eventData, int result)
         {
-            if (!(eventData.Context is TriggeredDbContext))
-            {
-                Debug.Assert(_triggerSession != null);
+            Debug.Assert(_triggerSession != null);
 
-                _triggerSession.RaiseAfterSaveStartingTriggers().GetAwaiter().GetResult();
-                _triggerSession.RaiseAfterSaveTriggers().GetAwaiter().GetResult();
-                _triggerSession.RaiseAfterSaveCompletedTriggers().GetAwaiter().GetResult();
+            _triggerSession.RaiseAfterSaveStartingTriggers();
+            _triggerSession.RaiseAfterSaveTriggers();
+            _triggerSession.RaiseAfterSaveCompletedTriggers();
 
-                DelistTriggerSession(eventData);
-            }
+            DelistTriggerSession(eventData);
 
             return result;
         }
 
         public async ValueTask<int> SavedChangesAsync(SaveChangesCompletedEventData eventData, int result, CancellationToken cancellationToken = default)
         {
-            if (!(eventData.Context is TriggeredDbContext))
-            {
-                Debug.Assert(_triggerSession != null);
+            Debug.Assert(_triggerSession != null);
 
-                await _triggerSession.RaiseAfterSaveStartingTriggers(cancellationToken).ConfigureAwait(false);
-                await _triggerSession.RaiseAfterSaveTriggers(cancellationToken).ConfigureAwait(false);
-                await _triggerSession.RaiseAfterSaveCompletedTriggers(cancellationToken).ConfigureAwait(false);
+            _triggerSession.RaiseAfterSaveStartingTriggers();
+            await _triggerSession.RaiseAfterSaveStartingAsyncTriggers(cancellationToken).ConfigureAwait(false);
 
-                DelistTriggerSession(eventData);
-            }
+            _triggerSession.RaiseAfterSaveTriggers();
+            await _triggerSession.RaiseAfterSaveAsyncTriggers(cancellationToken).ConfigureAwait(false);
 
+            _triggerSession.RaiseAfterSaveCompletedTriggers();
+            await _triggerSession.RaiseAfterSaveCompletedAsyncTriggers(cancellationToken).ConfigureAwait(false);
+
+            DelistTriggerSession(eventData);
+            
             return result;
         }
 
         public void SaveChangesFailed(DbContextErrorEventData eventData)
         {
-            if (!(eventData.Context is TriggeredDbContext))
-            {
-                Debug.Assert(_triggerSession != null);
+            Debug.Assert(_triggerSession != null);
 
-                _triggerSession.RaiseAfterSaveFailedStartingTriggers(eventData.Exception).GetAwaiter().GetResult();
-                _triggerSession.RaiseAfterSaveFailedTriggers(eventData.Exception).GetAwaiter().GetResult();
-                _triggerSession.RaiseAfterSaveFailedCompletedTriggers(eventData.Exception).GetAwaiter().GetResult();
+            _triggerSession.RaiseAfterSaveFailedStartingTriggers(eventData.Exception);
+            _triggerSession.RaiseAfterSaveFailedTriggers(eventData.Exception);
+            _triggerSession.RaiseAfterSaveFailedCompletedTriggers(eventData.Exception);
 
-                DelistTriggerSession(eventData);
-            }
+            DelistTriggerSession(eventData);
         }
 
         public async Task SaveChangesFailedAsync(DbContextErrorEventData eventData, CancellationToken cancellationToken = default)
         {
-            if (!(eventData.Context is TriggeredDbContext))
-            {
-                Debug.Assert(_triggerSession != null);
+            Debug.Assert(_triggerSession != null);
 
-                await _triggerSession.RaiseAfterSaveFailedStartingTriggers(eventData.Exception, cancellationToken).ConfigureAwait(false);
-                await _triggerSession.RaiseAfterSaveFailedTriggers(eventData.Exception, cancellationToken).ConfigureAwait(false);
-                await _triggerSession.RaiseAfterSaveFailedCompletedTriggers(eventData.Exception, cancellationToken).ConfigureAwait(false);
+            _triggerSession.RaiseAfterSaveFailedStartingTriggers(eventData.Exception);
+            await _triggerSession.RaiseAfterSaveFailedStartingAsyncTriggers(eventData.Exception, cancellationToken).ConfigureAwait(false);
+                
+            _triggerSession.RaiseAfterSaveFailedTriggers(eventData.Exception);
+            await _triggerSession.RaiseAfterSaveFailedAsyncTriggers(eventData.Exception, cancellationToken).ConfigureAwait(false);
+                
+            _triggerSession.RaiseAfterSaveFailedCompletedTriggers(eventData.Exception);
+            await _triggerSession.RaiseAfterSaveFailedCompletedAsyncTriggers(eventData.Exception, cancellationToken).ConfigureAwait(false);
 
-                DelistTriggerSession(eventData);
-            }
+            DelistTriggerSession(eventData);
         }
     }
 #pragma warning restore CS0618 // Type or member is obsolete

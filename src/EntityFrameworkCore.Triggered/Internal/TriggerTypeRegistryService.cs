@@ -1,19 +1,21 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using EntityFrameworkCore.Triggered.Internal.Descriptors;
 
 namespace EntityFrameworkCore.Triggered.Internal
 {
     public sealed class TriggerTypeRegistryService : ITriggerTypeRegistryService
     {
-        readonly ConcurrentDictionary<(Type, Type), TriggerTypeRegistry> _resolvedRegistries = new();
+        readonly ConcurrentDictionary<(Type, Type, Type), object> _resolvedRegistries = new();
 
-        TriggerTypeRegistry CreateRegistry(Type openTriggerType, Type entityType, Func<Type, ITriggerTypeDescriptor> triggerTypeDescriptorFactory) => _resolvedRegistries.GetOrAdd((openTriggerType, entityType), _ => new TriggerTypeRegistry(entityType, triggerTypeDescriptorFactory));
+        TriggerTypeRegistry<TTriggerTypeDescriptor> CreateRegistry<TTriggerTypeDescriptor>(Type openTriggerType, Type entityType, Func<Type, TTriggerTypeDescriptor> triggerTypeDescriptorFactory)
+            => (TriggerTypeRegistry<TTriggerTypeDescriptor>)_resolvedRegistries.GetOrAdd((openTriggerType, entityType, typeof(TTriggerTypeDescriptor)), _ => new TriggerTypeRegistry<TTriggerTypeDescriptor>(entityType, triggerTypeDescriptorFactory));
 
-        public TriggerTypeRegistry ResolveRegistry(Type openTriggerType, Type entityType, Func<Type, ITriggerTypeDescriptor> triggerTypeDescriptorFactory)
+        public TriggerTypeRegistry<TTriggerTypeDescriptor> ResolveRegistry<TTriggerTypeDescriptor>(Type openTriggerType, Type entityType, Func<Type, TTriggerTypeDescriptor> triggerTypeDescriptorFactory)
         {
-            if (_resolvedRegistries.TryGetValue((openTriggerType, entityType), out var registry))
+            if (_resolvedRegistries.TryGetValue((openTriggerType, entityType, typeof(TTriggerTypeDescriptor)), out var registry))
             {
-                return registry;
+                return (TriggerTypeRegistry<TTriggerTypeDescriptor>)registry;
             }
             else
             {

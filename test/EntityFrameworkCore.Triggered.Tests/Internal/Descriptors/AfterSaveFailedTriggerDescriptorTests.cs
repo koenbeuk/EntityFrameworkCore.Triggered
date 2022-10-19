@@ -2,10 +2,11 @@
 using System.Linq;
 using System.Threading.Tasks;
 using EntityFrameworkCore.Triggered.Internal;
+using EntityFrameworkCore.Triggered.Internal.Descriptors;
 using EntityFrameworkCore.Triggered.Tests.Stubs;
 using Xunit;
 
-namespace EntityFrameworkCore.Triggered.Tests.Internal
+namespace EntityFrameworkCore.Triggered.Tests.Internal.Descriptors
 {
     public class AfterSaveFailedTriggerDescriptorTests
     {
@@ -20,14 +21,14 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
         }
 
         [Fact]
-        public async Task Execute_ForwardsCall()
+        public void Execute_ForwardsCall()
         {
             var entityType = typeof(string);
             var exception = new Exception();
             var triggerStub = new TriggerStub<string>();
             var subject = new AfterSaveFailedTriggerDescriptor(entityType);
 
-            await subject.Invoke(triggerStub, new TriggerContextStub<string>(), exception, default);
+            subject.Invoke(triggerStub, new TriggerContextStub<string>(), exception);
 
             Assert.Single(triggerStub.AfterSaveFailedInvocations);
             Assert.Equal(exception, triggerStub.AfterSaveFailedInvocations.First().exception);

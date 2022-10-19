@@ -2,19 +2,18 @@
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using EntityFrameworkCore.Triggered.Internal;
 
-namespace EntityFrameworkCore.Triggered.Transactions.Internal
+namespace EntityFrameworkCore.Triggered.Internal.Descriptors
 {
-    public class AfterRollbackTriggerDescriptor : ITriggerTypeDescriptor
+    public sealed class AfterSaveAsyncTriggerDescriptor : IAsyncTriggerTypeDescriptor
     {
         readonly Func<object, object, CancellationToken, Task> _invocationDelegate;
         readonly Type _triggerType;
 
-        public AfterRollbackTriggerDescriptor(Type entityType)
+        public AfterSaveAsyncTriggerDescriptor(Type entityType)
         {
-            var triggerType = typeof(IAfterRollbackTrigger<>).MakeGenericType(entityType);
-            var triggerMethod = triggerType.GetMethod(nameof(IAfterRollbackTrigger<object>.AfterRollback));
+            var triggerType = typeof(IAfterSaveAsyncTrigger<>).MakeGenericType(entityType);
+            var triggerMethod = triggerType.GetMethod(nameof(IAfterSaveAsyncTrigger<object>.AfterSaveAsync));
 
             _triggerType = triggerType;
             _invocationDelegate = TriggerTypeDescriptorHelpers.GetAsyncWeakDelegate(triggerType, entityType, triggerMethod!);

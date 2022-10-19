@@ -3,20 +3,20 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace EntityFrameworkCore.Triggered.Internal
+namespace EntityFrameworkCore.Triggered.Internal.Descriptors
 {
-    public sealed class BeforeSaveTriggerDescriptor : ITriggerTypeDescriptor
+    public sealed class BeforeSaveAsyncTriggerDescriptor : IAsyncTriggerTypeDescriptor
     {
         readonly Func<object, object, CancellationToken, Task> _invocationDelegate;
         readonly Type _triggerType;
 
-        public BeforeSaveTriggerDescriptor(Type entityType)
+        public BeforeSaveAsyncTriggerDescriptor(Type entityType)
         {
             var triggerType = typeof(IBeforeSaveTrigger<>).MakeGenericType(entityType);
             var triggerMethod = triggerType.GetMethod(nameof(IBeforeSaveTrigger<object>.BeforeSave));
 
             _triggerType = triggerType;
-            _invocationDelegate = TriggerTypeDescriptorHelpers.GetWeakDelegate(triggerType, entityType, triggerMethod!);
+            _invocationDelegate = TriggerTypeDescriptorHelpers.GetAsyncWeakDelegate(triggerType, entityType, triggerMethod!);
         }
 
         public Type TriggerType => _triggerType;
@@ -27,6 +27,5 @@ namespace EntityFrameworkCore.Triggered.Internal
 
             return _invocationDelegate(trigger, triggerContext, cancellationToken);
         }
-
     }
 }

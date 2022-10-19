@@ -13,7 +13,7 @@ namespace EntityFrameworkCore.Triggered.Benchmarks.Triggers
             _applicationContext = applicationContext;
         }
 
-        public Task BeforeSave(ITriggerContext<Student> context, CancellationToken cancellationToken)
+        public void BeforeSave(ITriggerContext<Student> context)
         {
             var mandatoryCourses = _applicationContext.Courses.Where(x => x.IsMandatory).ToList();
 
@@ -24,8 +24,6 @@ namespace EntityFrameworkCore.Triggered.Benchmarks.Triggers
                     StudentId = context.Entity.Id
                 });
             }
-
-            return Task.CompletedTask;
         }
     }
 }

@@ -6,10 +6,9 @@ namespace EntityFrameworkCore.Triggered.Benchmarks.Triggers
 {
     public class SetStudentRegistrationDateTrigger : IBeforeSaveTrigger<Student>
     {
-        public Task BeforeSave(ITriggerContext<Student> context, CancellationToken cancellationToken)
+        public void BeforeSave(ITriggerContext<Student> context)
         {
             context.Entity.RegistrationDate = DateTimeOffset.Now;
-            return Task.CompletedTask;
         }
     }
 }

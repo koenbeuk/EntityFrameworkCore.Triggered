@@ -1,9 +1,10 @@
 ﻿using System.Threading.Tasks;
 using EntityFrameworkCore.Triggered.Internal;
+using EntityFrameworkCore.Triggered.Internal.Descriptors;
 using EntityFrameworkCore.Triggered.Tests.Stubs;
 using Xunit;
 
-namespace EntityFrameworkCore.Triggered.Tests.Internal
+namespace EntityFrameworkCore.Triggered.Tests.Internal.Descriptors
 {
     public class AfterSaveTriggerDescriptorTests
     {
@@ -17,13 +18,13 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
         }
 
         [Fact]
-        public async Task Execute_ForwardsCall()
+        public void Execute_ForwardsCall()
         {
             var entityType = typeof(string);
             var triggerStub = new TriggerStub<string>();
             var subject = new AfterSaveTriggerDescriptor(entityType);
 
-            await subject.Invoke(triggerStub, new TriggerContextStub<string>(), null, default);
+            subject.Invoke(triggerStub, new TriggerContextStub<string>(), null);
 
             Assert.Single(triggerStub.AfterSaveInvocations);
         }

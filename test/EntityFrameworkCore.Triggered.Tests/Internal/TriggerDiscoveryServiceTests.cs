@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using EntityFrameworkCore.Triggered.Internal;
+using EntityFrameworkCore.Triggered.Internal.Descriptors;
 using EntityFrameworkCore.Triggered.Tests.Stubs;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;

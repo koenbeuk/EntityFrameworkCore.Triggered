@@ -1,15 +1,17 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using EntityFrameworkCore.Triggered.Internal.Descriptors;
 
 namespace EntityFrameworkCore.Triggered.Internal
 {
-    public class TriggerDescriptor
+    public class AsyncTriggerDescriptor
     {
-        readonly ITriggerTypeDescriptor _triggerTypeDescriptor;
+        readonly IAsyncTriggerTypeDescriptor _triggerTypeDescriptor;
         readonly object _trigger;
         readonly int _priority;
 
-        public TriggerDescriptor(ITriggerTypeDescriptor triggerTypeDescriptor, object trigger)
+        public AsyncTriggerDescriptor(IAsyncTriggerTypeDescriptor triggerTypeDescriptor, object trigger)
         {
             _triggerTypeDescriptor = triggerTypeDescriptor ?? throw new ArgumentNullException(nameof(triggerTypeDescriptor));
             _trigger = trigger ?? throw new ArgumentNullException(nameof(trigger));
@@ -24,12 +26,12 @@ namespace EntityFrameworkCore.Triggered.Internal
             }
         }
 
-        public ITriggerTypeDescriptor TypeDescriptor => _triggerTypeDescriptor;
+        public IAsyncTriggerTypeDescriptor TypeDescriptor => _triggerTypeDescriptor;
         public object Trigger => _trigger;
         public int Priority => _priority;
 
-        public void Invoke(object triggerContext, Exception? exception)
-            => _triggerTypeDescriptor.Invoke(_trigger, triggerContext, exception);
+        public Task Invoke(object triggerContext, Exception? exception, CancellationToken cancellationToken)
+            => _triggerTypeDescriptor.Invoke(_trigger, triggerContext, exception, cancellationToken);
 
     }
 }

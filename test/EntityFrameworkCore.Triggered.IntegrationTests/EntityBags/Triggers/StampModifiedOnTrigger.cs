@@ -9,7 +9,7 @@ namespace EntityFrameworkCore.Triggered.IntegrationTests.EntityBags.Triggers
 {
     public class StampModifiedOnTrigger : IBeforeSaveTrigger<User>
     {
-        public Task BeforeSave(ITriggerContext<User> context, CancellationToken cancellationToken)
+        public void BeforeSave(ITriggerContext<User> context)
         {
             if (context.ChangeType is ChangeType.Modified)
             {
@@ -18,8 +18,6 @@ namespace EntityFrameworkCore.Triggered.IntegrationTests.EntityBags.Triggers
                     context.Entity.ModifiedOn = DateTime.UtcNow;
                 }
             }
-
-            return Task.CompletedTask;
         }
     }
 }

@@ -14,7 +14,7 @@ namespace EntityFrameworkCore.Triggered.Transactions.Internal
 
         public BeforeRollbackAsyncTriggerDescriptor(Type entityType)
         {
-            var triggerType = typeof(IBeforeRollbackTrigger<>).MakeGenericType(entityType);
+            var triggerType = typeof(IBeforeRollbackAsyncTrigger<>).MakeGenericType(entityType);
             var triggerMethod = triggerType.GetMethod(nameof(IBeforeRollbackAsyncTrigger<object>.BeforeRollbackAsync));
 
             _triggerType = triggerType;

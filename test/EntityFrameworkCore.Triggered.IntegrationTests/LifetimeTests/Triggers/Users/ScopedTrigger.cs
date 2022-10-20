@@ -10,6 +10,6 @@ namespace EntityFrameworkCore.Triggered.IntegrationTests.LifetimeTests.Triggers.
             triggerLifetimeTestScenario.ScopedTriggerInstances++;
         }
 
-        public Task BeforeSave(ITriggerContext<object> context, CancellationToken cancellationToken) => Task.CompletedTask;
+        public void BeforeSave(ITriggerContext<object> context) { }
     }
 }

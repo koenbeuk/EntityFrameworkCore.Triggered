@@ -11,8 +11,8 @@ namespace EntityFrameworkCore.Triggered.Internal.Descriptors
 
         public AfterSaveFailedAsyncTriggerDescriptor(Type entityType)
         {
-            var triggerType = typeof(IAfterSaveFailedTrigger<>).MakeGenericType(entityType);
-            var triggerMethod = triggerType.GetMethod(nameof(IAfterSaveFailedTrigger<object>.AfterSaveFailed));
+            var triggerType = typeof(IAfterSaveFailedAsyncTrigger<>).MakeGenericType(entityType);
+            var triggerMethod = triggerType.GetMethod(nameof(IAfterSaveFailedAsyncTrigger<object>.AfterSaveFailedAsync));
 
             _triggerType = triggerType;
             _invocationDelegate = TriggerTypeDescriptorHelpers.GetAsyncWeakDelegateWithException(triggerType, entityType, triggerMethod!);

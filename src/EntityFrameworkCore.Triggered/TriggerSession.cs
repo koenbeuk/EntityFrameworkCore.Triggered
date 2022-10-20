@@ -26,6 +26,7 @@ namespace EntityFrameworkCore.Triggered
         readonly EntityBagStateManager _entityBagStateManager = new();
 
         bool _raiseBeforeSaveTriggersCalled;
+        bool _raiseBeforeSaveAsyncTriggersCalled;
 
         public TriggerSession(ITriggerService triggerService, TriggerSessionConfiguration configuration, ITriggerDiscoveryService triggerDiscoveryService, TriggerContextTracker tracker, ILogger<TriggerSession> logger)
         {
@@ -207,11 +208,11 @@ namespace EntityFrameworkCore.Triggered
         }
 
         public Task RaiseBeforeSaveAsyncTriggers(CancellationToken cancellationToken)
-            => RaiseBeforeSaveAsyncTriggers(_raiseBeforeSaveTriggersCalled, cancellationToken);
+            => RaiseBeforeSaveAsyncTriggers(_raiseBeforeSaveAsyncTriggersCalled, cancellationToken);
 
         public Task RaiseBeforeSaveAsyncTriggers(bool skipDetectedChanges, CancellationToken cancellationToken)
         {
-            _raiseBeforeSaveTriggersCalled = true;
+            _raiseBeforeSaveAsyncTriggersCalled = true;
 
             ITriggerContextDiscoveryStrategy? strategy;
 
@@ -235,7 +236,7 @@ namespace EntityFrameworkCore.Triggered
             }
 
             _raiseBeforeSaveTriggersCalled = true;
-            return RaiseAsyncTriggers(typeof(IBeforeSaveTrigger<>), null, strategy, entityType => new BeforeSaveAsyncTriggerDescriptor(entityType), cancellationToken);
+            return RaiseAsyncTriggers(typeof(IBeforeSaveAsyncTrigger<>), null, strategy, entityType => new BeforeSaveAsyncTriggerDescriptor(entityType), cancellationToken);
         }
 
         public void RaiseBeforeSaveCompletedTriggers()

@@ -25,7 +25,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal.Descriptors
 
             await subject.Invoke(triggerStub, new TriggerContextStub<string>(), null, default);
 
-            Assert.Single(triggerStub.AfterSaveInvocations);
+            Assert.Single(triggerStub.AfterSaveAsyncInvocations);
         }
     }
 }

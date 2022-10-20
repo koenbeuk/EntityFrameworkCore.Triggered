@@ -12,8 +12,8 @@ namespace EntityFrameworkCore.Triggered.Internal.Descriptors
 
         public BeforeSaveAsyncTriggerDescriptor(Type entityType)
         {
-            var triggerType = typeof(IBeforeSaveTrigger<>).MakeGenericType(entityType);
-            var triggerMethod = triggerType.GetMethod(nameof(IBeforeSaveTrigger<object>.BeforeSave));
+            var triggerType = typeof(IBeforeSaveAsyncTrigger<>).MakeGenericType(entityType);
+            var triggerMethod = triggerType.GetMethod(nameof(IBeforeSaveAsyncTrigger<object>.BeforeSaveAsync));
 
             _triggerType = triggerType;
             _invocationDelegate = TriggerTypeDescriptorHelpers.GetAsyncWeakDelegate(triggerType, entityType, triggerMethod!);

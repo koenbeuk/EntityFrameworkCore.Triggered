@@ -64,6 +64,17 @@ namespace EntityFrameworkCore.Triggered.Tests
         }
 
         [Fact]
+        public async Task RaiseBeforeSaveAsyncTriggers_RaisesNothingOnNoChanges()
+        {
+            using var context = new TestDbContext();
+            var subject = CreateSubject(context);
+
+            await subject.RaiseBeforeSaveAsyncTriggers();
+
+            Assert.Empty(context.TriggerStub.BeforeSaveAsyncInvocations);
+        }
+
+        [Fact]
         public void RaiseAfterSaveTriggers_RaisesNothingOnNoChanges()
         {
             using var context = new TestDbContext();
@@ -73,6 +84,19 @@ namespace EntityFrameworkCore.Triggered.Tests
             subject.RaiseAfterSaveTriggers();
 
             Assert.Empty(context.TriggerStub.AfterSaveInvocations);
+        }
+
+
+        [Fact]
+        public async Task RaiseAfterSaveAsyncTriggers_RaisesNothingOnNoChanges()
+        {
+            using var context = new TestDbContext();
+            var subject = CreateSubject(context);
+
+            subject.DiscoverChanges();
+            await subject.RaiseAfterSaveAsyncTriggers();
+
+            Assert.Empty(context.TriggerStub.AfterSaveAsyncInvocations);
         }
 
         [Fact]
@@ -92,6 +116,22 @@ namespace EntityFrameworkCore.Triggered.Tests
         }
 
         [Fact]
+        public async Task RaiseBeforeSaveAsyncTriggers_RaisesOnceOnSimpleAddition()
+        {
+            using var context = new TestDbContext();
+            var subject = CreateSubject(context);
+
+            context.TestModels.Add(new TestModel {
+                Id = 1,
+                Name = "test1"
+            });
+
+            await subject.RaiseBeforeSaveAsyncTriggers();
+
+            Assert.Equal(1, context.TriggerStub.BeforeSaveAsyncInvocations.Count);
+        }
+
+        [Fact]
         public void RaiseAfterSaveTriggers_WithoutCallToRaiseBeforeSaveTriggers_Throws()
         {
             using var context = new TestDbContext();
@@ -103,6 +143,20 @@ namespace EntityFrameworkCore.Triggered.Tests
             });
 
             Assert.Throws<InvalidOperationException>(() => subject.RaiseAfterSaveTriggers());
+        }
+
+        [Fact]
+        public async Task RaiseAfterSaveAsyncTriggers_WithoutCallToRaiseBeforeSaveTriggers_Throws()
+        {
+            using var context = new TestDbContext();
+            var subject = CreateSubject(context);
+
+            context.TestModels.Add(new TestModel {
+                Id = 1,
+                Name = "test1"
+            });
+
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await subject.RaiseAfterSaveAsyncTriggers());
         }
 
         [Fact]
@@ -123,7 +177,24 @@ namespace EntityFrameworkCore.Triggered.Tests
         }
 
         [Fact]
-        public async Task RaiseBeforeSaveTriggers_ThrowsOnCancelledException()
+        public async Task RaiseAfterSaveAsyncTriggers_RaisesOnceOnSimpleAddition()
+        {
+            using var context = new TestDbContext();
+            var subject = CreateSubject(context);
+
+            context.TestModels.Add(new TestModel {
+                Id = 1,
+                Name = "test1"
+            });
+
+            subject.DiscoverChanges();
+            await subject.RaiseAfterSaveAsyncTriggers();
+
+            Assert.Equal(1, context.TriggerStub.AfterSaveAsyncInvocations.Count);
+        }
+
+        [Fact]
+        public async Task RaiseBeforeSaveAsyncTriggers_ThrowsOnCancelledException()
         {
             using var context = new TestDbContext();
             var subject = CreateSubject(context);
@@ -139,7 +210,7 @@ namespace EntityFrameworkCore.Triggered.Tests
         }
 
         [Fact]
-        public async Task RaiseAfterSaveTriggers_ThrowsOnCancelledException()
+        public async Task RaiseAfterSaveAsyncTriggers_ThrowsOnCancelledException()
         {
             using var context = new TestDbContext();
             var subject = CreateSubject(context);
@@ -313,6 +384,24 @@ namespace EntityFrameworkCore.Triggered.Tests
             subject.RaiseAfterSaveFailedTriggers(new Exception());
 
             Assert.Equal(1, context.TriggerStub.AfterSaveFailedInvocations.Count);
+        }
+
+
+        [Fact]
+        public async Task RaiseAfterSaveFailedAsyncTriggers_OnException_RaisesSubsequentTriggers()
+        {
+            using var context = new TestDbContext();
+            var subject = CreateSubject(context);
+
+            context.TestModels.Add(new TestModel {
+                Id = 1,
+                Name = "test1"
+            });
+
+            subject.DiscoverChanges();
+            await subject.RaiseAfterSaveFailedAsyncTriggers(new Exception());
+
+            Assert.Equal(1, context.TriggerStub.AfterSaveFailedAsyncInvocations.Count);
         }
 
         [Fact]

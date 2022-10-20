@@ -14,7 +14,6 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal.Descriptors
         public void TriggerType_ReturnsConstructuredTriggerType()
         {
             var entityType = typeof(string);
-            var exception = new Exception();
             var subject = new AfterSaveFailedTriggerDescriptor(entityType);
 
             Assert.Equal(typeof(IAfterSaveFailedTrigger<string>), subject.TriggerType);

@@ -101,14 +101,23 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
         {
             _triggerTypes = new[] {
                 typeof(IBeforeSaveTrigger<>),
+                typeof(IBeforeSaveAsyncTrigger<>),
                 typeof(IAfterSaveTrigger<>),
+                typeof(IAfterSaveAsyncTrigger<>),
                 typeof(IAfterSaveFailedTrigger<>),
+                typeof(IAfterSaveFailedAsyncTrigger<>),
                 typeof(IBeforeSaveStartingTrigger),
+                typeof(IBeforeSaveStartingAsyncTrigger),
                 typeof(IBeforeSaveCompletedTrigger),
+                typeof(IBeforeSaveCompletedAsyncTrigger),
                 typeof(IAfterSaveFailedStartingTrigger),
+                typeof(IAfterSaveFailedStartingAsyncTrigger),
                 typeof(IAfterSaveFailedCompletedTrigger),
+                typeof(IAfterSaveFailedCompletedAsyncTrigger),
                 typeof(IAfterSaveStartingTrigger),
-                typeof(IAfterSaveCompletedTrigger)
+                typeof(IAfterSaveStartingAsyncTrigger),
+                typeof(IAfterSaveCompletedTrigger),
+                typeof(IAfterSaveCompletedAsyncTrigger)
             };
         }
 

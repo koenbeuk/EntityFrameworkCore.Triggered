@@ -41,7 +41,7 @@ namespace EntityFrameworkCore.Triggered.Internal
         static Action<object, object, Exception> GetWeakDelegateHelperWithException<TTriggerType, TTriggerContext>(MethodInfo method)
             where TTriggerType : class
         {
-            var invocationDelegate = (Action<object, object, Exception?>)Delegate.CreateDelegate(typeof(Action<object, object, Exception>), method);
+            var invocationDelegate = (Action<TTriggerType, TTriggerContext, Exception?>)Delegate.CreateDelegate(typeof(Action<TTriggerType, TTriggerContext, Exception>), method);
 
             Action<object, object, Exception?> result = (object trigger, object triggerContext, Exception? exception) => invocationDelegate((TTriggerType)trigger, (TTriggerContext)triggerContext, exception);
             return result;

@@ -44,7 +44,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Stubs
 
         public Task BeforeSaveAsync(ITriggerContext<TEntity> context, CancellationToken cancellationToken)
         {
-            BeforeSaveInvocations.Add(context);
+            BeforeSaveAsyncInvocations.Add(context);
             BeforeSaveAsyncHandler?.Invoke(context, cancellationToken);
             return Task.CompletedTask;
         }
@@ -57,7 +57,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Stubs
 
         public Task AfterSaveAsync(ITriggerContext<TEntity> context, CancellationToken cancellationToken)
         {
-            AfterSaveInvocations.Add(context);
+            AfterSaveAsyncInvocations.Add(context);
             AfterSaveAsyncHandler?.Invoke(context, cancellationToken);
             return Task.CompletedTask;
         }
@@ -71,7 +71,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Stubs
 
         public Task AfterSaveFailedAsync(ITriggerContext<TEntity> context, Exception exception, CancellationToken cancellationToken)
         {
-            AfterSaveFailedInvocations.Add((context, exception));
+            AfterSaveFailedAsyncInvocations.Add((context, exception));
             AfterSaveFailedAsyncHandler?.Invoke(context, exception, cancellationToken);
             return Task.CompletedTask;
         }

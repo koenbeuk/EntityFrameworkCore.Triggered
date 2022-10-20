@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 
 namespace EntityFrameworkCore.Triggered.Transactions.Lifecycles
 {
-    public interface IAfterCommitStartingTrigger
+    public interface IAfterCommitStartingAsyncTrigger
     {
-        void AfterCommitStarting();
+        Task AfterCommitStartingAsync(CancellationToken cancellationToken);
     }
 }

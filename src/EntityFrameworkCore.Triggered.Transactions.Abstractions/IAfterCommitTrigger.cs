@@ -6,6 +6,6 @@ namespace EntityFrameworkCore.Triggered.Transactions
     public interface IAfterCommitTrigger<in TEntity>
         where TEntity : class
     {
-        Task AfterCommit(ITriggerContext<TEntity> context, CancellationToken cancellationToken);
+        void AfterCommit(ITriggerContext<TEntity> context);
     }
 }

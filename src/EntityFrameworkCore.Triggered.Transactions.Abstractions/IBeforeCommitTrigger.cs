@@ -6,6 +6,6 @@ namespace EntityFrameworkCore.Triggered.Transactions
     public interface IBeforeCommitTrigger<in TEntity>
         where TEntity : class
     {
-        Task BeforeCommit(ITriggerContext<TEntity> context, CancellationToken cancellationToken);
+        void BeforeCommit(ITriggerContext<TEntity> context);
     }
 }

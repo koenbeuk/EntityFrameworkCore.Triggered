@@ -17,13 +17,13 @@ namespace EntityFrameworkCore.Triggered.Transactions.Tests.Internal
         }
 
         [Fact]
-        public async Task Execute_ForwardsCall()
+        public void Execute_ForwardsCall()
         {
             var entityType = typeof(string);
             var triggerStub = new TriggerStub<string>();
             var subject = new AfterRollbackTriggerDescriptor(entityType);
 
-            await subject.Invoke(triggerStub, new TriggerContextStub<string>(), null, default);
+            subject.Invoke(triggerStub, new TriggerContextStub<string>(), null);
 
             Assert.Single(triggerStub.AfterRollbackInvocations);
         }

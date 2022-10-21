@@ -3,11 +3,11 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace EntityFrameworkCore.Triggered.Internal
+namespace EntityFrameworkCore.Triggered.Internal.Descriptors
 {
     public sealed class AfterSaveFailedTriggerDescriptor : ITriggerTypeDescriptor
     {
-        readonly Func<object, object, Exception?, CancellationToken, Task> _invocationDelegate;
+        readonly Action<object, object, Exception?> _invocationDelegate;
         readonly Type _triggerType;
 
         public AfterSaveFailedTriggerDescriptor(Type entityType)
@@ -21,8 +21,7 @@ namespace EntityFrameworkCore.Triggered.Internal
 
         public Type TriggerType => _triggerType;
 
-        public Task Invoke(object trigger, object triggerContext, Exception? exception, CancellationToken cancellationToken)
-            => _invocationDelegate(trigger, triggerContext, exception, cancellationToken);
-
+        public void Invoke(object trigger, object triggerContext, Exception? exception)
+            => _invocationDelegate(trigger, triggerContext, exception);
     }
 }

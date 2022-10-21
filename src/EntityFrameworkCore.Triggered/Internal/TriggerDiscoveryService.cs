@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using EntityFrameworkCore.Triggered.Internal.Descriptors;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace EntityFrameworkCore.Triggered.Internal
@@ -56,6 +57,48 @@ namespace EntityFrameworkCore.Triggered.Internal
                 if (triggerDescriptors == null)
                 {
                     return Enumerable.Empty<TriggerDescriptor>();
+                }
+                else
+                {
+                    triggerDescriptors.Sort(_triggerDescriptorComparer);
+                    return triggerDescriptors;
+                }
+            }
+        }
+
+        public IEnumerable<AsyncTriggerDescriptor> DiscoverAsyncTriggers(Type openTriggerType, Type entityType, Func<Type, IAsyncTriggerTypeDescriptor> triggerTypeDescriptorFactory)
+        {
+            var registry = _triggerTypeRegistryService.ResolveRegistry(openTriggerType, entityType, triggerTypeDescriptorFactory);
+
+            var triggerTypeDescriptors = registry.GetTriggerTypeDescriptors();
+            if (triggerTypeDescriptors.Length == 0)
+            {
+                return Enumerable.Empty<AsyncTriggerDescriptor>();
+            }
+            else
+            {
+                List<AsyncTriggerDescriptor>? triggerDescriptors = null;
+
+                foreach (var triggerTypeDescriptor in triggerTypeDescriptors)
+                {
+                    var triggers = _triggerFactory.Resolve(ServiceProvider, triggerTypeDescriptor.TriggerType);
+                    foreach (var trigger in triggers)
+                    {
+                        if (triggerDescriptors == null)
+                        {
+                            triggerDescriptors = new List<AsyncTriggerDescriptor>();
+                        }
+
+                        if (trigger != null)
+                        {
+                            triggerDescriptors.Add(new AsyncTriggerDescriptor(triggerTypeDescriptor, trigger));
+                        }
+                    }
+                }
+
+                if (triggerDescriptors == null)
+                {
+                    return Enumerable.Empty<AsyncTriggerDescriptor>();
                 }
                 else
                 {

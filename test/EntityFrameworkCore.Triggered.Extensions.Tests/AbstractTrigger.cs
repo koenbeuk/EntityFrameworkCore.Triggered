@@ -9,6 +9,6 @@ namespace EntityFrameworkCore.Triggered.Extensions.Tests
 {
     public abstract class AbstractTrigger : IBeforeSaveTrigger<object>
     {
-        public Task BeforeSave(ITriggerContext<object> context, CancellationToken cancellationToken) => throw new NotImplementedException();
+        public void BeforeSave(ITriggerContext<object> context) => throw new NotImplementedException();
     }
 }

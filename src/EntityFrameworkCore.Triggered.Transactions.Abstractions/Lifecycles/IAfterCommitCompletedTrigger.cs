@@ -5,6 +5,6 @@ namespace EntityFrameworkCore.Triggered.Transactions.Lifecycles
 {
     public interface IAfterCommitCompletedTrigger
     {
-        Task AfterCommitCompleted(CancellationToken cancellationToken);
+        void AfterCommitCompleted();
     }
 }

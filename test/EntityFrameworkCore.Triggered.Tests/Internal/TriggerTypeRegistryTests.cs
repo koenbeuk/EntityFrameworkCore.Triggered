@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using EntityFrameworkCore.Triggered.Internal;
+using EntityFrameworkCore.Triggered.Internal.Descriptors;
 using Xunit;
 
 namespace EntityFrameworkCore.Triggered.Tests.Internal
@@ -12,7 +13,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
         public class BaseTypeWithInterface : IInterfaceType { }
         public class DerivedTypeWithInterface : BaseTypeWithInterface, IInterfaceType { }
 
-        TriggerTypeRegistry CreateSubject<TType>()
+        TriggerTypeRegistry<BeforeSaveTriggerDescriptor> CreateSubject<TType>()
             => new(typeof(TType), type => new BeforeSaveTriggerDescriptor(type));
 
         [Fact]

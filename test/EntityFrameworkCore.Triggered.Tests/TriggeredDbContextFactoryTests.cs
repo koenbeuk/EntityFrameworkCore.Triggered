@@ -28,16 +28,13 @@ namespace EntityFrameworkCore.Triggered.Tests
                 _testDbContext = testDbContext;
             }
 
-            public Task BeforeSave(ITriggerContext<TestModel> context, CancellationToken cancellationToken)
+            public void BeforeSave(ITriggerContext<TestModel> context)
             {
                 _testDbContext.TriggerRaised = true;
-                return Task.CompletedTask;
             }
         }
 
-#pragma warning disable CS0618 // Type or member is obsolete
-        class TestDbContext : TriggeredDbContext
-#pragma warning restore CS0618 // Type or member is obsolete
+        class TestDbContext : DbContext
         {
             public TestDbContext(DbContextOptions options)
                 : base(options)

@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using EntityFrameworkCore.Triggered.Internal;
+using EntityFrameworkCore.Triggered.Internal.Descriptors;
 using Xunit;
 
 namespace EntityFrameworkCore.Triggered.Tests.Internal
@@ -12,12 +13,12 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
         {
             public int Priority => 1;
 
-            public Task BeforeSave(ITriggerContext<object> context, CancellationToken cancellationToken) => throw new NotImplementedException();
+            public void BeforeSave(ITriggerContext<object> context) => throw new NotImplementedException();
         }
 
         class TestTriggerWithoutPriority : IBeforeSaveTrigger<object>
         {
-            public Task BeforeSave(ITriggerContext<object> context, CancellationToken cancellationToken) => throw new NotImplementedException();
+            public void BeforeSave(ITriggerContext<object> context) => throw new NotImplementedException();
         }
 
         [Fact]

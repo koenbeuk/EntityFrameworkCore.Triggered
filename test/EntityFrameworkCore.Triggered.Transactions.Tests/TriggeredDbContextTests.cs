@@ -15,9 +15,7 @@ namespace EntityFrameworkCore.Triggered.Transactions.Tests
             public string Name { get; set; }
         }
 
-#pragma warning disable CS0618 // Type or member is obsolete
-        class TestDbContext : TriggeredDbContext
-#pragma warning restore CS0618 // Type or member is obsolete
+        class TestDbContext : DbContext
         {
             public TriggerStub<TestModel> TriggerStub { get; } = new TriggerStub<TestModel>();
 
@@ -53,7 +51,7 @@ namespace EntityFrameworkCore.Triggered.Transactions.Tests
 
             dbContext.SaveChanges();
 
-            subject.RaiseBeforeCommitTriggers().GetAwaiter().GetResult();
+            subject.RaiseBeforeCommitTriggers();
 
             Assert.Equal(1, dbContext.TriggerStub.BeforeCommitInvocations.Count);
         }
@@ -72,7 +70,7 @@ namespace EntityFrameworkCore.Triggered.Transactions.Tests
 
             dbContext.SaveChanges();
 
-            subject.RaiseAfterCommitTriggers().GetAwaiter().GetResult();
+            subject.RaiseAfterCommitTriggers();
 
             Assert.Equal(1, dbContext.TriggerStub.AfterCommitInvocations.Count);
         }

@@ -43,19 +43,31 @@ namespace EntityFrameworkCore.Triggered.Transactions.Tests
 
 
         [Fact]
-        public async Task RaiseBeforeCommitTriggers_RaisesNothingOnNoChanges()
+        public void RaiseBeforeCommitTriggers_RaisesNothingOnNoChanges()
         {
             using var context = new TestDbContext();
             var session = CreateSession(context);
 
             session.DiscoverChanges();
-            await session.RaiseBeforeCommitTriggers();
+            session.RaiseBeforeCommitTriggers();
 
             Assert.Empty(context.TriggerStub.BeforeCommitInvocations);
         }
 
         [Fact]
-        public async Task RaiseBeforeCommitTriggers_RaisesOnceOnSimpleAddition()
+        public async Task RaiseBeforeCommitAsyncTriggers_RaisesNothingOnNoChanges()
+        {
+            using var context = new TestDbContext();
+            var session = CreateSession(context);
+
+            session.DiscoverChanges();
+            await session.RaiseBeforeCommitAsyncTriggers();
+
+            Assert.Empty(context.TriggerStub.BeforeCommitAsyncInvocations);
+        }
+
+        [Fact]
+        public void RaiseBeforeCommitTriggers_RaisesOnceOnSimpleAddition()
         {
             using var context = new TestDbContext();
             var session = CreateSession(context);
@@ -66,25 +78,54 @@ namespace EntityFrameworkCore.Triggered.Transactions.Tests
             });
 
             session.DiscoverChanges();
-            await session.RaiseBeforeCommitTriggers();
+            session.RaiseBeforeCommitTriggers();
 
             Assert.Equal(1, context.TriggerStub.BeforeCommitInvocations.Count);
         }
 
         [Fact]
-        public async Task RaiseAfterCommitTriggers_RaisesNothingOnNoChanges()
+        public async Task RaiseBeforeCommitAsyncTriggers_RaisesOnceOnSimpleAddition()
+        {
+            using var context = new TestDbContext();
+            var session = CreateSession(context);
+
+            context.TestModels.Add(new TestModel {
+                Id = Guid.NewGuid(),
+                Name = "test1"
+            });
+
+            session.DiscoverChanges();
+            await session.RaiseBeforeCommitAsyncTriggers();
+
+            Assert.Equal(1, context.TriggerStub.BeforeCommitAsyncInvocations.Count);
+        }
+
+        [Fact]
+        public void RaiseAfterCommitTriggers_RaisesNothingOnNoChanges()
         {
             using var context = new TestDbContext();
             var session = CreateSession(context);
 
             session.DiscoverChanges();
-            await session.RaiseAfterCommitTriggers();
+            session.RaiseAfterCommitTriggers();
 
             Assert.Empty(context.TriggerStub.AfterCommitInvocations);
         }
 
         [Fact]
-        public async Task RaiseAfterCommitTriggers_RaisesOnceOnSimpleAddition()
+        public async Task RaiseAfterCommitAsyncTriggers_RaisesNothingOnNoChanges()
+        {
+            using var context = new TestDbContext();
+            var session = CreateSession(context);
+
+            session.DiscoverChanges();
+            await session.RaiseAfterCommitAsyncTriggers();
+
+            Assert.Empty(context.TriggerStub.AfterCommitAsyncInvocations);
+        }
+
+        [Fact]
+        public void RaiseAfterCommitTriggers_RaisesOnceOnSimpleAddition()
         {
             using var context = new TestDbContext();
             var session = CreateSession(context);
@@ -95,26 +136,54 @@ namespace EntityFrameworkCore.Triggered.Transactions.Tests
             });
 
             session.DiscoverChanges();
-            await session.RaiseAfterCommitTriggers();
+            session.RaiseAfterCommitTriggers();
 
             Assert.Equal(1, context.TriggerStub.AfterCommitInvocations.Count);
         }
 
+        [Fact]
+        public async Task RaiseAfterCommitAsyncTriggers_RaisesOnceOnSimpleAddition()
+        {
+            using var context = new TestDbContext();
+            var session = CreateSession(context);
+
+            context.TestModels.Add(new TestModel {
+                Id = Guid.NewGuid(),
+                Name = "test1"
+            });
+
+            session.DiscoverChanges();
+            await session.RaiseAfterCommitAsyncTriggers();
+
+            Assert.Equal(1, context.TriggerStub.AfterCommitAsyncInvocations.Count);
+        }
 
         [Fact]
-        public async Task RaiseBeforeRollbackTriggers_RaisesNothingOnNoChanges()
+        public void RaiseBeforeRollbackTriggers_RaisesNothingOnNoChanges()
         {
             using var context = new TestDbContext();
             var session = CreateSession(context);
 
             session.DiscoverChanges();
-            await session.RaiseBeforeRollbackTriggers();
+            session.RaiseBeforeRollbackTriggers();
 
             Assert.Empty(context.TriggerStub.BeforeRollbackInvocations);
         }
 
         [Fact]
-        public async Task RaiseBeforeRollbackTriggers_RaisesOnceOnSimpleAddition()
+        public async Task RaiseBeforeRollbackAsyncTriggers_RaisesNothingOnNoChanges()
+        {
+            using var context = new TestDbContext();
+            var session = CreateSession(context);
+
+            session.DiscoverChanges();
+            await session.RaiseBeforeRollbackAsyncTriggers();
+
+            Assert.Empty(context.TriggerStub.BeforeRollbackAsyncInvocations);
+        }
+
+        [Fact]
+        public void RaiseBeforeRollbackTriggers_RaisesOnceOnSimpleAddition()
         {
             using var context = new TestDbContext();
             var session = CreateSession(context);
@@ -125,26 +194,54 @@ namespace EntityFrameworkCore.Triggered.Transactions.Tests
             });
 
             session.DiscoverChanges();
-            await session.RaiseBeforeRollbackTriggers();
+            session.RaiseBeforeRollbackTriggers();
 
             Assert.Equal(1, context.TriggerStub.BeforeRollbackInvocations.Count);
         }
 
+        [Fact]
+        public async Task RaiseBeforeRollbackAsyncTriggers_RaisesOnceOnSimpleAddition()
+        {
+            using var context = new TestDbContext();
+            var session = CreateSession(context);
+
+            context.TestModels.Add(new TestModel {
+                Id = Guid.NewGuid(),
+                Name = "test1"
+            });
+
+            session.DiscoverChanges();
+            await session.RaiseBeforeRollbackAsyncTriggers();
+
+            Assert.Equal(1, context.TriggerStub.BeforeRollbackAsyncInvocations.Count);
+        }
 
         [Fact]
-        public async Task RaiseAfterRollbackTriggers_RaisesNothingOnNoChanges()
+        public void RaiseAfterRollbackTriggers_RaisesNothingOnNoChanges()
         {
             using var context = new TestDbContext();
             var session = CreateSession(context);
 
             session.DiscoverChanges();
-            await session.RaiseAfterRollbackTriggers();
+            session.RaiseAfterRollbackTriggers();
 
             Assert.Empty(context.TriggerStub.AfterRollbackInvocations);
         }
 
         [Fact]
-        public async Task RaiseAfterRollbackTriggers_RaisesOnceOnSimpleAddition()
+        public async Task RaiseAfterRollbackAsyncTriggers_RaisesNothingOnNoChanges()
+        {
+            using var context = new TestDbContext();
+            var session = CreateSession(context);
+
+            session.DiscoverChanges();
+            await session.RaiseAfterRollbackAsyncTriggers();
+
+            Assert.Empty(context.TriggerStub.AfterRollbackAsyncInvocations);
+        }
+
+        [Fact]
+        public void RaiseAfterRollbackTriggers_RaisesOnceOnSimpleAddition()
         {
             using var context = new TestDbContext();
             var session = CreateSession(context);
@@ -155,11 +252,27 @@ namespace EntityFrameworkCore.Triggered.Transactions.Tests
             });
 
             session.DiscoverChanges();
-            await session.RaiseAfterRollbackTriggers();
+            session.RaiseAfterRollbackTriggers();
 
             Assert.Equal(1, context.TriggerStub.AfterRollbackInvocations.Count);
         }
 
+        [Fact]
+        public async Task RaiseAfterRollbackAsyncTriggers_RaisesOnceOnSimpleAddition()
+        {
+            using var context = new TestDbContext();
+            var session = CreateSession(context);
+
+            context.TestModels.Add(new TestModel {
+                Id = Guid.NewGuid(),
+                Name = "test1"
+            });
+
+            session.DiscoverChanges();
+            await session.RaiseAfterRollbackAsyncTriggers();
+
+            Assert.Equal(1, context.TriggerStub.AfterRollbackAsyncInvocations.Count);
+        }
 
         [Fact]
         public void RaiseBeforeCommitStartingTriggers_CallsTriggers()
@@ -167,9 +280,20 @@ namespace EntityFrameworkCore.Triggered.Transactions.Tests
             using var context = new TestDbContext();
             var session = CreateSession(context);
 
-            session.RaiseBeforeCommitStartingTriggers().GetAwaiter().GetResult();
+            session.RaiseBeforeCommitStartingTriggers();
 
             Assert.Equal(1, context.TriggerStub.BeforeCommitStartingInvocationsCount);
+        }
+
+        [Fact]
+        public async Task RaiseBeforeCommitStartingAsyncTriggers_CallsTriggers()
+        {
+            using var context = new TestDbContext();
+            var session = CreateSession(context);
+
+            await session.RaiseBeforeCommitStartingAsyncTriggers();
+
+            Assert.Equal(1, context.TriggerStub.BeforeCommitStartingAsyncInvocationsCount);
         }
 
         [Fact]
@@ -178,9 +302,20 @@ namespace EntityFrameworkCore.Triggered.Transactions.Tests
             using var context = new TestDbContext();
             var session = CreateSession(context);
 
-            session.RaiseBeforeCommitCompletedTriggers().GetAwaiter().GetResult();
+            session.RaiseBeforeCommitCompletedTriggers();
 
             Assert.Equal(1, context.TriggerStub.BeforeCommitCompletedInvocationsCount);
+        }
+
+        [Fact]
+        public async Task RaiseBeforeCommitCompletedAsyncTriggers_CallsTriggers()
+        {
+            using var context = new TestDbContext();
+            var session = CreateSession(context);
+
+            await session.RaiseBeforeCommitCompletedAsyncTriggers();
+
+            Assert.Equal(1, context.TriggerStub.BeforeCommitCompletedAsyncInvocationsCount);
         }
 
         [Fact]
@@ -189,9 +324,20 @@ namespace EntityFrameworkCore.Triggered.Transactions.Tests
             using var context = new TestDbContext();
             var session = CreateSession(context);
 
-            session.RaiseAfterCommitStartingTriggers().GetAwaiter().GetResult();
+            session.RaiseAfterCommitStartingTriggers();
 
             Assert.Equal(1, context.TriggerStub.AfterCommitStartingInvocationsCount);
+        }
+
+        [Fact]
+        public async Task RaiseAfterCommitStartingAsyncTriggers_CallsTriggers()
+        {
+            using var context = new TestDbContext();
+            var session = CreateSession(context);
+
+            await session.RaiseAfterCommitStartingAsyncTriggers();
+
+            Assert.Equal(1, context.TriggerStub.AfterCommitStartingAsyncInvocationsCount);
         }
 
         [Fact]
@@ -200,9 +346,20 @@ namespace EntityFrameworkCore.Triggered.Transactions.Tests
             using var context = new TestDbContext();
             var session = CreateSession(context);
 
-            session.RaiseAfterCommitCompletedTriggers().GetAwaiter().GetResult();
+            session.RaiseAfterCommitCompletedTriggers();
 
             Assert.Equal(1, context.TriggerStub.AfterCommitCompletedInvocationsCount);
+        }
+
+        [Fact]
+        public async Task RaiseAfterCommitCompletedAsyncTrigger_CallsTriggers()
+        {
+            using var context = new TestDbContext();
+            var session = CreateSession(context);
+
+            await session.RaiseAfterCommitCompletedAsyncTriggers();
+
+            Assert.Equal(1, context.TriggerStub.AfterCommitCompletedAsyncInvocationsCount);
         }
     }
 }

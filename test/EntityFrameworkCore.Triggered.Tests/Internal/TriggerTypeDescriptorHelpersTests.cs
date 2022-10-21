@@ -8,15 +8,27 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
     public class TriggerTypeDescriptorHelpersTests
     {
         [Fact]
-        public async Task CreateWeakDelegate_WrapsTargetMethod()
+        public void CreateWeakDelegate_WrapsTargetMethod()
         {
             var triggerStub = new TriggerStub<object>();
             var triggerContextStub = new TriggerContextStub<object>();
             var weakDelegate = TriggerTypeDescriptorHelpers.GetWeakDelegate(typeof(IBeforeSaveTrigger<object>), typeof(object), typeof(IBeforeSaveTrigger<object>).GetMethod("BeforeSave"));
 
-            await weakDelegate(triggerStub, triggerContextStub, default);
+            weakDelegate(triggerStub, triggerContextStub);
 
             Assert.NotEmpty(triggerStub.BeforeSaveInvocations);
+        }
+
+        [Fact]
+        public async Task CreateAsyncWeakDelegate_WrapsTargetMethod()
+        {
+            var triggerStub = new TriggerStub<object>();
+            var triggerContextStub = new TriggerContextStub<object>();
+            var weakDelegate = TriggerTypeDescriptorHelpers.GetAsyncWeakDelegate(typeof(IBeforeSaveAsyncTrigger<object>), typeof(object), typeof(IBeforeSaveAsyncTrigger<object>).GetMethod("BeforeSaveAsync"));
+
+            await weakDelegate(triggerStub, triggerContextStub, default);
+
+            Assert.NotEmpty(triggerStub.BeforeSaveAsyncInvocations);
         }
     }
 }

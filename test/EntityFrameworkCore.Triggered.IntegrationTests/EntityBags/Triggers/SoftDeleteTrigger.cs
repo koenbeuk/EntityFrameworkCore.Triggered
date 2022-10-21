@@ -18,7 +18,7 @@ namespace EntityFrameworkCore.Triggered.IntegrationTests.EntityBags.Triggers
             _dbContext = dbContext;
         }
 
-        public Task BeforeSave(ITriggerContext<User> context, CancellationToken cancellationToken)
+        public void BeforeSave(ITriggerContext<User> context)
         {
             if (context.ChangeType is ChangeType.Deleted)
             {
@@ -27,8 +27,6 @@ namespace EntityFrameworkCore.Triggered.IntegrationTests.EntityBags.Triggers
 
                 _dbContext.Entry(context.Entity).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
             }
-
-            return Task.CompletedTask;
         }
     }
 }

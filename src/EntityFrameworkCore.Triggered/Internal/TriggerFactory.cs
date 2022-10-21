@@ -19,12 +19,15 @@ namespace EntityFrameworkCore.Triggered.Internal
         public IEnumerable<object> Resolve(IServiceProvider serviceProvider, Type triggerType)
         {
             // triggers may be directly registered with our DI container
-            var triggers = serviceProvider.GetServices(triggerType);
-            foreach (var trigger in triggers)
+            if (serviceProvider is not null)
             {
-                if (trigger is not null)
+                var triggers = serviceProvider.GetServices(triggerType);
+                foreach (var trigger in triggers)
                 {
-                    yield return trigger;
+                    if (trigger is not null)
+                    {
+                        yield return trigger;
+                    }
                 }
             }
 
@@ -40,7 +43,7 @@ namespace EntityFrameworkCore.Triggered.Internal
                 {
                     if (triggerServiceFactory is not null)
                     {
-                        yield return ((ITriggerInstanceFactory)triggerServiceFactory).Create(serviceProvider);
+                        yield return ((ITriggerInstanceFactory)triggerServiceFactory).Create(serviceProvider ?? _internalServiceProvider);
                     }
                 }
             }

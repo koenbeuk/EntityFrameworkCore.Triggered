@@ -117,15 +117,11 @@ namespace EntityFrameworkCore.Triggered.Tests
         {
             var subject = CreateSubject(false);
 
-            subject.TriggerStub.BeforeSaveHandler = (_1, _2) => {
-                if (subject.TriggerStub.BeforeSaveInvocations.Count > 1)
+            subject.TriggerStub.BeforeSaveHandler = _ => {
+                if (subject.TriggerStub.BeforeSaveInvocations.Count <= 1)
                 {
-                    return Task.CompletedTask;
+                    subject.SaveChanges();
                 }
-
-                subject.SaveChanges();
-
-                return Task.CompletedTask;
             };
 
             subject.TestModels.Add(new TestModel {
@@ -153,13 +149,11 @@ namespace EntityFrameworkCore.Triggered.Tests
         {
             var subject = CreateSubject(false);
 
-            subject.TriggerStub.BeforeSaveHandler = (_1, _2) => {
-                if (subject.TriggerStub.BeforeSaveInvocations.Count > 1)
+            subject.TriggerStub.BeforeSaveAsyncHandler = async (_, _) => {
+                if (subject.TriggerStub.BeforeSaveInvocations.Count <= 1)
                 {
-                    return Task.CompletedTask;
+                    await subject.SaveChangesAsync();
                 }
-
-                return subject.SaveChangesAsync();
             };
 
             subject.TestModels.Add(new TestModel {

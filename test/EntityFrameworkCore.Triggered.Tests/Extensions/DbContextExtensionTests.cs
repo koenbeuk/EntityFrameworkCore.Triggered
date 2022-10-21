@@ -17,10 +17,9 @@ namespace EntityFrameworkCore.Triggered.Tests.Extensions
         {
             public int BeforeSaveCalls { get; set; }
 
-            public Task BeforeSave(ITriggerContext<TestModel> context, CancellationToken cancellationToken)
+            public void BeforeSave(ITriggerContext<TestModel> context)
             {
                 BeforeSaveCalls += 1;
-                return Task.CompletedTask;
             }
         }
 

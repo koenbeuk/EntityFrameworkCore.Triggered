@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
+using EntityFrameworkCore.Triggered.Internal.Descriptors;
 
 namespace EntityFrameworkCore.Triggered.Internal
 {
@@ -19,14 +18,18 @@ namespace EntityFrameworkCore.Triggered.Internal
             {
                 _priority = triggerPriority.Priority;
             }
+            else
+            {
+                _priority = 0;
+            }
         }
 
         public ITriggerTypeDescriptor TypeDescriptor => _triggerTypeDescriptor;
         public object Trigger => _trigger;
         public int Priority => _priority;
 
-        public Task Invoke(object triggerContext, Exception? exception, CancellationToken cancellationToken)
-            => _triggerTypeDescriptor.Invoke(_trigger, triggerContext, exception, cancellationToken);
+        public void Invoke(object triggerContext, Exception? exception)
+            => _triggerTypeDescriptor.Invoke(_trigger, triggerContext, exception);
 
     }
 }

@@ -15,7 +15,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
     {
         class SampleTrigger : IBeforeSaveTrigger<object>
         {
-            public Task BeforeSave(ITriggerContext<object> context, CancellationToken cancellationToken) => throw new NotImplementedException();
+            public void BeforeSave(ITriggerContext<object> context) => throw new NotImplementedException();
         }
 
         class SampleTrigger2 : IBeforeSaveTrigger<object>
@@ -27,7 +27,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
 
             public TriggerFactory TriggerFactory { get; }
 
-            public Task BeforeSave(ITriggerContext<object> context, CancellationToken cancellationToken) => throw new NotImplementedException();
+            public void BeforeSave(ITriggerContext<object> context) => throw new NotImplementedException();
         }
 
         class SampleTrigger3<TDbContext> : IBeforeSaveTrigger<object>
@@ -40,7 +40,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
 
             public TDbContext DbContext { get; }
 
-            public Task BeforeSave(ITriggerContext<object> context, CancellationToken cancellationToken) => throw new NotImplementedException();
+            public void BeforeSave(ITriggerContext<object> context) => throw new NotImplementedException();
         }
 
         public class SampleDbContext3 : DbContext

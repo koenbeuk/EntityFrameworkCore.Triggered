@@ -96,7 +96,7 @@ namespace Microsoft.Extensions.DependencyInjection
                         registered = true;
                     }
 
-                    services.TryAdd(new ServiceDescriptor(triggerType, sp => sp.GetRequiredService(assemblyType), ServiceLifetime.Transient));
+                    services.Add(new ServiceDescriptor(triggerType, sp => sp.GetRequiredService(assemblyType), ServiceLifetime.Transient));
                 }
             }
 

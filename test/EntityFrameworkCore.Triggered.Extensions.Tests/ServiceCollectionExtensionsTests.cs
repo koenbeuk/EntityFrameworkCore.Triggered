@@ -86,7 +86,7 @@ namespace EntityFrameworkCore.Triggered.Extensions.Tests
             var serviceCollection = new ServiceCollection()
                 .AddAssemblyTriggers(typeof(ServiceCollectionExtensionsTests).Assembly);
 
-            Assert.Equal(8, serviceCollection.Count);
+            Assert.Equal(16, serviceCollection.Count);
         }
 
         protected async Task SaveChanges_TriggeredAddedThroughDI_Template(Func<IServiceCollection, IServiceCollection> transform)
@@ -108,18 +108,29 @@ namespace EntityFrameworkCore.Triggered.Extensions.Tests
             await dbContext.SaveChangesAsync();
 
             var trigger = serviceProvider.GetRequiredService<SampleTrigger>();
+            var triggerClone = serviceProvider.GetRequiredService<SampleTriggerClone>();
 
             Assert.Equal(1, trigger.BeforeSaveStartingTriggerCalls);
             Assert.Equal(1, trigger.BeforeSaveCalls);
             Assert.Equal(1, trigger.BeforeSaveAsyncCalls);
             Assert.Equal(1, trigger.AfterSaveCalls);
             Assert.Equal(1, trigger.AfterSaveAsyncCalls);
+
+            Assert.Equal(1, triggerClone.BeforeSaveStartingTriggerCalls);
+            Assert.Equal(1, triggerClone.BeforeSaveCalls);
+            Assert.Equal(1, triggerClone.BeforeSaveAsyncCalls);
+            Assert.Equal(1, triggerClone.AfterSaveCalls);
+            Assert.Equal(1, triggerClone.AfterSaveAsyncCalls);
         }
 
         [Fact]
         public Task SaveChanges_ExplicitlyAddedTriggerThroughDI_RaisesAllTriggerTypes()
-            => SaveChanges_TriggeredAddedThroughDI_Template(x => x.AddTrigger<SampleTrigger>());
-
+            => SaveChanges_TriggeredAddedThroughDI_Template(x => {
+                x.AddTrigger<SampleTrigger>();
+                x.AddTrigger<SampleTriggerClone>();
+                
+                return x;
+            });
 
         [Fact]
         public Task SaveChanges_DiscoveredTriggerThroughDI_RaisesAllTriggerTypes()
@@ -141,9 +152,10 @@ namespace EntityFrameworkCore.Triggered.Extensions.Tests
         {
             var serviceCollection = new ServiceCollection()
                 .AddTrigger<SampleTrigger>(lifetime)
+                .AddTrigger<SampleTriggerClone>(lifetime)
                 .AddTrigger<Trigger<object>>(lifetime);
 
-            Assert.Equal(15, serviceCollection.Count);
+            Assert.Equal(23, serviceCollection.Count);
         }
 
         [Theory]
@@ -152,9 +164,10 @@ namespace EntityFrameworkCore.Triggered.Extensions.Tests
         {
             var serviceCollection = new ServiceCollection()
                 .AddTrigger<SampleTrigger>(lifetime)
+                .AddTrigger<SampleTriggerClone>(lifetime)
                 .AddAssemblyTriggers(typeof(Trigger<object>).Assembly);
 
-            Assert.Equal(15, serviceCollection.Count);
+            Assert.Equal(23, serviceCollection.Count);
         }
 
         [Fact]
@@ -228,9 +241,10 @@ namespace EntityFrameworkCore.Triggered.Extensions.Tests
         {
             var serviceCollection = new ServiceCollection()
                 .AddSingleton<SampleTrigger>()
+                .AddSingleton<SampleTriggerClone>()
                 .AddAssemblyTriggers();
 
-            Assert.Equal(8, serviceCollection.Count);
+            Assert.Equal(16, serviceCollection.Count);
         }
     }
 }

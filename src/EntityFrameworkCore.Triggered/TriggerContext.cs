@@ -7,23 +7,23 @@ namespace EntityFrameworkCore.Triggered
     public class TriggerContext<TEntity> : ITriggerContext<TEntity>
         where TEntity : class
     {
-        readonly TEntity _entity;
+        readonly EntityEntry _entityEntry;
         readonly ChangeType _type;
         readonly PropertyValues? _originalValues;
         readonly EntityBagStateManager _entityBagStateManager;
 
         TEntity? _unmodifiedEntity;
 
-        public TriggerContext(object entity, PropertyValues? originalValues, ChangeType changeType, EntityBagStateManager entityBagStateManager)
+        public TriggerContext(EntityEntry entityEntry, PropertyValues? originalValues, ChangeType changeType, EntityBagStateManager entityBagStateManager)
         {
-            _entity = (TEntity)entity;
+            _entityEntry = entityEntry;
             _originalValues = originalValues;
             _type = changeType;
             _entityBagStateManager = entityBagStateManager;
         }
 
         public ChangeType ChangeType => _type;
-        public TEntity Entity => _entity;
+        public TEntity Entity => (TEntity)_entityEntry.Entity;
         public TEntity? UnmodifiedEntity
         {
             get
@@ -44,6 +44,8 @@ namespace EntityFrameworkCore.Triggered
             }
         }
 
-        public IDictionary<object, object> Items => _entityBagStateManager.GetForEntity(_entity);
+        public IDictionary<object, object> Items => _entityBagStateManager.GetForEntity(_entityEntry.Entity);
+
+        public EntityEntry<TEntity> Entry => (EntityEntry<TEntity>)_entityEntry;
     }
 }

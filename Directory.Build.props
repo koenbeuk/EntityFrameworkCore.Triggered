@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <LangVersion>9.0</LangVersion>
+    <LangVersion>11.0</LangVersion>
     <Nullable>enable</Nullable>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <Configurations>Debug;Release</Configurations>

@@ -31,7 +31,7 @@ class StudentSignupTrigger  : IBeforeSaveTrigger<Student> {
         _applicationDbContext = applicationDbContext;
     }
 
-    public Task BeforeSave(ITriggerContext<Student> context, CancellationToken cancellationToken) {   
+    public void BeforeSave(ITriggerContext<Student> context) {   
         if (context.ChangeType == ChangeType.Added){
             _applicationDbContext.Emails.Add(new Email {
                 Student = context.Entity, 
@@ -39,12 +39,10 @@ class StudentSignupTrigger  : IBeforeSaveTrigger<Student> {
                 Body = "...."
             });
         } 
-
-        return Task.CompletedTask;
     }
 }
 
-class SendEmailTrigger : IAfterSaveTrigger<Email> {
+class SendEmailTrigger : IAfterSaveAsyncTrigger<Email> {
     readonly IEmailService _emailService;
     readonly ApplicationDbContext _applicationDbContext;
     public StudentTrigger (ApplicationDbContext applicationDbContext, IEmailService emailservice) {
@@ -54,10 +52,10 @@ class SendEmailTrigger : IAfterSaveTrigger<Email> {
 
     public async Task AfterSave(ITriggerContext<Student> context, CancellationToken cancellationToken) {
         if (context.Entity.SentDate == null && context.ChangeType != ChangeType.Deleted) {
-            await _emailService.Send(context.Enity);
+            await _emailService.Send(context.Enity, cancellationToken);
             context.Entity.SentDate = DateTime.Now;
 
-            await _applicationContext.SaveChangesAsync();
+            await _applicationContext.SaveChangesAsync(cancellationToken);
         }
     }
 }
@@ -171,16 +169,14 @@ public BulkReportTrigger : IAfterSaveTrigger<Email>, IAfterSaveCompletedTrigger 
     private List<string> _emailAddresses = new List<string>();
     
     // This may be invoked multiple times within the same SaveChanges call if there are multiple emails
-    public Task AfterSave(ITriggerContext<Email> context, CancellationToken cancellationToken) { 
+    public void AfterSave(ITriggerContext<Email> context) { 
         if (context.ChangeType == ChangeType.Added) { 
             this._emailAddresses.Add(context.Address);
-            return Task.CompletedTask;
         }
     }
     
-    public Task AfterSaveCompleted(CancellationToken cancellationToken) {
+    public void AfterSaveCompleted() {
         Console.WriteLine($"We've sent {_emailAddresses.Count()} emails to {_emailAddresses.Distinct().Count()}" distinct email addresses");
-        return Task.CompletedTask;
     }
 }
 ```
@@ -197,14 +193,18 @@ var triggerSession = triggerService.CreateSession(context); // A trigger session
 
 try {
     await context.SaveChangesAsync();
-    await triggerSession.RaiseBeforeCommitTriggers();    
+    triggerSession.RaiseBeforeCommitTriggers();    
+    await triggerSession.RaiseBeforeCommitAsyncTriggers();    
     await context.CommitAsync();
-    await triggerSession.RaiseAfterCommitTriggers();
+    triggerSession.RaiseAfterCommitTriggers();
+    await triggerSession.RaiseAfterCommitAsyncTriggers();
 }
 catch {
-    await triggerSession.RaiseBeforeRollbackTriggers();
+    triggerSession.RaiseBeforeRollbackTriggers();
+    await triggerSession.RaiseBeforeRollbackAsyncTriggers();
     await context.RollbackAsync();
-    await triggerSession.RaiseAfterRollbackTriggers();	
+    triggerSession.RaiseAfterRollbackTriggers();	
+    await triggerSession.RaiseAfterRollbackAsyncTriggers();	
     throw;
 }
 ```
@@ -214,8 +214,4 @@ In this example we were not able to inherit from TriggeredDbContext since we wan
 By default we offer 3 trigger types: `IBeforeSaveTrigger`, `IAfterSaveTrigger` and `IAfterSaveFailedTrigger`. These will cover most cases. In addition we offer `IRaiseBeforeCommitTrigger` and `IRaiseAfterCommitTrigger` as an extension to further enhance your control of when triggers should run. We also offer support for custom triggers. Let's say we want to react to specific events happening in your context. We can do so by creating a new interface `IThisThingJustHappenedTrigger` and implementing an extension method for `ITriggerSession` to invoke triggers of that type. Please take a look at how [Transactional triggers](https://github.com/koenbeuk/EntityFrameworkCore.Triggered/tree/master/src/EntityFrameworkCore.Triggered.Transactions) are implemented as an example.
 
 ### Async triggers
-Async triggers are fully supported, though you should be aware that if they are fired as a result of a call to the synchronous `SaveChanges` on your DbContext, the triggers will be invoked and the results waited for by blocking the caller thread as discussed [here](https://github.com/koenbeuk/EntityFrameworkCore.Triggered/issues/127). This is known as the sync-over-async problem which can result in deadlocks. It's recommended to use `SaveChangesAsync` to avoid the potential for deadlocks, which is also best practice anyway for an operation that involves network/file access as is the case with an EF Core read/write to the database.
-
-### Similar products
-- [Ramses](https://github.com/JValck/Ramses): Lifecycle hooks for EF Core. A simple yet effective way of reacting to changes. Great for situations where you simply want to make sure that a property is set before saving to the database. Limited though in features as there is no dependency injection, no async support, no extensibility model and lifecycle hooks need to be implemented on the entity type itself.
-- [EntityFramework.Triggers](https://github.com/NickStrupat/EntityFramework.Triggers). Add triggers to your entities with insert, update, and delete events. There are three events for each: before, after, and upon failure. A fine alternative to EntityFrameworkCore.Triggered. It has been around for some time and has support for EF6 and boast a decent community. There are plenty of trigger types to opt into including the option to cancel SaveChanges from within a trigger. A big drawback however is that it does not support cascading triggers so that triggers can never be relied on to enforce a domain constraint.
+All standard trigger types offer asynchronous counterparts. Note that an async trigger will only be fired when `SaveChangesAsync` is used. Synchronous triggers are always fired, regardless of whether `SaveChanges` or `SaveChangesAsync` is used.

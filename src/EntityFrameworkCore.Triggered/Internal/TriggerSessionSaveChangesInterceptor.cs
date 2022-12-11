@@ -80,13 +80,18 @@ namespace EntityFrameworkCore.Triggered.Internal
 
             try
             {
-
                 eventData.Context.ChangeTracker.AutoDetectChangesEnabled = false;
 
                 _triggerSession.RaiseBeforeSaveStartingTriggers();
                 _triggerSession.RaiseBeforeSaveTriggers();
                 _triggerSession.CaptureDiscoveredChanges();
                 _triggerSession.RaiseBeforeSaveCompletedTriggers();
+            }
+            catch
+            {
+                // We're aborting the SaveChanges call, delist the trigger session now
+                DelistTriggerSession(eventData);
+                throw;
             }
             finally
             {
@@ -117,6 +122,12 @@ namespace EntityFrameworkCore.Triggered.Internal
 
                 _triggerSession.RaiseBeforeSaveCompletedTriggers();
                 await _triggerSession.RaiseBeforeSaveCompletedAsyncTriggers(cancellationToken).ConfigureAwait(false);
+            }
+            catch
+            {
+                // We're aborting the SaveChanges call, delist the trigger session now
+                DelistTriggerSession(eventData);
+                throw;
             }
             finally
             {

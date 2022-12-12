@@ -6,7 +6,8 @@
     <Nullable>enable</Nullable>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <Configurations>Debug;Release</Configurations>
-  </PropertyGroup>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+	</PropertyGroup>
 
   <PropertyGroup>
     <Description>Triggers for EF Core. Respond to changes in your ApplicationDbContext before and after they are committed to the database</Description>
@@ -22,5 +23,9 @@
     <EFCorePackageVersion>6.0.0</EFCorePackageVersion>
     <MicrosoftExtensionsVersion>6.0.0</MicrosoftExtensionsVersion>
   </PropertyGroup>
+
+	<ItemGroup>
+		<None Include="$(SolutionDir)\README.md" Pack="true" PackagePath="\"></None>
+	</ItemGroup>
 
 </Project>

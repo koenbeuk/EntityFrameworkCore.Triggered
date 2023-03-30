@@ -49,9 +49,10 @@ namespace EntityFrameworkCore.Triggered.IntegrationTests.OwnedEntities
 
     class OwneeTrigger : IBeforeSaveTrigger<Ownee>
     {
-        public void BeforeSave(ITriggerContext<Ownee> context)
+        public Task BeforeSave(ITriggerContext<Ownee> context, CancellationToken cancellationToken)
         {
             Calls++;
+            return Task.CompletedTask;
         }
 
         public int Calls { get; set; }
@@ -59,9 +60,10 @@ namespace EntityFrameworkCore.Triggered.IntegrationTests.OwnedEntities
 
     class OwnerTrigger : IBeforeSaveTrigger<Owner>
     {
-        public void BeforeSave(ITriggerContext<Owner> context)
+        public Task BeforeSave(ITriggerContext<Owner> context, CancellationToken cancellationToken)
         {
             Calls++;
+            return Task.CompletedTask;
         }
 
         public int Calls { get; set; }

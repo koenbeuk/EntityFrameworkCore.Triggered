@@ -214,10 +214,6 @@ Async triggers are fully supported, though you should be aware that if they are 
 
 > Starting from v4 (currently in preview), we offer both synchronous and asynchronous triggers.
 
-### Trigger extensions
-The [EntityFrameworkCore.Triggered.Extensions](https://www.nuget.org/packages/EntityFrameworkCore.Triggered.Extensions/) package gives you additional 
-
-
 ### Versions
 - [V4-preview](https://www.nuget.org/packages/EntityFrameworkCore.Triggered/4.0.0) is an evolution of this library with breaking changes. This is still in production and not ready for production use.
 - [V3](https://www.nuget.org/packages/EntityFrameworkCore.Triggered/3.2.2) is available for those targeting EF Core 6 or later and is the current stable offering.

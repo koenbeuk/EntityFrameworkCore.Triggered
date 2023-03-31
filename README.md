@@ -18,10 +18,6 @@ Triggers for EF Core. Respond to changes in your DbContext before and after they
 4. View our [samples](https://github.com/koenbeuk/EntityFrameworkCore.Triggered/tree/master/samples) and [more samples](https://github.com/koenbeuk/EntityFrameworkCore.Triggered.Samples) and [a sample application](https://github.com/koenbeuk/EntityFrameworkCore.BookStoreSampleApp)
 5. Check out our [wiki](https://github.com/koenbeuk/EntityFrameworkCore.Triggered/wiki) for tips and tricks on getting started and being successful.
 
-> Since EntityFrameworkCore.Triggered 2.0, triggers will be invoked automatically, however this requires EF Core 5.0. If you're stuck with EF Core 3.1 then you can use [EntityFrameworkCore.Triggered V1](https://www.nuget.org/packages/EntityFrameworkCore.Triggered/1.4.0). This requires you to inherit from `TriggeredDbContext` or handle manual management of trigger sessions.
-
-> [EntityFrameworkCore.Triggered V3](https://www.nuget.org/packages/EntityFrameworkCore.Triggered/3.0.0) is now available for those targeting EF Core 6 or later
-
 ### Example
 ```csharp
 class StudentSignupTrigger  : IBeforeSaveTrigger<Student> {
@@ -216,6 +212,9 @@ By default we offer 3 trigger types: `IBeforeSaveTrigger`, `IAfterSaveTrigger` a
 ### Async triggers
 Async triggers are fully supported, though you should be aware that if they are fired as a result of a call to the synchronous `SaveChanges` on your DbContext, the triggers will be invoked and the results waited for by blocking the caller thread as discussed [here](https://github.com/koenbeuk/EntityFrameworkCore.Triggered/issues/127). This is known as the sync-over-async problem which can result in deadlocks. It's recommended to use `SaveChangesAsync` to avoid the potential for deadlocks, which is also best practice anyway for an operation that involves network/file access as is the case with an EF Core read/write to the database.
 
-### Similar products
-- [Ramses](https://github.com/JValck/Ramses): Lifecycle hooks for EF Core. A simple yet effective way of reacting to changes. Great for situations where you simply want to make sure that a property is set before saving to the database. Limited though in features as there is no dependency injection, no async support, no extensibility model and lifecycle hooks need to be implemented on the entity type itself.
-- [EntityFramework.Triggers](https://github.com/NickStrupat/EntityFramework.Triggers). Add triggers to your entities with insert, update, and delete events. There are three events for each: before, after, and upon failure. A fine alternative to EntityFrameworkCore.Triggered. It has been around for some time and has support for EF6 and boast a decent community. There are plenty of trigger types to opt into including the option to cancel SaveChanges from within a trigger. A big drawback however is that it does not support cascading triggers so that triggers can never be relied on to enforce a domain constraint.
+> Starting from v4 (currently in preview), we offer both synchronous and asynchronous triggers.
+
+### Versions
+- [V4-preview](https://www.nuget.org/packages/EntityFrameworkCore.Triggered/4.0.0) is an evolution of this library with breaking changes. This is still in production and not ready for production use.
+- [V3](https://www.nuget.org/packages/EntityFrameworkCore.Triggered/3.2.2) is available for those targeting EF Core 6 or later and is the current stable offering.
+- [V2](https://www.nuget.org/packages/EntityFrameworkCore.Triggered/1.4.0) Targets EF Core 3.1. This requires you to inherit from `TriggeredDbContext` or handle manual management of trigger sessions.

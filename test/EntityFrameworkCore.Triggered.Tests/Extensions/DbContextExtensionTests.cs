@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
 using EntityFrameworkCore.Triggered.Extensions;
 using Microsoft.EntityFrameworkCore;
@@ -17,10 +16,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Extensions
         {
             public int BeforeSaveCalls { get; set; }
 
-            public void BeforeSave(ITriggerContext<TestModel> context)
-            {
-                BeforeSaveCalls += 1;
-            }
+            public void BeforeSave(ITriggerContext<TestModel> context) => BeforeSaveCalls += 1;
         }
 
         class TestDbContext : DbContext

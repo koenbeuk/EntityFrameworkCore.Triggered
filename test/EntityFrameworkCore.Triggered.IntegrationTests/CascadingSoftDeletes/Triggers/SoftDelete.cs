@@ -4,14 +4,9 @@ using EntityFrameworkCore.Triggered.IntegrationTests.CascadingSoftDeletes.Models
 
 namespace EntityFrameworkCore.Triggered.IntegrationTests.CascadingSoftDeletes.Triggers
 {
-    public class SoftDelete : Trigger<Branch>
+    public class SoftDelete(ApplicationDbContext applicationDbContext) : Trigger<Branch>
     {
-        readonly ApplicationDbContext _applicationDbContext;
-
-        public SoftDelete(ApplicationDbContext applicationDbContext)
-        {
-            _applicationDbContext = applicationDbContext;
-        }
+        readonly ApplicationDbContext _applicationDbContext = applicationDbContext;
 
         public override void BeforeSave(ITriggerContext<Branch> context)
         {

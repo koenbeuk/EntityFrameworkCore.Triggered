@@ -8,15 +8,16 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
 {
     public partial class TriggerInstanceFactoryTests
     {
-        class SampleDbContext : DbContext
+        class SampleDbContext(DbContextOptions options) : DbContext(options)
         {
-            public SampleDbContext(DbContextOptions options) : base(options)
-            {
-            }
         }
 
         class SampleTrigger1 { }
-        class SampleTrigger2 { public SampleTrigger2(SampleDbContext sampleDbContext) { } }
+#pragma warning disable CS9113 // Parameter is unread.
+        class SampleTrigger2(TriggerInstanceFactoryTests.SampleDbContext sampleDbContext)
+#pragma warning restore CS9113 // Parameter is unread.
+        {
+        }
 
         [Scenario]
         public void TriggerInstanceFactoriesBehaviorTests(ScenarioContext scenario)

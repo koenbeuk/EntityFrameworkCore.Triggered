@@ -6,14 +6,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace StudentManager.Triggers.Courses
 {
-    public class AutoSignupStudents : IBeforeSaveAsyncTrigger<Course>
+    public class AutoSignupStudents(ApplicationDbContext applicationContext) : IBeforeSaveAsyncTrigger<Course>
     {
-        readonly ApplicationDbContext _applicationContext;
-
-        public AutoSignupStudents(ApplicationDbContext applicationContext)
-        {
-            _applicationContext = applicationContext;
-        }
+        readonly ApplicationDbContext _applicationContext = applicationContext;
 
         public async Task BeforeSaveAsync(ITriggerContext<Course> context, CancellationToken cancellationToken)
         {

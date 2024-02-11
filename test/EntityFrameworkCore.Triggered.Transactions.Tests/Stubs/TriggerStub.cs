@@ -5,7 +5,7 @@ using EntityFrameworkCore.Triggered.Transactions.Lifecycles;
 
 namespace EntityFrameworkCore.Triggered.Transactions.Tests.Stubs
 {
-    public class TriggerStub<TEntity> : 
+    public class TriggerStub<TEntity> :
         IBeforeCommitTrigger<TEntity>,
         IBeforeCommitAsyncTrigger<TEntity>,
         IAfterCommitTrigger<TEntity>,
@@ -34,19 +34,16 @@ namespace EntityFrameworkCore.Triggered.Transactions.Tests.Stubs
         public int AfterCommitCompletedInvocationsCount { get; set; }
         public int AfterCommitCompletedAsyncInvocationsCount { get; set; }
 
-        public ICollection<ITriggerContext<TEntity>> BeforeCommitInvocations { get; } = new List<ITriggerContext<TEntity>>();
-        public ICollection<ITriggerContext<TEntity>> BeforeCommitAsyncInvocations { get; } = new List<ITriggerContext<TEntity>>();
-        public ICollection<ITriggerContext<TEntity>> AfterCommitInvocations { get; } = new List<ITriggerContext<TEntity>>();
-        public ICollection<ITriggerContext<TEntity>> AfterCommitAsyncInvocations { get; } = new List<ITriggerContext<TEntity>>();
-        public ICollection<ITriggerContext<TEntity>> BeforeRollbackInvocations { get; } = new List<ITriggerContext<TEntity>>();
-        public ICollection<ITriggerContext<TEntity>> BeforeRollbackAsyncInvocations { get; } = new List<ITriggerContext<TEntity>>();
-        public ICollection<ITriggerContext<TEntity>> AfterRollbackInvocations { get; } = new List<ITriggerContext<TEntity>>();
-        public ICollection<ITriggerContext<TEntity>> AfterRollbackAsyncInvocations { get; } = new List<ITriggerContext<TEntity>>();
+        public ICollection<ITriggerContext<TEntity>> BeforeCommitInvocations { get; } = [];
+        public ICollection<ITriggerContext<TEntity>> BeforeCommitAsyncInvocations { get; } = [];
+        public ICollection<ITriggerContext<TEntity>> AfterCommitInvocations { get; } = [];
+        public ICollection<ITriggerContext<TEntity>> AfterCommitAsyncInvocations { get; } = [];
+        public ICollection<ITriggerContext<TEntity>> BeforeRollbackInvocations { get; } = [];
+        public ICollection<ITriggerContext<TEntity>> BeforeRollbackAsyncInvocations { get; } = [];
+        public ICollection<ITriggerContext<TEntity>> AfterRollbackInvocations { get; } = [];
+        public ICollection<ITriggerContext<TEntity>> AfterRollbackAsyncInvocations { get; } = [];
 
-        public void BeforeCommitStarting()
-        {
-            BeforeCommitStartingInvocationsCount++;
-        }
+        public void BeforeCommitStarting() => BeforeCommitStartingInvocationsCount++;
 
         public Task BeforeCommitStartingAsync(CancellationToken cancellationToken)
         {
@@ -54,10 +51,7 @@ namespace EntityFrameworkCore.Triggered.Transactions.Tests.Stubs
             return Task.CompletedTask;
         }
 
-        public void BeforeCommitCompleted()
-        {
-            BeforeCommitCompletedInvocationsCount++;
-        }
+        public void BeforeCommitCompleted() => BeforeCommitCompletedInvocationsCount++;
 
         public Task BeforeCommitCompletedAsync(CancellationToken cancellationToken)
         {
@@ -65,10 +59,7 @@ namespace EntityFrameworkCore.Triggered.Transactions.Tests.Stubs
             return Task.CompletedTask;
         }
 
-        public void AfterCommitStarting()
-        {
-            AfterCommitStartingInvocationsCount++;
-        }
+        public void AfterCommitStarting() => AfterCommitStartingInvocationsCount++;
 
         public Task AfterCommitStartingAsync(CancellationToken cancellationToken)
         {
@@ -76,10 +67,7 @@ namespace EntityFrameworkCore.Triggered.Transactions.Tests.Stubs
             return Task.CompletedTask;
         }
 
-        public void AfterCommitCompleted()
-        {
-            AfterCommitCompletedInvocationsCount++;
-        }
+        public void AfterCommitCompleted() => AfterCommitCompletedInvocationsCount++;
 
         public Task AfterCommitCompletedAsync(CancellationToken cancellationToken)
         {
@@ -87,10 +75,7 @@ namespace EntityFrameworkCore.Triggered.Transactions.Tests.Stubs
             return Task.CompletedTask;
         }
 
-        public void BeforeCommit(ITriggerContext<TEntity> context)
-        {
-            BeforeCommitInvocations.Add(context);
-        }
+        public void BeforeCommit(ITriggerContext<TEntity> context) => BeforeCommitInvocations.Add(context);
 
         public Task BeforeCommitAsync(ITriggerContext<TEntity> context, CancellationToken cancellationToken)
         {
@@ -98,10 +83,7 @@ namespace EntityFrameworkCore.Triggered.Transactions.Tests.Stubs
             return Task.CompletedTask;
         }
 
-        public void AfterCommit(ITriggerContext<TEntity> context)
-        {
-            AfterCommitInvocations.Add(context);
-        }
+        public void AfterCommit(ITriggerContext<TEntity> context) => AfterCommitInvocations.Add(context);
 
         public Task AfterCommitAsync(ITriggerContext<TEntity> context, CancellationToken cancellationToken)
         {
@@ -109,10 +91,7 @@ namespace EntityFrameworkCore.Triggered.Transactions.Tests.Stubs
             return Task.CompletedTask;
         }
 
-        public void BeforeRollback(ITriggerContext<TEntity> context)
-        {
-            BeforeRollbackInvocations.Add(context);
-        }
+        public void BeforeRollback(ITriggerContext<TEntity> context) => BeforeRollbackInvocations.Add(context);
 
         public Task BeforeRollbackAsync(ITriggerContext<TEntity> context, CancellationToken cancellationToken)
         {
@@ -120,10 +99,7 @@ namespace EntityFrameworkCore.Triggered.Transactions.Tests.Stubs
             return Task.CompletedTask;
         }
 
-        public void AfterRollback(ITriggerContext<TEntity> context)
-        {
-            AfterRollbackInvocations.Add(context);
-        }
+        public void AfterRollback(ITriggerContext<TEntity> context) => AfterRollbackInvocations.Add(context);
 
         public Task AfterRollbackAsync(ITriggerContext<TEntity> context, CancellationToken cancellationToken)
         {

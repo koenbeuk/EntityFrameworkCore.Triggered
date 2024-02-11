@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using EntityFrameworkCore.Triggered.Internal;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
@@ -18,27 +16,17 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
             public void BeforeSave(ITriggerContext<object> context) => throw new NotImplementedException();
         }
 
-        class SampleTrigger2 : IBeforeSaveTrigger<object>
+        class SampleTrigger2(TriggerFactory triggerFactory) : IBeforeSaveTrigger<object>
         {
-            public SampleTrigger2(TriggerFactory triggerFactory)
-            {
-                TriggerFactory = triggerFactory;
-            }
-
-            public TriggerFactory TriggerFactory { get; }
+            public TriggerFactory TriggerFactory { get; } = triggerFactory;
 
             public void BeforeSave(ITriggerContext<object> context) => throw new NotImplementedException();
         }
 
-        class SampleTrigger3<TDbContext> : IBeforeSaveTrigger<object>
+        class SampleTrigger3<TDbContext>(TDbContext dbContext) : IBeforeSaveTrigger<object>
             where TDbContext : DbContext
         {
-            public SampleTrigger3(TDbContext dbContext)
-            {
-                DbContext = dbContext;
-            }
-
-            public TDbContext DbContext { get; }
+            public TDbContext DbContext { get; } = dbContext;
 
             public void BeforeSave(ITriggerContext<object> context) => throw new NotImplementedException();
         }

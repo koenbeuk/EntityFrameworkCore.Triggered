@@ -19,10 +19,7 @@ namespace Microsoft.EntityFrameworkCore
 
         public static TriggersContextOptionsBuilder AddAssemblyTriggers(this TriggersContextOptionsBuilder builder, ServiceLifetime lifetime, params Assembly[] assemblies)
         {
-            if (assemblies is null)
-            {
-                throw new ArgumentNullException(nameof(assemblies));
-            }
+            ArgumentNullException.ThrowIfNull(assemblies);
 
             var assemblyTypes = assemblies
                 .SelectMany(x => x.GetTypes())

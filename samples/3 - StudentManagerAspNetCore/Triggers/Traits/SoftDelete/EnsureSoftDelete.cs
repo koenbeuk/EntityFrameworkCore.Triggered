@@ -1,19 +1,12 @@
 ﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
 using EntityFrameworkCore.Triggered;
 using StudentManager.Traits;
 
 namespace StudentManager.Triggers.Traits.SoftDelete
 {
-    class EnsureSoftDelete : IBeforeSaveTrigger<ISoftDelete>
+    class EnsureSoftDelete(ApplicationDbContext applicationContext) : IBeforeSaveTrigger<ISoftDelete>
     {
-        readonly ApplicationDbContext _applicationContext;
-
-        public EnsureSoftDelete(ApplicationDbContext applicationContext)
-        {
-            _applicationContext = applicationContext;
-        }
+        readonly ApplicationDbContext _applicationContext = applicationContext;
 
         public void BeforeSave(ITriggerContext<ISoftDelete> context)
         {

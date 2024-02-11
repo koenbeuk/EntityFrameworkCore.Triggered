@@ -7,15 +7,9 @@ namespace EntityFrameworkCore.Triggered.Internal
     {
         public int Compare(TriggerDescriptor? x, TriggerDescriptor? y)
         {
-            if (x is null)
-            {
-                throw new ArgumentNullException(nameof(x));
-            }
+            ArgumentNullException.ThrowIfNull(x);
 
-            if (y is null)
-            {
-                throw new ArgumentNullException(nameof(y));
-            }
+            ArgumentNullException.ThrowIfNull(y);
 
             return x.Priority - y.Priority;
         }
@@ -23,15 +17,9 @@ namespace EntityFrameworkCore.Triggered.Internal
 
         public int Compare(AsyncTriggerDescriptor? x, AsyncTriggerDescriptor? y)
         {
-            if (x is null)
-            {
-                throw new ArgumentNullException(nameof(x));
-            }
+            ArgumentNullException.ThrowIfNull(x);
 
-            if (y is null)
-            {
-                throw new ArgumentNullException(nameof(y));
-            }
+            ArgumentNullException.ThrowIfNull(y);
 
             return x.Priority - y.Priority;
         }

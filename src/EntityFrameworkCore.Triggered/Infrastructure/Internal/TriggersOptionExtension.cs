@@ -14,22 +14,16 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
 {
     public class TriggersOptionExtension : IDbContextOptionsExtension
     {
-        sealed class ExtensionInfo : DbContextOptionsExtensionInfo
+        sealed class ExtensionInfo(IDbContextOptionsExtension extension) : DbContextOptionsExtensionInfo(extension)
         {
             private string? _logFragment;
-            public ExtensionInfo(IDbContextOptionsExtension extension) : base(extension)
-            {
-            }
 
             public override bool IsDatabaseProvider => false;
             public override string LogFragment
             {
                 get
                 {
-                    if (_logFragment == null)
-                    {
-                        _logFragment = string.Empty;
-                    }
+                    _logFragment ??= string.Empty;
 
                     return _logFragment;
                 }
@@ -39,10 +33,7 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
 
             public override void PopulateDebugInfo(IDictionary<string, string> debugInfo)
             {
-                if (debugInfo == null)
-                {
-                    throw new ArgumentNullException(nameof(debugInfo));
-                }
+                ArgumentNullException.ThrowIfNull(debugInfo);
 
                 debugInfo["Triggers:TriggersCount"] = (Extension._triggers?.Count() ?? 0).ToString();
                 debugInfo["Triggers:TriggerTypesCount"] = (Extension._triggerTypes?.Count() ?? 0).ToString();
@@ -83,8 +74,8 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
 
             public override bool ShouldUseSameServiceProvider(DbContextOptionsExtensionInfo other)
                 => other is ExtensionInfo otherInfo
-                    && Enumerable.SequenceEqual(Extension._triggers ?? Enumerable.Empty<ValueTuple<object, ServiceLifetime>>(), otherInfo.Extension._triggers ?? Enumerable.Empty<ValueTuple<object, ServiceLifetime>>())
-                    && Enumerable.SequenceEqual(Extension._triggerTypes ?? Enumerable.Empty<Type>(), otherInfo.Extension._triggerTypes ?? Enumerable.Empty<Type>())
+                    && Enumerable.SequenceEqual(Extension._triggers ?? [], otherInfo.Extension._triggers ?? [])
+                    && Enumerable.SequenceEqual(Extension._triggerTypes ?? [], otherInfo.Extension._triggerTypes ?? [])
                     && Extension._maxCascadeCycles == otherInfo.Extension._maxCascadeCycles
                     && Extension._cascadeBehavior == otherInfo.Extension._cascadeBehavior
                     && Extension._serviceProviderTransform == otherInfo.Extension._serviceProviderTransform;
@@ -99,7 +90,7 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
 
         public TriggersOptionExtension()
         {
-            _triggerTypes = new[] {
+            _triggerTypes = [
                 typeof(IBeforeSaveTrigger<>),
                 typeof(IBeforeSaveAsyncTrigger<>),
                 typeof(IAfterSaveTrigger<>),
@@ -118,7 +109,7 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
                 typeof(IAfterSaveStartingAsyncTrigger),
                 typeof(IAfterSaveCompletedTrigger),
                 typeof(IAfterSaveCompletedAsyncTrigger)
-            };
+            ];
         }
 
         public TriggersOptionExtension(TriggersOptionExtension copyFrom)
@@ -139,7 +130,7 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
 
         public int MaxCascadeCycles => _maxCascadeCycles;
         public CascadeBehavior CascadeBehavior => _cascadeBehavior;
-        public IEnumerable<(object typeOrInstance, ServiceLifetime lifetime)> Triggers => _triggers ?? Enumerable.Empty<(object typeOrInstance, ServiceLifetime lifetime)>();
+        public IEnumerable<(object typeOrInstance, ServiceLifetime lifetime)> Triggers => _triggers ?? [];
 
         public void ApplyServices(IServiceCollection services)
         {
@@ -195,18 +186,15 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
 
                         foreach (var triggerTypeImplementation in triggerTypeImplementations)
                         {
-                            if (triggerInstanceFactoryBuilder is null)
-                            {
-                                triggerInstanceFactoryBuilder =
+                            triggerInstanceFactoryBuilder ??=
                                     Expression.Lambda<Func<object?, object>>(
                                             Expression.New(
-                                                typeof(TriggerInstanceFactory<>).MakeGenericType(triggerServiceType).GetConstructor(new[] { typeof(object) })!,
+                                                typeof(TriggerInstanceFactory<>).MakeGenericType(triggerServiceType).GetConstructor([typeof(object)])!,
                                                 instanceParamExpression
                                             ),
                                             instanceParamExpression
                                     )
                                     .Compile();
-                            }
 
                             var triggerTypeImplementationFactoryType = typeof(ITriggerInstanceFactory<>).MakeGenericType(triggerTypeImplementation);
                             services.Add(new ServiceDescriptor(triggerTypeImplementationFactoryType, _ => triggerInstanceFactoryBuilder(triggerServiceInstance), lifetime));
@@ -280,10 +268,7 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
 
         public TriggersOptionExtension WithAdditionalTrigger(object instance)
         {
-            if (instance == null)
-            {
-                throw new ArgumentNullException(nameof(instance));
-            }
+            ArgumentNullException.ThrowIfNull(instance);
 
             if (!TypeIsValidTrigger(instance.GetType()))
             {
@@ -308,10 +293,7 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
 
         public TriggersOptionExtension WithAdditionalTriggerType(Type triggerType)
         {
-            if (triggerType == null)
-            {
-                throw new ArgumentNullException(nameof(triggerType));
-            }
+            ArgumentNullException.ThrowIfNull(triggerType);
 
 
             var clone = Clone();

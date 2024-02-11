@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 
 namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
@@ -14,11 +13,11 @@ namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
         {
             Type? nextType = type;
 
-            while(nextType is not null)
+            while (nextType is not null)
             {
                 yield return nextType;
                 nextType = nextType.BaseType;
-            } while (nextType != null);
+            } while (nextType != null) ;
         }
     }
 }

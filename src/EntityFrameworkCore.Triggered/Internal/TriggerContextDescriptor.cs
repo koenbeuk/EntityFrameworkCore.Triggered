@@ -4,20 +4,13 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace EntityFrameworkCore.Triggered.Internal
 {
-    public readonly struct TriggerContextDescriptor
+    public readonly struct TriggerContextDescriptor(EntityEntry entityEntry, ChangeType changeType)
     {
-        static readonly ConcurrentDictionary<Type, Func<EntityEntry, PropertyValues?, ChangeType, EntityBagStateManager, object>> _cachedTriggerContextFactories = new();
+        readonly static ConcurrentDictionary<Type, Func<EntityEntry, PropertyValues?, ChangeType, EntityBagStateManager, object>> _cachedTriggerContextFactories = new();
 
-        readonly EntityEntry _entityEntry;
-        readonly ChangeType _changeType;
-        readonly PropertyValues? _originalValues;
-
-        public TriggerContextDescriptor(EntityEntry entityEntry, ChangeType changeType)
-        {
-            _entityEntry = entityEntry;
-            _changeType = changeType;
-            _originalValues = entityEntry.OriginalValues.Clone();
-        }
+        readonly EntityEntry _entityEntry = entityEntry;
+        readonly ChangeType _changeType = changeType;
+        readonly PropertyValues? _originalValues = entityEntry.OriginalValues.Clone();
 
         public ChangeType ChangeType => _changeType;
         public object Entity => _entityEntry!.Entity;
@@ -37,7 +30,7 @@ namespace EntityFrameworkCore.Triggered.Internal
             var entityType = entityEntry.Entity.GetType();
 
             var triggerContextFactory = _cachedTriggerContextFactories.GetOrAdd(entityType, entityType =>
-                (Func<EntityEntry, PropertyValues?, ChangeType, EntityBagStateManager, object >)typeof(TriggerContextFactory<>).MakeGenericType(entityType)
+                (Func<EntityEntry, PropertyValues?, ChangeType, EntityBagStateManager, object>)typeof(TriggerContextFactory<>).MakeGenericType(entityType)
                     !.GetMethod(nameof(TriggerContextFactory<object>.Activate))
                     !.CreateDelegate(typeof(Func<EntityEntry, PropertyValues?, ChangeType, EntityBagStateManager, object>)));
 

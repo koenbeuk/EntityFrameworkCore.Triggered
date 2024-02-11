@@ -10,14 +10,9 @@ namespace EntityFrameworkCore.Triggered.Tests.Internal
 {
     public class TriggerDiscoveryServiceTests
     {
-        class TriggerServiceProviderAccessor : ITriggerServiceProviderAccessor
+        class TriggerServiceProviderAccessor(IServiceProvider serviceProvider) : ITriggerServiceProviderAccessor
         {
-            readonly IServiceProvider _serviceProvider;
-
-            public TriggerServiceProviderAccessor(IServiceProvider serviceProvider)
-            {
-                _serviceProvider = serviceProvider;
-            }
+            readonly IServiceProvider _serviceProvider = serviceProvider;
 
             public IServiceProvider GetTriggerServiceProvider() => _serviceProvider;
         }

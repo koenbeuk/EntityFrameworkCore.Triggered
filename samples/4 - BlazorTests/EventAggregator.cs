@@ -9,9 +9,6 @@ namespace BlazorTests
     {
         public event Action<Count> CountAdded;
 
-        public void PublishCountAdded(Count count)
-        {
-            CountAdded?.Invoke(count);
-        }
+        public void PublishCountAdded(Count count) => CountAdded?.Invoke(count);
     }
 }

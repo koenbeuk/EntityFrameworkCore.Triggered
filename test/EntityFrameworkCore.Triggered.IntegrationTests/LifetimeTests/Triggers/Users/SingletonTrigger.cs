@@ -1,7 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-
-namespace EntityFrameworkCore.Triggered.IntegrationTests.LifetimeTests.Triggers.Users
+﻿namespace EntityFrameworkCore.Triggered.IntegrationTests.LifetimeTests.Triggers.Users
 {
 
     class SingletonTrigger : IBeforeSaveTrigger<object>

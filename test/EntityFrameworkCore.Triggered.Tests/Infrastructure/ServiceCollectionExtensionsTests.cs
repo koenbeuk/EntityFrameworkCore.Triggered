@@ -12,22 +12,14 @@ namespace EntityFrameworkCore.Triggered.Tests.Infrastructure
     public class ServiceCollectionExtensionsTests
     {
         class TestModel { public int Id { get; set; } }
-#pragma warning disable CS0618 // Type or member is obsolete
-        class TestDbContext : DbContext
-#pragma warning restore CS0618 // Type or member is obsolete
+        class TestDbContext(DbContextOptions options) : DbContext(options)
         {
 
             public DbSet<TestModel> TestModels { get; set; }
-            public TestDbContext(DbContextOptions options) : base(options)
-            {
-            }
         }
 
-        class TestDbContextFactory : DbContextFactory<TestDbContext>
+        class TestDbContextFactory(IServiceProvider serviceProvider, DbContextOptions<ServiceCollectionExtensionsTests.TestDbContext> options, IDbContextFactorySource<ServiceCollectionExtensionsTests.TestDbContext> factorySource) : DbContextFactory<TestDbContext>(serviceProvider, options, factorySource)
         {
-            public TestDbContextFactory(IServiceProvider serviceProvider, DbContextOptions<TestDbContext> options, IDbContextFactorySource<TestDbContext> factorySource) : base(serviceProvider, options, factorySource)
-            {
-            }
         }
 
         [Fact]

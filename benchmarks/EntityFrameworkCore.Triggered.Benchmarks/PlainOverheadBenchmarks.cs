@@ -12,9 +12,7 @@ namespace EntityFrameworkCore.Triggered.Benchmarks
         IServiceProvider _serviceProvider;
 
         [GlobalSetup]
-        public void GlobalSetup()
-        {
-            _serviceProvider = new ServiceCollection()
+        public void GlobalSetup() => _serviceProvider = new ServiceCollection()
                 .AddDbContext<ApplicationContext>(options => {
                     options
                         .UseInMemoryDatabase(nameof(WithDbContext));
@@ -25,7 +23,6 @@ namespace EntityFrameworkCore.Triggered.Benchmarks
                         .UseTriggers();
                 })
                 .BuildServiceProvider();
-        }
 
         [Params(50)]
         public int OuterBatches;
@@ -89,15 +86,9 @@ namespace EntityFrameworkCore.Triggered.Benchmarks
         }
 
         [Benchmark(Baseline = true)]
-        public void WithDbContext()
-        {
-            Execute<ApplicationContext>();
-        }
+        public void WithDbContext() => Execute<ApplicationContext>();
 
         [Benchmark]
-        public void WithTriggeredDbContext()
-        {
-            Execute<TriggeredApplicationContext>();
-        }
+        public void WithTriggeredDbContext() => Execute<TriggeredApplicationContext>();
     }
 }

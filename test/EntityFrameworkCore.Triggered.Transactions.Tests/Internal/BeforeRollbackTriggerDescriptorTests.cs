@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using EntityFrameworkCore.Triggered.Transactions.Internal;
+﻿using EntityFrameworkCore.Triggered.Transactions.Internal;
 using EntityFrameworkCore.Triggered.Transactions.Tests.Stubs;
 using Xunit;
 

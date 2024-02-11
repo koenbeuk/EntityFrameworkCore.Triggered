@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,29 +14,15 @@ namespace EntityFrameworkCore.Triggered.Tests
             public string Name { get; set; }
         }
 
-        class TestTrigger : IBeforeSaveTrigger<TestModel>
+        class TestTrigger(TriggeredDbContextFactoryTests.TestDbContext testDbContext) : IBeforeSaveTrigger<TestModel>
         {
-            readonly TestDbContext _testDbContext;
+            readonly TestDbContext _testDbContext = testDbContext;
 
-            public TestTrigger(TestDbContext testDbContext)
-            {
-                _testDbContext = testDbContext;
-            }
-
-            public void BeforeSave(ITriggerContext<TestModel> context)
-            {
-                _testDbContext.TriggerRaised = true;
-            }
+            public void BeforeSave(ITriggerContext<TestModel> context) => _testDbContext.TriggerRaised = true;
         }
 
-        class TestDbContext : DbContext
+        class TestDbContext(DbContextOptions options) : DbContext(options)
         {
-            public TestDbContext(DbContextOptions options)
-                : base(options)
-            {
-
-            }
-
             public DbSet<TestModel> TestModels { get; set; }
 
             public bool TriggerRaised { get; set; } = false;

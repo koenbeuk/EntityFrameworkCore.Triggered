@@ -2,22 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using EntityFrameworkCore.Triggered.Infrastructure.Internal;
-using EntityFrameworkCore.Triggered.Internal.Descriptors;
 
 namespace EntityFrameworkCore.Triggered.Internal
 {
-    public sealed class TriggerTypeRegistry<TTriggerTypeDescriptor>
+    public sealed class TriggerTypeRegistry<TTriggerTypeDescriptor>(Type entityType, Func<Type, TTriggerTypeDescriptor> triggerTypeDescriptorFactory)
     {
-        readonly Type _entityType;
-        readonly Func<Type, TTriggerTypeDescriptor> _triggerTypeDescriptorFactory;
+        readonly Type _entityType = entityType;
+        readonly Func<Type, TTriggerTypeDescriptor> _triggerTypeDescriptorFactory = triggerTypeDescriptorFactory;
 
         TTriggerTypeDescriptor[]? _resolvedDescriptors;
-
-        public TriggerTypeRegistry(Type entityType, Func<Type, TTriggerTypeDescriptor> triggerTypeDescriptorFactory)
-        {
-            _entityType = entityType;
-            _triggerTypeDescriptorFactory = triggerTypeDescriptorFactory;
-        }
 
         IEnumerable<Type> GetEntityTypeHierarchy()
         {

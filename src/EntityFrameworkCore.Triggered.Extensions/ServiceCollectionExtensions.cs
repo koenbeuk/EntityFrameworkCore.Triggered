@@ -10,7 +10,7 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
-        static readonly Type[] _wellKnownTriggerTypes = new Type[] {
+        readonly static Type[] _wellKnownTriggerTypes = [
                 typeof(IBeforeSaveTrigger<>),
                 typeof(IBeforeSaveAsyncTrigger<>),
                 typeof(IAfterSaveTrigger<>),
@@ -29,7 +29,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 typeof(IAfterSaveStartingAsyncTrigger),
                 typeof(IAfterSaveCompletedTrigger),
                 typeof(IAfterSaveCompletedAsyncTrigger)
-            };
+            ];
 
         static void RegisterTriggerTypes(Type triggerImplementationType, IServiceCollection services)
         {
@@ -78,10 +78,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IServiceCollection AddAssemblyTriggers(this IServiceCollection services, ServiceLifetime lifetime, params Assembly[] assemblies)
         {
-            if (assemblies is null)
-            {
-                throw new ArgumentNullException(nameof(assemblies));
-            }
+            ArgumentNullException.ThrowIfNull(assemblies);
 
             var assemblyTypes = assemblies
                 .SelectMany(x => x.GetTypes())

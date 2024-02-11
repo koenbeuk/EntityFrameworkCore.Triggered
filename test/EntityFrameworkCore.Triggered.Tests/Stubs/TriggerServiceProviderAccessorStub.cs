@@ -2,14 +2,9 @@
 
 namespace EntityFrameworkCore.Triggered.Tests.Stubs
 {
-    public class TriggerServiceProviderAccessorStub : ITriggerServiceProviderAccessor
+    public class TriggerServiceProviderAccessorStub(IServiceProvider serviceProvider) : ITriggerServiceProviderAccessor
     {
-        readonly IServiceProvider _serviceProvider;
-
-        public TriggerServiceProviderAccessorStub(IServiceProvider serviceProvider)
-        {
-            _serviceProvider = serviceProvider;
-        }
+        readonly IServiceProvider _serviceProvider = serviceProvider;
 
         public IServiceProvider GetTriggerServiceProvider() => _serviceProvider;
     }

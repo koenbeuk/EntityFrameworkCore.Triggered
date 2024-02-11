@@ -1,5 +1,4 @@
 ﻿using System;
-using EntityFrameworkCore.Triggered.Internal.Descriptors;
 
 namespace EntityFrameworkCore.Triggered.Internal
 {

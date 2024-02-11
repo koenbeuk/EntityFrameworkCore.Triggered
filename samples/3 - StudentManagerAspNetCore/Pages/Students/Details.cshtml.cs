@@ -5,14 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace StudentManager.Pages.Students
 {
-    public class DetailsModel : PageModel
+    public class DetailsModel(StudentManager.ApplicationDbContext context) : PageModel
     {
-        private readonly StudentManager.ApplicationDbContext _context;
-
-        public DetailsModel(StudentManager.ApplicationDbContext context)
-        {
-            _context = context;
-        }
+        private readonly StudentManager.ApplicationDbContext _context = context;
 
         public Student Student { get; set; }
 

@@ -8,21 +8,14 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace EntityFrameworkCore.Triggered.Internal
 {
-    public sealed class TriggerDiscoveryService : ITriggerDiscoveryService, IResettableService
+    public sealed class TriggerDiscoveryService(ITriggerServiceProviderAccessor triggerServiceProviderAccessor, ITriggerTypeRegistryService triggerTypeRegistryService, TriggerFactory triggerFactory) : ITriggerDiscoveryService, IResettableService
     {
         readonly static TriggerDescriptorComparer _triggerDescriptorComparer = new();
-        readonly ITriggerServiceProviderAccessor _triggerServiceProviderAccessor;
-        readonly ITriggerTypeRegistryService _triggerTypeRegistryService;
-        readonly TriggerFactory _triggerFactory;
+        readonly ITriggerServiceProviderAccessor _triggerServiceProviderAccessor = triggerServiceProviderAccessor;
+        readonly ITriggerTypeRegistryService _triggerTypeRegistryService = triggerTypeRegistryService ?? throw new ArgumentNullException(nameof(triggerTypeRegistryService));
+        readonly TriggerFactory _triggerFactory = triggerFactory;
 
         IServiceProvider? _serviceProvider;
-
-        public TriggerDiscoveryService(ITriggerServiceProviderAccessor triggerServiceProviderAccessor, ITriggerTypeRegistryService triggerTypeRegistryService, TriggerFactory triggerFactory)
-        {
-            _triggerServiceProviderAccessor = triggerServiceProviderAccessor;
-            _triggerTypeRegistryService = triggerTypeRegistryService ?? throw new ArgumentNullException(nameof(triggerTypeRegistryService));
-            _triggerFactory = triggerFactory;
-        }
 
         public IEnumerable<TriggerDescriptor> DiscoverTriggers(Type openTriggerType, Type entityType, Func<Type, ITriggerTypeDescriptor> triggerTypeDescriptorFactory)
         {
@@ -31,7 +24,7 @@ namespace EntityFrameworkCore.Triggered.Internal
             var triggerTypeDescriptors = registry.GetTriggerTypeDescriptors();
             if (triggerTypeDescriptors.Length == 0)
             {
-                return Enumerable.Empty<TriggerDescriptor>();
+                return [];
             }
             else
             {
@@ -42,10 +35,7 @@ namespace EntityFrameworkCore.Triggered.Internal
                     var triggers = _triggerFactory.Resolve(ServiceProvider, triggerTypeDescriptor.TriggerType);
                     foreach (var trigger in triggers)
                     {
-                        if (triggerDescriptors == null)
-                        {
-                            triggerDescriptors = new List<TriggerDescriptor>();
-                        }
+                        triggerDescriptors ??= [];
 
                         if (trigger != null)
                         {
@@ -56,7 +46,7 @@ namespace EntityFrameworkCore.Triggered.Internal
 
                 if (triggerDescriptors == null)
                 {
-                    return Enumerable.Empty<TriggerDescriptor>();
+                    return [];
                 }
                 else
                 {
@@ -73,7 +63,7 @@ namespace EntityFrameworkCore.Triggered.Internal
             var triggerTypeDescriptors = registry.GetTriggerTypeDescriptors();
             if (triggerTypeDescriptors.Length == 0)
             {
-                return Enumerable.Empty<AsyncTriggerDescriptor>();
+                return [];
             }
             else
             {
@@ -84,10 +74,7 @@ namespace EntityFrameworkCore.Triggered.Internal
                     var triggers = _triggerFactory.Resolve(ServiceProvider, triggerTypeDescriptor.TriggerType);
                     foreach (var trigger in triggers)
                     {
-                        if (triggerDescriptors == null)
-                        {
-                            triggerDescriptors = new List<AsyncTriggerDescriptor>();
-                        }
+                        triggerDescriptors ??= [];
 
                         if (trigger != null)
                         {
@@ -98,7 +85,7 @@ namespace EntityFrameworkCore.Triggered.Internal
 
                 if (triggerDescriptors == null)
                 {
-                    return Enumerable.Empty<AsyncTriggerDescriptor>();
+                    return [];
                 }
                 else
                 {
@@ -129,20 +116,14 @@ namespace EntityFrameworkCore.Triggered.Internal
         {
             get
             {
-                if (_serviceProvider == null)
-                {
-                    _serviceProvider = _triggerServiceProviderAccessor.GetTriggerServiceProvider();
-                }
+                _serviceProvider ??= _triggerServiceProviderAccessor.GetTriggerServiceProvider();
 
                 return _serviceProvider;
             }
             set => _serviceProvider = value;
         }
 
-        public void ResetState()
-        {
-            _serviceProvider = null;
-        }
+        public void ResetState() => _serviceProvider = null;
 
         public Task ResetStateAsync(CancellationToken cancellationToken = default)
         {

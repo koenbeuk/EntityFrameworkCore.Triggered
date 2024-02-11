@@ -6,15 +6,10 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace EntityFrameworkCore.Triggered.Internal
 {
-    public sealed class TriggerFactory
+    public sealed class TriggerFactory(IServiceProvider internalServiceProvider)
     {
-        static readonly ConcurrentDictionary<Type, Type> _instanceFactoryTypeCache = new();
-        readonly IServiceProvider _internalServiceProvider;
-
-        public TriggerFactory(IServiceProvider internalServiceProvider)
-        {
-            _internalServiceProvider = internalServiceProvider;
-        }
+        readonly static ConcurrentDictionary<Type, Type> _instanceFactoryTypeCache = new();
+        readonly IServiceProvider _internalServiceProvider = internalServiceProvider;
 
         public IEnumerable<object> Resolve(IServiceProvider serviceProvider, Type triggerType)
         {

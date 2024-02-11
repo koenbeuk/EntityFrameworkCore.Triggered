@@ -6,19 +6,13 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace EntityFrameworkCore.Triggered.Internal
 {
-    public sealed class TriggerContextTracker
+    public sealed class TriggerContextTracker(ChangeTracker changeTracker, ICascadeStrategy cascadingStrategy)
     {
-        readonly ChangeTracker _changeTracker;
-        readonly ICascadeStrategy _cascadingStrategy;
+        readonly ChangeTracker _changeTracker = changeTracker;
+        readonly ICascadeStrategy _cascadingStrategy = cascadingStrategy;
 
         List<TriggerContextDescriptor>? _discoveredChanges;
         List<int>? _capturedChangeIndexes;
-
-        public TriggerContextTracker(ChangeTracker changeTracker, ICascadeStrategy cascadingStrategy)
-        {
-            _changeTracker = changeTracker;
-            _cascadingStrategy = cascadingStrategy;
-        }
 
         static ChangeType? ResolveChangeType(EntityEntry entry) => entry.State switch {
             EntityState.Added => ChangeType.Added,
@@ -117,10 +111,7 @@ namespace EntityFrameworkCore.Triggered.Internal
                 var changesCount = _discoveredChanges.Count;
                 if (changesCount > 0)
                 {
-                    if (_capturedChangeIndexes == null)
-                    {
-                        _capturedChangeIndexes = new List<int>(changesCount); // assuming all will be captured
-                    }
+                    _capturedChangeIndexes ??= new List<int>(changesCount); // assuming all will be captured
 
                     for (var changeIndex = 0; changeIndex < changesCount; changeIndex++)
                     {

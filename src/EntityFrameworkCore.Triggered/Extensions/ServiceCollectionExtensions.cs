@@ -163,7 +163,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     lifetime: ServiceLifetime.Scoped
                 ));
             }
-            
+
             if (serviceDescriptor?.ImplementationFactory != null)
             {
                 var triggeredFactoryType = typeof(TriggeredDbContextFactory<>).MakeGenericType(typeof(TContext));

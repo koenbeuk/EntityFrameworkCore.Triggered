@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace EntityFrameworkCore.Triggered.Internal
 {
@@ -19,7 +18,7 @@ namespace EntityFrameworkCore.Triggered.Internal
 
             return Expression.Lambda<Func<EntityEntry, PropertyValues?, ChangeType, EntityBagStateManager, TriggerContext<TEntityType>>>(
                 Expression.New(
-                    typeof(TriggerContext<>).MakeGenericType(typeof(TEntityType)).GetConstructor(new[] { typeof(EntityEntry), typeof(PropertyValues), typeof(ChangeType), typeof(EntityBagStateManager) })!,
+                    typeof(TriggerContext<>).MakeGenericType(typeof(TEntityType)).GetConstructor([typeof(EntityEntry), typeof(PropertyValues), typeof(ChangeType), typeof(EntityBagStateManager)])!,
                     entityEntryParamExpression,
                     originalValuesParamExpression,
                     changeTypeParamExpression,

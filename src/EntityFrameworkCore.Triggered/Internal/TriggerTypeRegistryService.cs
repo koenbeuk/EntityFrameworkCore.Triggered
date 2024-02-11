@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using EntityFrameworkCore.Triggered.Internal.Descriptors;
 
 namespace EntityFrameworkCore.Triggered.Internal
 {

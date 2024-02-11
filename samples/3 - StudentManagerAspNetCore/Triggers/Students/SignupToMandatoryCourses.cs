@@ -6,14 +6,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace StudentManager.Triggers.Students
 {
-    public class SignupToMandatoryCourses : IBeforeSaveAsyncTrigger<Student>
+    public class SignupToMandatoryCourses(ApplicationDbContext applicationContext) : IBeforeSaveAsyncTrigger<Student>
     {
-        readonly ApplicationDbContext _applicationContext;
-
-        public SignupToMandatoryCourses(ApplicationDbContext applicationContext)
-        {
-            _applicationContext = applicationContext;
-        }
+        readonly ApplicationDbContext _applicationContext = applicationContext;
 
         public async Task BeforeSaveAsync(ITriggerContext<Student> context, CancellationToken cancellationToken)
         {

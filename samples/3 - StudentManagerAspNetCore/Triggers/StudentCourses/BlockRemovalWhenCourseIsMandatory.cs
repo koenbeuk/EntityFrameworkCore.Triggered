@@ -5,20 +5,15 @@ using EntityFrameworkCore.Triggered;
 
 namespace StudentManager.Triggers.StudentCourses
 {
-    public class BlockRemovalWhenCourseIsMandatory : IBeforeSaveAsyncTrigger<StudentCourse>
+    public class BlockRemovalWhenCourseIsMandatory(ApplicationDbContext applicationContext) : IBeforeSaveAsyncTrigger<StudentCourse>
     {
-        readonly ApplicationDbContext _applicationContext;
-
-        public BlockRemovalWhenCourseIsMandatory(ApplicationDbContext applicationContext)
-        {
-            _applicationContext = applicationContext;
-        }
+        readonly ApplicationDbContext _applicationContext = applicationContext;
 
         public async Task BeforeSaveAsync(ITriggerContext<StudentCourse> context, CancellationToken cancellationToken)
         {
             if (context.ChangeType == ChangeType.Deleted)
             {
-                var course = await _applicationContext.Courses.FindAsync(new object[] { context.Entity.CourseId }, cancellationToken);
+                var course = await _applicationContext.Courses.FindAsync([context.Entity.CourseId], cancellationToken);
                 if (course.IsMandatory)
                 {
                     throw new InvalidOperationException("Course is required");

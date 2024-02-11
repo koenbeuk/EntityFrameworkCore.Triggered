@@ -15,10 +15,7 @@ namespace Microsoft.EntityFrameworkCore
 
         public static DbContextOptionsBuilder UseTriggers(this DbContextOptionsBuilder optionsBuilder, Action<TriggersContextOptionsBuilder>? configure = null)
         {
-            if (optionsBuilder is null)
-            {
-                throw new ArgumentNullException(nameof(optionsBuilder));
-            }
+            ArgumentNullException.ThrowIfNull(optionsBuilder);
 
             var extension = optionsBuilder.Options.FindExtension<TriggersOptionExtension>() ?? new TriggersOptionExtension();
             ((IDbContextOptionsBuilderInfrastructure)optionsBuilder).AddOrUpdateExtension(extension);

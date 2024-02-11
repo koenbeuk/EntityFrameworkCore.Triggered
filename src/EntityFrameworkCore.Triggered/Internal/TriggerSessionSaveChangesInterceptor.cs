@@ -164,7 +164,7 @@ namespace EntityFrameworkCore.Triggered.Internal
             await _triggerSession.RaiseAfterSaveCompletedAsyncTriggers(cancellationToken).ConfigureAwait(false);
 
             DelistTriggerSession(eventData);
-            
+
             return result;
         }
 
@@ -185,10 +185,10 @@ namespace EntityFrameworkCore.Triggered.Internal
 
             _triggerSession.RaiseAfterSaveFailedStartingTriggers(eventData.Exception);
             await _triggerSession.RaiseAfterSaveFailedStartingAsyncTriggers(eventData.Exception, cancellationToken).ConfigureAwait(false);
-                
+
             _triggerSession.RaiseAfterSaveFailedTriggers(eventData.Exception);
             await _triggerSession.RaiseAfterSaveFailedAsyncTriggers(eventData.Exception, cancellationToken).ConfigureAwait(false);
-                
+
             _triggerSession.RaiseAfterSaveFailedCompletedTriggers(eventData.Exception);
             await _triggerSession.RaiseAfterSaveFailedCompletedAsyncTriggers(eventData.Exception, cancellationToken).ConfigureAwait(false);
 

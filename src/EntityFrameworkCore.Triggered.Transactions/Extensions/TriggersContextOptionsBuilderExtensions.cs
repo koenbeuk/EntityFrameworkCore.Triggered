@@ -9,10 +9,7 @@ namespace Microsoft.EntityFrameworkCore
     {
         public static TriggersContextOptionsBuilder UseTransactionTriggers(this TriggersContextOptionsBuilder triggersContextOptionsBuilder)
         {
-            if (triggersContextOptionsBuilder is null)
-            {
-                throw new ArgumentNullException(nameof(triggersContextOptionsBuilder));
-            }
+            ArgumentNullException.ThrowIfNull(triggersContextOptionsBuilder);
 
             return triggersContextOptionsBuilder
                 .AddTriggerType(typeof(IBeforeCommitTrigger<>))

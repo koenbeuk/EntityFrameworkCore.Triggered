@@ -26,7 +26,7 @@ namespace EntityFrameworkCore.Triggered
             _cascadingStrategy = cascadingStrategy ?? throw new ArgumentNullException(nameof(cascadingStrategy));
             _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
             _defaultConfiguration = new TriggerSessionConfiguration(false, triggerOptions.Value.MaxCascadeCycles);
-            
+
             Configuration = _defaultConfiguration;
         }
 
@@ -43,10 +43,7 @@ namespace EntityFrameworkCore.Triggered
 
         public ITriggerSession CreateSession(DbContext context, TriggerSessionConfiguration configuration, IServiceProvider? serviceProvider)
         {
-            if (context is null)
-            {
-                throw new ArgumentNullException(nameof(context));
-            }
+            ArgumentNullException.ThrowIfNull(context);
 
             var triggerContextTracker = new TriggerContextTracker(context.ChangeTracker, _cascadingStrategy);
 

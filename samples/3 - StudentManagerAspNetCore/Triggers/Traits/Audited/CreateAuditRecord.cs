@@ -1,21 +1,14 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using EntityFrameworkCore.Triggered;
 using StudentManager.Traits;
 
 namespace StudentManager.Triggers.Traits.Audited
 {
-    public class CreateAuditRecord : IBeforeSaveTrigger<IAudited>
+    public class CreateAuditRecord(ApplicationDbContext applicationContext) : IBeforeSaveTrigger<IAudited>
     {
-        private readonly ApplicationDbContext _applicationContext;
-
-        public CreateAuditRecord(ApplicationDbContext applicationContext)
-        {
-            _applicationContext = applicationContext;
-        }
+        private readonly ApplicationDbContext _applicationContext = applicationContext;
 
         public void BeforeSave(ITriggerContext<IAudited> context)
         {

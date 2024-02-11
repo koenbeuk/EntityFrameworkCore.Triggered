@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,7 +15,7 @@ namespace EntityFrameworkCore.Triggered.Internal
             var genericHelper = typeof(TriggerTypeDescriptorHelpers).GetMethod(nameof(TriggerTypeDescriptorHelpers.GetWeakDelegateHelper), BindingFlags.Static | BindingFlags.NonPublic);
             var constructedHelper = genericHelper!.MakeGenericMethod(triggerType, triggerContextType);
 
-            return (Action<object, object>)constructedHelper.Invoke(null, new object[] { method })!;
+            return (Action<object, object>)constructedHelper.Invoke(null, [method])!;
         }
 
         public static Action<object, object, Exception?> GetWeakDelegateWithException(Type triggerType, Type entityType, MethodInfo method)
@@ -26,7 +25,7 @@ namespace EntityFrameworkCore.Triggered.Internal
             var genericHelper = typeof(TriggerTypeDescriptorHelpers).GetMethod(nameof(TriggerTypeDescriptorHelpers.GetWeakDelegateHelperWithException), BindingFlags.Static | BindingFlags.NonPublic);
             var constructedHelper = genericHelper!.MakeGenericMethod(triggerType, triggerContextType);
 
-            return (Action<object, object, Exception?>)constructedHelper.Invoke(null, new object[] { method })!;
+            return (Action<object, object, Exception?>)constructedHelper.Invoke(null, [method])!;
         }
 
         static Action<object, object> GetWeakDelegateHelper<TTriggerType, TTriggerContext>(MethodInfo method)
@@ -54,7 +53,7 @@ namespace EntityFrameworkCore.Triggered.Internal
             var genericHelper = typeof(TriggerTypeDescriptorHelpers).GetMethod(nameof(TriggerTypeDescriptorHelpers.GetAsyncWeakDelegateHelper), BindingFlags.Static | BindingFlags.NonPublic);
             var constructedHelper = genericHelper!.MakeGenericMethod(triggerType, triggerContextType);
 
-            return (Func<object, object, CancellationToken, Task>)constructedHelper.Invoke(null, new object[] { method })!;
+            return (Func<object, object, CancellationToken, Task>)constructedHelper.Invoke(null, [method])!;
         }
 
         public static Func<object, object, Exception?, CancellationToken, Task> GetAsyncWeakDelegateWithException(Type triggerType, Type entityType, MethodInfo method)
@@ -64,7 +63,7 @@ namespace EntityFrameworkCore.Triggered.Internal
             var genericHelper = typeof(TriggerTypeDescriptorHelpers).GetMethod(nameof(TriggerTypeDescriptorHelpers.GetAsyncWeakDelegateHelperWithException), BindingFlags.Static | BindingFlags.NonPublic);
             var constructedHelper = genericHelper!.MakeGenericMethod(triggerType, triggerContextType);
 
-            return (Func<object, object, Exception?, CancellationToken, Task>)constructedHelper.Invoke(null, new object[] { method })!;
+            return (Func<object, object, Exception?, CancellationToken, Task>)constructedHelper.Invoke(null, [method])!;
         }
 
         static Func<object, object, CancellationToken, Task> GetAsyncWeakDelegateHelper<TTriggerType, TTriggerContext>(MethodInfo method)

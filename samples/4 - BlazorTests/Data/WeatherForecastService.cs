@@ -6,10 +6,10 @@ namespace BlazorTests.Data
 {
     public class WeatherForecastService
     {
-        private static readonly string[] Summaries = new[]
-        {
+        private readonly static string[] Summaries =
+        [
             "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
+        ];
 
         public Task<WeatherForecast[]> GetForecastAsync(DateTime startDate)
         {

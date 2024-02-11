@@ -17,16 +17,11 @@ namespace EntityFrameworkCore.Triggered.Internal
 
     }
 
-    public sealed class TriggerInstanceFactory<TTriggerType> : ITriggerInstanceFactory<TTriggerType>
+    public sealed class TriggerInstanceFactory<TTriggerType>(object? instance) : ITriggerInstanceFactory<TTriggerType>
     {
         static ObjectFactory? _internalFactory;
 
-        object? _instance;
-
-        public TriggerInstanceFactory(object? instance)
-        {
-            _instance = instance;
-        }
+        object? _instance = instance;
 
         public object Create(IServiceProvider serviceProvider)
         {
@@ -35,19 +30,13 @@ namespace EntityFrameworkCore.Triggered.Internal
                 return _instance;
             }
 
-            if (_internalFactory is null)
-            {
-                _internalFactory = ActivatorUtilities.CreateFactory(typeof(TTriggerType), Array.Empty<Type>());
-            }
+            _internalFactory ??= ActivatorUtilities.CreateFactory(typeof(TTriggerType), []);
 
             _instance = _internalFactory(serviceProvider, null);
             return _instance;
         }
 
-        public void ResetState()
-        {
-            _instance = null;
-        }
+        public void ResetState() => _instance = null;
 
         public Task ResetStateAsync(CancellationToken cancellationToken = default)
         {

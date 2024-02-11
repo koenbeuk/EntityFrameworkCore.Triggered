@@ -3,14 +3,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EntityFrameworkCore.Triggered.IntegrationTests.SampleStore
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext(string databaseName) : DbContext
     {
-        readonly string _databaseName;
-
-        public ApplicationDbContext(string databaseName)
-        {
-            _databaseName = databaseName;
-        }
+        readonly string _databaseName = databaseName;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

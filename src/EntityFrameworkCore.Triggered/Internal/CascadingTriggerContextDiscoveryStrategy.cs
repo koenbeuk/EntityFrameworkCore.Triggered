@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace EntityFrameworkCore.Triggered.Internal
 {
-    public class CascadingTriggerContextDiscoveryStrategy : ITriggerContextDiscoveryStrategy
+    public class CascadingTriggerContextDiscoveryStrategy(string name, bool skipDetectedChanges) : ITriggerContextDiscoveryStrategy
     {
         readonly static Action<ILogger, string, int, Exception?> _discoveryStarted = LoggerMessage.Define<string, int>(
             LogLevel.Debug,
@@ -17,14 +17,8 @@ namespace EntityFrameworkCore.Triggered.Internal
             new EventId(1, "Discovered"),
             "Discovered changes: {changes} for {name}. Iteration ({iteration}/{maxCascadingCycles})");
 
-        readonly string _name;
-        readonly bool _skipDetectedChanges;
-
-        public CascadingTriggerContextDiscoveryStrategy(string name, bool skipDetectedChanges)
-        {
-            _name = name ?? throw new ArgumentNullException(nameof(name));
-            _skipDetectedChanges = skipDetectedChanges;
-        }
+        readonly string _name = name ?? throw new ArgumentNullException(nameof(name));
+        readonly bool _skipDetectedChanges = skipDetectedChanges;
 
         public IEnumerable<IEnumerable<TriggerContextDescriptor>> Discover(TriggerSessionConfiguration configuration, TriggerContextTracker tracker, ILogger logger)
         {

@@ -18,16 +18,9 @@ namespace EntityFrameworkCore.Triggered.Tests
             public string Name { get; set; }
         }
 
-#pragma warning disable CS0618 // Type or member is obsolete
-        class TestDbContext : DbContext
-#pragma warning restore CS0618 // Type or member is obsolete
+        class TestDbContext(bool stubService = true) : DbContext
         {
-            readonly bool _stubService;
-
-            public TestDbContext(bool stubService = true)
-            {
-                _stubService = stubService;
-            }
+            readonly bool _stubService = stubService;
 
             public TriggerStub<TestModel> TriggerStub { get; } = new TriggerStub<TestModel>();
 

@@ -9,13 +9,8 @@ namespace BlazorTests
         public DateTime CreatedOn { get; set; }
     }
 
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
-        {
-
-        }
-
         public DbSet<Count> Counts { get; set; }
 
     }

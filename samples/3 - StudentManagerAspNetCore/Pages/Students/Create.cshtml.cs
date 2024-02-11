@@ -4,19 +4,11 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace StudentManager.Pages.Students
 {
-    public class CreateModel : PageModel
+    public class CreateModel(StudentManager.ApplicationDbContext context) : PageModel
     {
-        private readonly StudentManager.ApplicationDbContext _context;
+        private readonly StudentManager.ApplicationDbContext _context = context;
 
-        public CreateModel(StudentManager.ApplicationDbContext context)
-        {
-            _context = context;
-        }
-
-        public IActionResult OnGet()
-        {
-            return Page();
-        }
+        public IActionResult OnGet() => Page();
 
         [BindProperty]
         public Student Student { get; set; }

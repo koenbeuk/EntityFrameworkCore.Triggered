@@ -4,23 +4,15 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace EntityFrameworkCore.Triggered
 {
-    public class TriggerContext<TEntity> : ITriggerContext<TEntity>
+    public class TriggerContext<TEntity>(EntityEntry entityEntry, PropertyValues? originalValues, ChangeType changeType, EntityBagStateManager entityBagStateManager) : ITriggerContext<TEntity>
         where TEntity : class
     {
-        readonly EntityEntry _entityEntry;
-        readonly ChangeType _type;
-        readonly PropertyValues? _originalValues;
-        readonly EntityBagStateManager _entityBagStateManager;
+        readonly EntityEntry _entityEntry = entityEntry;
+        readonly ChangeType _type = changeType;
+        readonly PropertyValues? _originalValues = originalValues;
+        readonly EntityBagStateManager _entityBagStateManager = entityBagStateManager;
 
         TEntity? _unmodifiedEntity;
-
-        public TriggerContext(EntityEntry entityEntry, PropertyValues? originalValues, ChangeType changeType, EntityBagStateManager entityBagStateManager)
-        {
-            _entityEntry = entityEntry;
-            _originalValues = originalValues;
-            _type = changeType;
-            _entityBagStateManager = entityBagStateManager;
-        }
 
         public ChangeType ChangeType => _type;
         public TEntity Entity => (TEntity)_entityEntry.Entity;

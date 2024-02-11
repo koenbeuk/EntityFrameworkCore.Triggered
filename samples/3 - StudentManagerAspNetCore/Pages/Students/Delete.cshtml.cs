@@ -5,14 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace StudentManager.Pages.Students
 {
-    public class DeleteModel : PageModel
+    public class DeleteModel(StudentManager.ApplicationDbContext context) : PageModel
     {
-        private readonly StudentManager.ApplicationDbContext _context;
-
-        public DeleteModel(StudentManager.ApplicationDbContext context)
-        {
-            _context = context;
-        }
+        private readonly StudentManager.ApplicationDbContext _context = context;
 
         [BindProperty]
         public Student Student { get; set; }

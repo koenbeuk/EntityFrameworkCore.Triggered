@@ -5,21 +5,15 @@ using StudentManager.Services;
 
 namespace StudentManager.Triggers.StudentCourses
 {
-    public class SendWelcomingEmail : IAfterSaveAsyncTrigger<StudentCourse>
+    public class SendWelcomingEmail(ApplicationDbContext applicationContext, EmailService emailService) : IAfterSaveAsyncTrigger<StudentCourse>
     {
-        readonly ApplicationDbContext _applicationContext;
-        readonly EmailService _emailService;
-
-        public SendWelcomingEmail(ApplicationDbContext applicationContext, EmailService emailService)
-        {
-            _applicationContext = applicationContext;
-            _emailService = emailService;
-        }
+        readonly ApplicationDbContext _applicationContext = applicationContext;
+        readonly EmailService _emailService = emailService;
 
         public async Task AfterSaveAsync(ITriggerContext<StudentCourse> context, CancellationToken cancellationToken)
         {
-            var student = await _applicationContext.Students.FindAsync(new object[] { context.Entity.StudentId }, cancellationToken);
-            var course = await _applicationContext.Courses.FindAsync(new object[] { context.Entity.CourseId }, cancellationToken);
+            var student = await _applicationContext.Students.FindAsync([context.Entity.StudentId], cancellationToken);
+            var course = await _applicationContext.Courses.FindAsync([context.Entity.CourseId], cancellationToken);
 
             _emailService.SendEmail(student, $"Welcoming {student.DisplayName} to the course: {course.DisplayName}");
         }

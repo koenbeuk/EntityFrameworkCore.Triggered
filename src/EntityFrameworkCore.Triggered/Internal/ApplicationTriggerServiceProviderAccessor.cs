@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -18,10 +17,7 @@ namespace EntityFrameworkCore.Triggered.Internal
 
         public ApplicationTriggerServiceProviderAccessor(IServiceProvider internalServiceProvider, Func<IServiceProvider, IServiceProvider>? scopedServiceProviderTransform)
         {
-            if (internalServiceProvider is null)
-            {
-                throw new ArgumentNullException(nameof(internalServiceProvider));
-            }
+            ArgumentNullException.ThrowIfNull(internalServiceProvider);
 
             var dbContextOptions = internalServiceProvider.GetRequiredService<IDbContextOptions>();
             var coreOptionsExtension = dbContextOptions.FindExtension<CoreOptionsExtension>() ?? throw new InvalidOperationException("No coreOptionsExtension configured");
@@ -35,10 +31,7 @@ namespace EntityFrameworkCore.Triggered.Internal
             _scopedServiceProviderTransform = scopedServiceProviderTransform;
         }
 
-        public void SetTriggerServiceProvider(IServiceProvider serviceProvider)
-        {
-            _applicationScopedServiceProvider = serviceProvider;
-        }
+        public void SetTriggerServiceProvider(IServiceProvider serviceProvider) => _applicationScopedServiceProvider = serviceProvider;
 
         public IServiceProvider GetTriggerServiceProvider()
         {

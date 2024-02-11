@@ -5,18 +5,12 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace EntityFrameworkCore.Triggered.Internal
 {
-    public sealed class TriggeredDbContextFactory<TContext, TFactory> : IDbContextFactory<TContext>
+    public sealed class TriggeredDbContextFactory<TContext, TFactory>(TFactory contextFactory, IServiceProvider serviceProvider) : IDbContextFactory<TContext>
         where TContext : DbContext
         where TFactory : IDbContextFactory<TContext>
     {
-        private readonly TFactory _contextFactory;
-        private readonly IServiceProvider _serviceProvider;
-
-        public TriggeredDbContextFactory(TFactory contextFactory, IServiceProvider serviceProvider)
-        {
-            _contextFactory = contextFactory;
-            _serviceProvider = serviceProvider;
-        }
+        private readonly TFactory _contextFactory = contextFactory;
+        private readonly IServiceProvider _serviceProvider = serviceProvider;
 
         public TContext CreateDbContext()
         {
@@ -32,18 +26,12 @@ namespace EntityFrameworkCore.Triggered.Internal
             return context;
         }
     }
-    
-    public sealed class TriggeredDbContextFactory<TContext> : IDbContextFactory<TContext>
+
+    public sealed class TriggeredDbContextFactory<TContext>(Func<IServiceProvider, IDbContextFactory<TContext>> contextFactoryFactory, IServiceProvider serviceProvider) : IDbContextFactory<TContext>
         where TContext : DbContext
     {
-        readonly Func<IServiceProvider, IDbContextFactory<TContext>> _contextFactoryFactory;
-        readonly IServiceProvider _serviceProvider;
-
-        public TriggeredDbContextFactory(Func<IServiceProvider, IDbContextFactory<TContext>> contextFactoryFactory, IServiceProvider serviceProvider)
-        {
-            _contextFactoryFactory = contextFactoryFactory;
-            _serviceProvider = serviceProvider;
-        }
+        readonly Func<IServiceProvider, IDbContextFactory<TContext>> _contextFactoryFactory = contextFactoryFactory;
+        readonly IServiceProvider _serviceProvider = serviceProvider;
 
         public TContext CreateDbContext()
         {
@@ -52,10 +40,7 @@ namespace EntityFrameworkCore.Triggered.Internal
             Debug.Assert(context is not null);
 
             var applicationTriggerServiceProviderAccessor = context.GetService<ApplicationTriggerServiceProviderAccessor>();
-            if (applicationTriggerServiceProviderAccessor != null)
-            {
-                applicationTriggerServiceProviderAccessor.SetTriggerServiceProvider(new HybridServiceProvider(_serviceProvider, context));
-            }
+            applicationTriggerServiceProviderAccessor?.SetTriggerServiceProvider(new HybridServiceProvider(_serviceProvider, context));
 
             return context;
         }

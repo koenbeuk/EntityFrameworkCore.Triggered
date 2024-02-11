@@ -3,16 +3,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EntityFrameworkCore.Triggered.Internal
 {
-    public sealed class HybridServiceProvider : IServiceProvider
+    public sealed class HybridServiceProvider(IServiceProvider serviceProvider, DbContext dbContext) : IServiceProvider
     {
-        readonly DbContext _dbContext;
-        readonly IServiceProvider _serviceProvider;
-
-        public HybridServiceProvider(IServiceProvider serviceProvider, DbContext dbContext)
-        {
-            _serviceProvider = serviceProvider;
-            _dbContext = dbContext;
-        }
+        readonly DbContext _dbContext = dbContext;
+        readonly IServiceProvider _serviceProvider = serviceProvider;
 
         public object? GetService(Type serviceType)
         {

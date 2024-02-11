@@ -1,18 +1,11 @@
 ﻿using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using EntityFrameworkCore.Triggered;
 
 namespace PrimarySchool.Triggers
 {
-    public class StudentSignupToMandatoryCourses : IBeforeSaveTrigger<Student>
+    public class StudentSignupToMandatoryCourses(ApplicationDbContext applicationContext) : IBeforeSaveTrigger<Student>
     {
-        readonly ApplicationDbContext _applicationContext;
-
-        public StudentSignupToMandatoryCourses(ApplicationDbContext applicationContext)
-        {
-            _applicationContext = applicationContext;
-        }
+        readonly ApplicationDbContext _applicationContext = applicationContext;
 
         public void BeforeSave(ITriggerContext<Student> context)
         {

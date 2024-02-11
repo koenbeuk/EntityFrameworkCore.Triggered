@@ -6,14 +6,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace EntityFrameworkCore.Triggered.Infrastructure
 {
-    public class TriggersContextOptionsBuilder
+    public class TriggersContextOptionsBuilder(DbContextOptionsBuilder optionsBuilder)
     {
-        readonly DbContextOptionsBuilder _optionsBuilder;
-
-        public TriggersContextOptionsBuilder(DbContextOptionsBuilder optionsBuilder)
-        {
-            _optionsBuilder = optionsBuilder ?? throw new ArgumentNullException(nameof(optionsBuilder));
-        }
+        readonly DbContextOptionsBuilder _optionsBuilder = optionsBuilder ?? throw new ArgumentNullException(nameof(optionsBuilder));
 
         public TriggersContextOptionsBuilder AddTrigger<TTrigger>()
             => AddTrigger<TTrigger>(ServiceLifetime.Transient);

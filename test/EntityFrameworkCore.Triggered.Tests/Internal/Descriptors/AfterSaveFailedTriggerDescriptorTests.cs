@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Threading.Tasks;
-using EntityFrameworkCore.Triggered.Internal;
 using EntityFrameworkCore.Triggered.Internal.Descriptors;
 using EntityFrameworkCore.Triggered.Tests.Stubs;
 using Xunit;

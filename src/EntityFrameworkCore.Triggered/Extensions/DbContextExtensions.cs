@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Threading.Tasks;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
@@ -13,10 +13,7 @@ namespace EntityFrameworkCore.Triggered.Extensions
         /// </summary>
         public static ITriggerService GetTriggerService(this DbContext dbContext)
         {
-            if (dbContext is null)
-            {
-                throw new ArgumentNullException(nameof(dbContext));
-            }
+            ArgumentNullException.ThrowIfNull(dbContext);
 
             return dbContext.GetService<ITriggerService>() ?? throw new InvalidOperationException("Triggers are not configured for this DbContext");
         }

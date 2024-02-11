@@ -30,13 +30,8 @@ namespace EntityFrameworkCore.Triggered.Extensions.Tests
             public int Id { get; set; }
         }
 
-        public class TestDbContext : DbContext
+        public class TestDbContext(DbContextOptions options) : DbContext(options)
         {
-            public TestDbContext(DbContextOptions options)
-                : base(options)
-            {
-            }
-
             public DbSet<TestModel> TestModels { get; set; }
         }
 
@@ -128,7 +123,7 @@ namespace EntityFrameworkCore.Triggered.Extensions.Tests
             => SaveChanges_TriggeredAddedThroughDI_Template(x => {
                 x.AddTrigger<SampleTrigger>();
                 x.AddTrigger<SampleTriggerClone>();
-                
+
                 return x;
             });
 

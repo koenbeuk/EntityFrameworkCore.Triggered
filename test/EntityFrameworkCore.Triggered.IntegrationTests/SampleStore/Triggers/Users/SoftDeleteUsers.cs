@@ -4,14 +4,9 @@ using EntityFrameworkCore.Triggered.IntegrationTests.SampleStore.Models;
 
 namespace EntityFrameworkCore.Triggered.IntegrationTests.SampleStore.Triggers.Users
 {
-    public class SoftDeleteUsers : Trigger<User>
+    public class SoftDeleteUsers(ApplicationDbContext applicationDbContext) : Trigger<User>
     {
-        readonly ApplicationDbContext _applicationDbContext;
-
-        public SoftDeleteUsers(ApplicationDbContext applicationDbContext)
-        {
-            _applicationDbContext = applicationDbContext;
-        }
+        readonly ApplicationDbContext _applicationDbContext = applicationDbContext;
 
         public override void BeforeSave(ITriggerContext<User> context)
         {

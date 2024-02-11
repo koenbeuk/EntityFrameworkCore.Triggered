@@ -1,17 +1,10 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using EntityFrameworkCore.Triggered;
+﻿using EntityFrameworkCore.Triggered;
 
 namespace BlazorTests.Triggers.Counts
 {
-    public class PublishCountAddedEvent : IAfterSaveTrigger<Count>
+    public class PublishCountAddedEvent(EventAggregator eventAggregator) : IAfterSaveTrigger<Count>
     {
-        private readonly EventAggregator _eventAggregator;
-
-        public PublishCountAddedEvent(EventAggregator eventAggregator)
-        {
-            _eventAggregator = eventAggregator;
-        }
+        private readonly EventAggregator _eventAggregator = eventAggregator;
 
         public void AfterSave(ITriggerContext<Count> context)
         {

@@ -1,17 +1,10 @@
 ﻿using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace EntityFrameworkCore.Triggered.Benchmarks.Triggers
 {
-    public class SignStudentUpForMandatoryCourses : IBeforeSaveTrigger<Student>
+    public class SignStudentUpForMandatoryCourses(TriggeredApplicationContext applicationContext) : IBeforeSaveTrigger<Student>
     {
-        readonly TriggeredApplicationContext _applicationContext;
-
-        public SignStudentUpForMandatoryCourses(TriggeredApplicationContext applicationContext)
-        {
-            _applicationContext = applicationContext;
-        }
+        readonly TriggeredApplicationContext _applicationContext = applicationContext;
 
         public void BeforeSave(ITriggerContext<Student> context)
         {

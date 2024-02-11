@@ -47,16 +47,9 @@ namespace EntityFrameworkCore.Triggered.Benchmarks
         DbSet<StudentCourse> StudentCourses { get; set; }
     }
 
-    public class ApplicationContext : DbContext, IApplicationContextContract
+    public class ApplicationContext(DbContextOptions<ApplicationContext> options) : DbContext(options), IApplicationContextContract
     {
-        public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
-        {
-        }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<StudentCourse>().HasKey(x => new { x.StudentId, x.CourseId });
-        }
+        protected override void OnModelCreating(ModelBuilder modelBuilder) => modelBuilder.Entity<StudentCourse>().HasKey(x => new { x.StudentId, x.CourseId });
 
         public DbSet<Student> Students { get; set; }
 
@@ -65,16 +58,9 @@ namespace EntityFrameworkCore.Triggered.Benchmarks
         public DbSet<StudentCourse> StudentCourses { get; set; }
     }
 
-    public class TriggeredApplicationContext : DbContext, IApplicationContextContract
+    public class TriggeredApplicationContext(DbContextOptions<TriggeredApplicationContext> options) : DbContext(options), IApplicationContextContract
     {
-        public TriggeredApplicationContext(DbContextOptions<TriggeredApplicationContext> options) : base(options)
-        {
-        }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<StudentCourse>().HasKey(x => new { x.StudentId, x.CourseId });
-        }
+        protected override void OnModelCreating(ModelBuilder modelBuilder) => modelBuilder.Entity<StudentCourse>().HasKey(x => new { x.StudentId, x.CourseId });
 
         public DbSet<Student> Students { get; set; }
 

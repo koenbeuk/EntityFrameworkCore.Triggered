@@ -5,19 +5,14 @@ using Microsoft.Extensions.Logging;
 
 namespace EntityFrameworkCore.Triggered.Internal
 {
-    public class NonCascadingTriggerContextDiscoveryStrategy : ITriggerContextDiscoveryStrategy
+    public class NonCascadingTriggerContextDiscoveryStrategy(string name) : ITriggerContextDiscoveryStrategy
     {
         readonly static Action<ILogger, int, string, Exception?> _changesDetected = LoggerMessage.Define<int, string>(
             LogLevel.Debug,
             new EventId(1, "Discovered"),
             "Discovered changes: {changes} for {name}");
 
-        readonly string _name;
-
-        public NonCascadingTriggerContextDiscoveryStrategy(string name)
-        {
-            _name = name ?? throw new ArgumentNullException(nameof(name));
-        }
+        readonly string _name = name ?? throw new ArgumentNullException(nameof(name));
 
         public IEnumerable<IEnumerable<TriggerContextDescriptor>> Discover(TriggerSessionConfiguration configuration, TriggerContextTracker tracker, ILogger logger)
         {

@@ -1,22 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace EntityFrameworkCore.Triggered.IntegrationTests.EntityBags.Triggers
 {
-    public class SoftDeleteTrigger : IBeforeSaveTrigger<User>
+    public class SoftDeleteTrigger(ApplicationDbContext dbContext) : IBeforeSaveTrigger<User>
     {
         public const string IsSoftDeleted = "SoftDeleteTrigger_IsSoftDeleted";
 
-        readonly ApplicationDbContext _dbContext;
-
-        public SoftDeleteTrigger(ApplicationDbContext dbContext)
-        {
-            _dbContext = dbContext;
-        }
+        readonly ApplicationDbContext _dbContext = dbContext;
 
         public void BeforeSave(ITriggerContext<User> context)
         {

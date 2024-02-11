@@ -6,14 +6,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace StudentManager.Pages.Courses
 {
-    public class EditModel : PageModel
+    public class EditModel(StudentManager.ApplicationDbContext context) : PageModel
     {
-        private readonly StudentManager.ApplicationDbContext _context;
-
-        public EditModel(StudentManager.ApplicationDbContext context)
-        {
-            _context = context;
-        }
+        private readonly StudentManager.ApplicationDbContext _context = context;
 
         [BindProperty]
         public Course Course { get; set; }
@@ -64,9 +59,6 @@ namespace StudentManager.Pages.Courses
             return RedirectToPage("./Index");
         }
 
-        private bool CourseExists(int id)
-        {
-            return _context.Courses.Any(e => e.Id == id);
-        }
+        private bool CourseExists(int id) => _context.Courses.Any(e => e.Id == id);
     }
 }

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace EntityFrameworkCore.Triggered.Tests.Stubs
 {
-    public class TriggerStub<TEntity> : 
+    public class TriggerStub<TEntity> :
         IBeforeSaveTrigger<TEntity>,
         IBeforeSaveAsyncTrigger<TEntity>,
         IAfterSaveTrigger<TEntity>,
@@ -15,10 +15,10 @@ namespace EntityFrameworkCore.Triggered.Tests.Stubs
         ITriggerPriority
         where TEntity : class
     {
-        public ICollection<ITriggerContext<TEntity>> BeforeSaveInvocations { get; } = new List<ITriggerContext<TEntity>>();
-        public ICollection<ITriggerContext<TEntity>> BeforeSaveAsyncInvocations { get; } = new List<ITriggerContext<TEntity>>();
-        public ICollection<ITriggerContext<TEntity>> AfterSaveInvocations { get; } = new List<ITriggerContext<TEntity>>();
-        public ICollection<ITriggerContext<TEntity>> AfterSaveAsyncInvocations { get; } = new List<ITriggerContext<TEntity>>();
+        public ICollection<ITriggerContext<TEntity>> BeforeSaveInvocations { get; } = [];
+        public ICollection<ITriggerContext<TEntity>> BeforeSaveAsyncInvocations { get; } = [];
+        public ICollection<ITriggerContext<TEntity>> AfterSaveInvocations { get; } = [];
+        public ICollection<ITriggerContext<TEntity>> AfterSaveAsyncInvocations { get; } = [];
         public ICollection<(ITriggerContext<TEntity> context, Exception exception)> AfterSaveFailedInvocations { get; } = new List<(ITriggerContext<TEntity>, Exception)>();
         public ICollection<(ITriggerContext<TEntity> context, Exception exception)> AfterSaveFailedAsyncInvocations { get; } = new List<(ITriggerContext<TEntity>, Exception)>();
 

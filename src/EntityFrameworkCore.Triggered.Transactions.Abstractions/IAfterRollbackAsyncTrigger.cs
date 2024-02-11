@@ -1,8 +1,7 @@
-﻿namespace EntityFrameworkCore.Triggered.Transactions
+﻿namespace EntityFrameworkCore.Triggered.Transactions;
+
+public interface IAfterRollbackAsyncTrigger<in TEntity>
+    where TEntity : class
 {
-    public interface IAfterRollbackAsyncTrigger<in TEntity>
-        where TEntity : class
-    {
-        Task AfterRollbackAsync(ITriggerContext<TEntity> context, CancellationToken cancellationToken);
-    }
+    Task AfterRollbackAsync(ITriggerContext<TEntity> context, CancellationToken cancellationToken);
 }

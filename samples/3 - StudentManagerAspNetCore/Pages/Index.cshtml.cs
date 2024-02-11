@@ -1,14 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace StudentManager.Pages
+namespace StudentManager.Pages;
+
+public class IndexModel(ILogger<IndexModel> logger) : PageModel
 {
-    public class IndexModel(ILogger<IndexModel> logger) : PageModel
+    private readonly ILogger<IndexModel> _logger = logger;
+
+    public void OnGet()
     {
-        private readonly ILogger<IndexModel> _logger = logger;
 
-        public void OnGet()
-        {
-
-        }
     }
 }

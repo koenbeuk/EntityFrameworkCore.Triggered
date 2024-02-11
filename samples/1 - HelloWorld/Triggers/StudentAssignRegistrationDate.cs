@@ -1,15 +1,14 @@
 ﻿using EntityFrameworkCore.Triggered;
 
-namespace PrimarySchool.Triggers
+namespace PrimarySchool.Triggers;
+
+public class StudentAssignRegistrationDate : IBeforeSaveTrigger<Student>
 {
-    public class StudentAssignRegistrationDate : IBeforeSaveTrigger<Student>
+    public void BeforeSave(ITriggerContext<Student> context)
     {
-        public void BeforeSave(ITriggerContext<Student> context)
+        if (context.ChangeType == ChangeType.Added)
         {
-            if (context.ChangeType == ChangeType.Added)
-            {
-                context.Entity.RegistrationDate = DateTime.Today;
-            }
+            context.Entity.RegistrationDate = DateTime.Today;
         }
     }
 }

@@ -1,10 +1,9 @@
-﻿namespace StudentManager.Services
+﻿namespace StudentManager.Services;
+
+public class EmailService
 {
-    public class EmailService
+    public void SendEmail(Student student, string message)
     {
-        public void SendEmail(Student student, string message)
-        {
-            // Left up for imagination
-        }
+        // Left up for imagination
     }
 }

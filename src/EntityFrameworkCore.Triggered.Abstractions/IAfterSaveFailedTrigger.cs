@@ -1,10 +1,7 @@
-﻿namespace EntityFrameworkCore.Triggered
+﻿namespace EntityFrameworkCore.Triggered;
+
+public interface IAfterSaveFailedTrigger<TEntity>
+    where TEntity : class
 {
-    public interface IAfterSaveFailedTrigger<TEntity>
-        where TEntity : class
-    {
-        void AfterSaveFailed(ITriggerContext<TEntity> context, Exception exception);
-    }
-
-
+    void AfterSaveFailed(ITriggerContext<TEntity> context, Exception exception);
 }

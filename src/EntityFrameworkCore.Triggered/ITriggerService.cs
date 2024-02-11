@@ -1,15 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace EntityFrameworkCore.Triggered
+namespace EntityFrameworkCore.Triggered;
+
+public interface ITriggerService
 {
-    public interface ITriggerService
-    {
-        TriggerSessionConfiguration Configuration { get; set; }
+    TriggerSessionConfiguration Configuration { get; set; }
 
-        ITriggerSession CreateSession(DbContext context, IServiceProvider? serviceProvider = null);
+    ITriggerSession CreateSession(DbContext context, IServiceProvider? serviceProvider = null);
 
-        ITriggerSession CreateSession(DbContext context, TriggerSessionConfiguration configuration, IServiceProvider? serviceProvider = null);
+    ITriggerSession CreateSession(DbContext context, TriggerSessionConfiguration configuration, IServiceProvider? serviceProvider = null);
 
-        ITriggerSession? Current { get; set; }
-    }
+    ITriggerSession? Current { get; set; }
 }

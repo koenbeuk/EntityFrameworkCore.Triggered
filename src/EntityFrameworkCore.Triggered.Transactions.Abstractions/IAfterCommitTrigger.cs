@@ -1,8 +1,7 @@
-﻿namespace EntityFrameworkCore.Triggered.Transactions
+﻿namespace EntityFrameworkCore.Triggered.Transactions;
+
+public interface IAfterCommitTrigger<in TEntity>
+    where TEntity : class
 {
-    public interface IAfterCommitTrigger<in TEntity>
-        where TEntity : class
-    {
-        void AfterCommit(ITriggerContext<TEntity> context);
-    }
+    void AfterCommit(ITriggerContext<TEntity> context);
 }

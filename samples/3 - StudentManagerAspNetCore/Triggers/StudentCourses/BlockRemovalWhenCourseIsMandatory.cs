@@ -1,20 +1,19 @@
 ﻿using EntityFrameworkCore.Triggered;
 
-namespace StudentManager.Triggers.StudentCourses
-{
-    public class BlockRemovalWhenCourseIsMandatory(ApplicationDbContext applicationContext) : IBeforeSaveAsyncTrigger<StudentCourse>
-    {
-        readonly ApplicationDbContext _applicationContext = applicationContext;
+namespace StudentManager.Triggers.StudentCourses;
 
-        public async Task BeforeSaveAsync(ITriggerContext<StudentCourse> context, CancellationToken cancellationToken)
+public class BlockRemovalWhenCourseIsMandatory(ApplicationDbContext applicationContext) : IBeforeSaveAsyncTrigger<StudentCourse>
+{
+    readonly ApplicationDbContext _applicationContext = applicationContext;
+
+    public async Task BeforeSaveAsync(ITriggerContext<StudentCourse> context, CancellationToken cancellationToken)
+    {
+        if (context.ChangeType == ChangeType.Deleted)
         {
-            if (context.ChangeType == ChangeType.Deleted)
+            var course = await _applicationContext.Courses.FindAsync([context.Entity.CourseId], cancellationToken);
+            if (course.IsMandatory)
             {
-                var course = await _applicationContext.Courses.FindAsync([context.Entity.CourseId], cancellationToken);
-                if (course.IsMandatory)
-                {
-                    throw new InvalidOperationException("Course is required");
-                }
+                throw new InvalidOperationException("Course is required");
             }
         }
     }

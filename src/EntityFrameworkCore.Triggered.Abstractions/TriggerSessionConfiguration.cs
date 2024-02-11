@@ -1,15 +1,14 @@
-﻿namespace EntityFrameworkCore.Triggered
+﻿namespace EntityFrameworkCore.Triggered;
+
+public record TriggerSessionConfiguration
 {
-    public record TriggerSessionConfiguration
+    public TriggerSessionConfiguration(bool disabled, int maxCascadeCycles)
     {
-        public TriggerSessionConfiguration(bool disabled, int maxCascadeCycles)
-        {
-            Disabled = disabled;
-            MaxCascadeCycles = maxCascadeCycles;
-        }
-
-        public bool Disabled { get; init; }
-
-        public int MaxCascadeCycles { get; init; }
+        Disabled = disabled;
+        MaxCascadeCycles = maxCascadeCycles;
     }
+
+    public bool Disabled { get; init; }
+
+    public int MaxCascadeCycles { get; init; }
 }

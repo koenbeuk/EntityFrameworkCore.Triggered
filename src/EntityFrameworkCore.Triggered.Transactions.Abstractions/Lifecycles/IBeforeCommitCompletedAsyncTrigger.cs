@@ -1,7 +1,6 @@
-﻿namespace EntityFrameworkCore.Triggered.Transactions.Lifecycles
+﻿namespace EntityFrameworkCore.Triggered.Transactions.Lifecycles;
+
+public interface IBeforeCommitCompletedAsyncTrigger
 {
-    public interface IBeforeCommitCompletedAsyncTrigger
-    {
-        Task BeforeCommitCompletedAsync(CancellationToken cancellationToken);
-    }
+    Task BeforeCommitCompletedAsync(CancellationToken cancellationToken);
 }

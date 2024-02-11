@@ -1,20 +1,19 @@
-﻿namespace EntityFrameworkCore.Triggered.Benchmarks.Triggers
+﻿namespace EntityFrameworkCore.Triggered.Benchmarks.Triggers;
+
+public class SignStudentUpForMandatoryCourses(TriggeredApplicationContext applicationContext) : IBeforeSaveTrigger<Student>
 {
-    public class SignStudentUpForMandatoryCourses(TriggeredApplicationContext applicationContext) : IBeforeSaveTrigger<Student>
+    readonly TriggeredApplicationContext _applicationContext = applicationContext;
+
+    public void BeforeSave(ITriggerContext<Student> context)
     {
-        readonly TriggeredApplicationContext _applicationContext = applicationContext;
+        var mandatoryCourses = _applicationContext.Courses.Where(x => x.IsMandatory).ToList();
 
-        public void BeforeSave(ITriggerContext<Student> context)
+        foreach (var mandatoryCourse in mandatoryCourses)
         {
-            var mandatoryCourses = _applicationContext.Courses.Where(x => x.IsMandatory).ToList();
-
-            foreach (var mandatoryCourse in mandatoryCourses)
-            {
-                _applicationContext.StudentCourses.Add(new StudentCourse {
-                    CourseId = mandatoryCourse.Id,
-                    StudentId = context.Entity.Id
-                });
-            }
+            _applicationContext.StudentCourses.Add(new StudentCourse {
+                CourseId = mandatoryCourse.Id,
+                StudentId = context.Entity.Id
+            });
         }
     }
 }

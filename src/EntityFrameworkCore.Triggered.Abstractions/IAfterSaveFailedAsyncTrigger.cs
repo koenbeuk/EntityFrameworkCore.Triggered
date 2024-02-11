@@ -1,10 +1,7 @@
-﻿namespace EntityFrameworkCore.Triggered
+﻿namespace EntityFrameworkCore.Triggered;
+
+public interface IAfterSaveFailedAsyncTrigger<TEntity>
+    where TEntity : class
 {
-    public interface IAfterSaveFailedAsyncTrigger<TEntity>
-        where TEntity : class
-    {
-        Task AfterSaveFailedAsync(ITriggerContext<TEntity> context, Exception exception, CancellationToken cancellationToken);
-    }
-
-
+    Task AfterSaveFailedAsync(ITriggerContext<TEntity> context, Exception exception, CancellationToken cancellationToken);
 }

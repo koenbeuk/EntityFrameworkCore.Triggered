@@ -1,22 +1,21 @@
-﻿namespace EntityFrameworkCore.Triggered.Internal.Descriptors
+﻿namespace EntityFrameworkCore.Triggered.Internal.Descriptors;
+
+public sealed class AfterSaveFailedTriggerDescriptor : ITriggerTypeDescriptor
 {
-    public sealed class AfterSaveFailedTriggerDescriptor : ITriggerTypeDescriptor
+    readonly Action<object, object, Exception?> _invocationDelegate;
+    readonly Type _triggerType;
+
+    public AfterSaveFailedTriggerDescriptor(Type entityType)
     {
-        readonly Action<object, object, Exception?> _invocationDelegate;
-        readonly Type _triggerType;
+        var triggerType = typeof(IAfterSaveFailedTrigger<>).MakeGenericType(entityType);
+        var triggerMethod = triggerType.GetMethod(nameof(IAfterSaveFailedTrigger<object>.AfterSaveFailed));
 
-        public AfterSaveFailedTriggerDescriptor(Type entityType)
-        {
-            var triggerType = typeof(IAfterSaveFailedTrigger<>).MakeGenericType(entityType);
-            var triggerMethod = triggerType.GetMethod(nameof(IAfterSaveFailedTrigger<object>.AfterSaveFailed));
-
-            _triggerType = triggerType;
-            _invocationDelegate = TriggerTypeDescriptorHelpers.GetWeakDelegateWithException(triggerType, entityType, triggerMethod!);
-        }
-
-        public Type TriggerType => _triggerType;
-
-        public void Invoke(object trigger, object triggerContext, Exception? exception)
-            => _invocationDelegate(trigger, triggerContext, exception);
+        _triggerType = triggerType;
+        _invocationDelegate = TriggerTypeDescriptorHelpers.GetWeakDelegateWithException(triggerType, entityType, triggerMethod!);
     }
+
+    public Type TriggerType => _triggerType;
+
+    public void Invoke(object trigger, object triggerContext, Exception? exception)
+        => _invocationDelegate(trigger, triggerContext, exception);
 }

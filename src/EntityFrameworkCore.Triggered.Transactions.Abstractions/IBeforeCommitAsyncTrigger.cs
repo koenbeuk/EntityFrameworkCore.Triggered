@@ -1,8 +1,7 @@
-﻿namespace EntityFrameworkCore.Triggered.Transactions
+﻿namespace EntityFrameworkCore.Triggered.Transactions;
+
+public interface IBeforeCommitAsyncTrigger<in TEntity>
+    where TEntity : class
 {
-    public interface IBeforeCommitAsyncTrigger<in TEntity>
-        where TEntity : class
-    {
-        Task BeforeCommitAsync(ITriggerContext<TEntity> context, CancellationToken cancellationToken);
-    }
+    Task BeforeCommitAsync(ITriggerContext<TEntity> context, CancellationToken cancellationToken);
 }

@@ -1,30 +1,29 @@
 ﻿using EntityFrameworkCore.Triggered.Infrastructure.Internal;
 using Xunit;
 
-namespace EntityFrameworkCore.Triggered.Tests.Internal
+namespace EntityFrameworkCore.Triggered.Tests.Internal;
+
+public class TypeHelpersTests
 {
-    public class TypeHelpersTests
+    [Theory]
+    [InlineData(typeof(List<>), typeof(ICollection<>), true)]
+    [InlineData(typeof(List<object>), typeof(ICollection<>), true)]
+    [InlineData(typeof(object), typeof(IBeforeSaveTrigger<>), false)]
+    public void FindGenericInterface_DetectsImplementation(Type type, Type interfaceType, bool expectedResult)
     {
-        [Theory]
-        [InlineData(typeof(List<>), typeof(ICollection<>), true)]
-        [InlineData(typeof(List<object>), typeof(ICollection<>), true)]
-        [InlineData(typeof(object), typeof(IBeforeSaveTrigger<>), false)]
-        public void FindGenericInterface_DetectsImplementation(Type type, Type interfaceType, bool expectedResult)
-        {
-            var result = TypeHelpers.FindGenericInterfaces(type, interfaceType).Any();
+        var result = TypeHelpers.FindGenericInterfaces(type, interfaceType).Any();
 
-            Assert.Equal(expectedResult, result);
-        }
+        Assert.Equal(expectedResult, result);
+    }
 
-        [Fact]
-        public void EnumerateTypeHierarchy_Object_FindsOne()
-        {
-            var type = typeof(object);
+    [Fact]
+    public void EnumerateTypeHierarchy_Object_FindsOne()
+    {
+        var type = typeof(object);
 
-            var result = TypeHelpers.EnumerateTypeHierarchy(type);
+        var result = TypeHelpers.EnumerateTypeHierarchy(type);
 
-            Assert.Single(result);
-            Assert.Equal(type, result.Single());
-        }
+        Assert.Single(result);
+        Assert.Equal(type, result.Single());
     }
 }

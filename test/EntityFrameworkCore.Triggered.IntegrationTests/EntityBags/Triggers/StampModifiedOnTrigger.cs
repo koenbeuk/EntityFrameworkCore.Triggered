@@ -1,15 +1,14 @@
-﻿namespace EntityFrameworkCore.Triggered.IntegrationTests.EntityBags.Triggers
+﻿namespace EntityFrameworkCore.Triggered.IntegrationTests.EntityBags.Triggers;
+
+public class StampModifiedOnTrigger : IBeforeSaveTrigger<User>
 {
-    public class StampModifiedOnTrigger : IBeforeSaveTrigger<User>
+    public void BeforeSave(ITriggerContext<User> context)
     {
-        public void BeforeSave(ITriggerContext<User> context)
+        if (context.ChangeType is ChangeType.Modified)
         {
-            if (context.ChangeType is ChangeType.Modified)
+            if (!context.Items.ContainsKey(SoftDeleteTrigger.IsSoftDeleted))
             {
-                if (!context.Items.ContainsKey(SoftDeleteTrigger.IsSoftDeleted))
-                {
-                    context.Entity.ModifiedOn = DateTime.UtcNow;
-                }
+                context.Entity.ModifiedOn = DateTime.UtcNow;
             }
         }
     }

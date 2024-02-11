@@ -1,80 +1,79 @@
 ﻿using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace EntityFrameworkCore.Triggered.Internal
+namespace EntityFrameworkCore.Triggered.Internal;
+
+public sealed class ApplicationTriggerServiceProviderAccessor : ITriggerServiceProviderAccessor, IDisposable, IResettableService
 {
-    public sealed class ApplicationTriggerServiceProviderAccessor : ITriggerServiceProviderAccessor, IDisposable, IResettableService
+    readonly IServiceProvider _internalServiceProvider;
+    readonly IServiceProvider? _fallbackApplicationServiceProvider;
+    readonly Func<IServiceProvider, IServiceProvider>? _scopedServiceProviderTransform;
+
+    IServiceScope? _serviceScope;
+    IServiceProvider? _applicationScopedServiceProvider;
+
+    public ApplicationTriggerServiceProviderAccessor(IServiceProvider internalServiceProvider, Func<IServiceProvider, IServiceProvider>? scopedServiceProviderTransform)
     {
-        readonly IServiceProvider _internalServiceProvider;
-        readonly IServiceProvider? _fallbackApplicationServiceProvider;
-        readonly Func<IServiceProvider, IServiceProvider>? _scopedServiceProviderTransform;
+        ArgumentNullException.ThrowIfNull(internalServiceProvider);
 
-        IServiceScope? _serviceScope;
-        IServiceProvider? _applicationScopedServiceProvider;
+        var dbContextOptions = internalServiceProvider.GetRequiredService<IDbContextOptions>();
+        var coreOptionsExtension = dbContextOptions.FindExtension<CoreOptionsExtension>() ?? throw new InvalidOperationException("No coreOptionsExtension configured");
 
-        public ApplicationTriggerServiceProviderAccessor(IServiceProvider internalServiceProvider, Func<IServiceProvider, IServiceProvider>? scopedServiceProviderTransform)
+        _internalServiceProvider = internalServiceProvider;
+        if (scopedServiceProviderTransform == null)
         {
-            ArgumentNullException.ThrowIfNull(internalServiceProvider);
+            _fallbackApplicationServiceProvider = coreOptionsExtension.ApplicationServiceProvider;
+        }
 
-            var dbContextOptions = internalServiceProvider.GetRequiredService<IDbContextOptions>();
-            var coreOptionsExtension = dbContextOptions.FindExtension<CoreOptionsExtension>() ?? throw new InvalidOperationException("No coreOptionsExtension configured");
+        _scopedServiceProviderTransform = scopedServiceProviderTransform;
+    }
 
-            _internalServiceProvider = internalServiceProvider;
-            if (scopedServiceProviderTransform == null)
+    public void SetTriggerServiceProvider(IServiceProvider serviceProvider) => _applicationScopedServiceProvider = serviceProvider;
+
+    public IServiceProvider GetTriggerServiceProvider()
+    {
+        if (_applicationScopedServiceProvider == null)
+        {
+            if (_fallbackApplicationServiceProvider != null)
             {
-                _fallbackApplicationServiceProvider = coreOptionsExtension.ApplicationServiceProvider;
+                _applicationScopedServiceProvider = _fallbackApplicationServiceProvider;
+            }
+            else if (_scopedServiceProviderTransform != null)
+            {
+                var dbContextOptions = _internalServiceProvider.GetRequiredService<IDbContextOptions>();
+                var coreOptionsExtension = dbContextOptions.FindExtension<CoreOptionsExtension>();
+                var serviceProvider = coreOptionsExtension!.ApplicationServiceProvider ?? _internalServiceProvider;
+
+                _applicationScopedServiceProvider = _scopedServiceProviderTransform(serviceProvider);
+            }
+            else
+            {
+                var dbContext = _internalServiceProvider.GetRequiredService<ICurrentDbContext>().Context;
+                _applicationScopedServiceProvider = new HybridServiceProvider(_internalServiceProvider, dbContext);
             }
 
-            _scopedServiceProviderTransform = scopedServiceProviderTransform;
         }
 
-        public void SetTriggerServiceProvider(IServiceProvider serviceProvider) => _applicationScopedServiceProvider = serviceProvider;
+        return _applicationScopedServiceProvider;
+    }
 
-        public IServiceProvider GetTriggerServiceProvider()
+    public void Dispose()
+        => _serviceScope?.Dispose();
+
+    public void ResetState()
+    {
+        if (_serviceScope != null)
         {
-            if (_applicationScopedServiceProvider == null)
-            {
-                if (_fallbackApplicationServiceProvider != null)
-                {
-                    _applicationScopedServiceProvider = _fallbackApplicationServiceProvider;
-                }
-                else if (_scopedServiceProviderTransform != null)
-                {
-                    var dbContextOptions = _internalServiceProvider.GetRequiredService<IDbContextOptions>();
-                    var coreOptionsExtension = dbContextOptions.FindExtension<CoreOptionsExtension>();
-                    var serviceProvider = coreOptionsExtension!.ApplicationServiceProvider ?? _internalServiceProvider;
-
-                    _applicationScopedServiceProvider = _scopedServiceProviderTransform(serviceProvider);
-                }
-                else
-                {
-                    var dbContext = _internalServiceProvider.GetRequiredService<ICurrentDbContext>().Context;
-                    _applicationScopedServiceProvider = new HybridServiceProvider(_internalServiceProvider, dbContext);
-                }
-
-            }
-
-            return _applicationScopedServiceProvider;
+            _serviceScope.Dispose();
+            _serviceScope = null;
         }
 
-        public void Dispose()
-            => _serviceScope?.Dispose();
+        _applicationScopedServiceProvider = null;
+    }
 
-        public void ResetState()
-        {
-            if (_serviceScope != null)
-            {
-                _serviceScope.Dispose();
-                _serviceScope = null;
-            }
-
-            _applicationScopedServiceProvider = null;
-        }
-
-        public Task ResetStateAsync(CancellationToken cancellationToken = default)
-        {
-            ResetState();
-            return Task.CompletedTask;
-        }
+    public Task ResetStateAsync(CancellationToken cancellationToken = default)
+    {
+        ResetState();
+        return Task.CompletedTask;
     }
 }

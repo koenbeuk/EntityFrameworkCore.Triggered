@@ -4,22 +4,21 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
-namespace EntityFrameworkCore.Triggered.Extensions.Tests
+namespace EntityFrameworkCore.Triggered.Extensions.Tests;
+
+public class TriggerContextOptionsBuilderExtensionsTests
 {
-    public class TriggerContextOptionsBuilderExtensionsTests
+    [Fact]
+    public void AddAssemblyTriggers_AbstractTrigger_GetsIgnored()
     {
-        [Fact]
-        public void AddAssemblyTriggers_AbstractTrigger_GetsIgnored()
-        {
-            var context = new DbContextOptionsBuilder();
-            var builder = new TriggersContextOptionsBuilder(context);
+        var context = new DbContextOptionsBuilder();
+        var builder = new TriggersContextOptionsBuilder(context);
 
-            builder.AddAssemblyTriggers();
+        builder.AddAssemblyTriggers();
 
-            var triggerOptionExtension = context.Options.Extensions.OfType<TriggersOptionExtension>().Single();
+        var triggerOptionExtension = context.Options.Extensions.OfType<TriggersOptionExtension>().Single();
 
-            // Ensure that we did not register the AbstractTrigger
-            Assert.Empty(triggerOptionExtension.Triggers.Where(x => ReferenceEquals(x.typeOrInstance, typeof(AbstractTrigger))));
-        }
+        // Ensure that we did not register the AbstractTrigger
+        Assert.Empty(triggerOptionExtension.Triggers.Where(x => ReferenceEquals(x.typeOrInstance, typeof(AbstractTrigger))));
     }
 }

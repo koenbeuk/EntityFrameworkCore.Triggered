@@ -1,24 +1,23 @@
-﻿namespace EntityFrameworkCore.Triggered.Internal
+﻿namespace EntityFrameworkCore.Triggered.Internal;
+
+public sealed class TriggerDescriptorComparer : IComparer<TriggerDescriptor>, IComparer<AsyncTriggerDescriptor>
 {
-    public sealed class TriggerDescriptorComparer : IComparer<TriggerDescriptor>, IComparer<AsyncTriggerDescriptor>
+    public int Compare(TriggerDescriptor? x, TriggerDescriptor? y)
     {
-        public int Compare(TriggerDescriptor? x, TriggerDescriptor? y)
-        {
-            ArgumentNullException.ThrowIfNull(x);
+        ArgumentNullException.ThrowIfNull(x);
 
-            ArgumentNullException.ThrowIfNull(y);
+        ArgumentNullException.ThrowIfNull(y);
 
-            return x.Priority - y.Priority;
-        }
+        return x.Priority - y.Priority;
+    }
 
 
-        public int Compare(AsyncTriggerDescriptor? x, AsyncTriggerDescriptor? y)
-        {
-            ArgumentNullException.ThrowIfNull(x);
+    public int Compare(AsyncTriggerDescriptor? x, AsyncTriggerDescriptor? y)
+    {
+        ArgumentNullException.ThrowIfNull(x);
 
-            ArgumentNullException.ThrowIfNull(y);
+        ArgumentNullException.ThrowIfNull(y);
 
-            return x.Priority - y.Priority;
-        }
+        return x.Priority - y.Priority;
     }
 }

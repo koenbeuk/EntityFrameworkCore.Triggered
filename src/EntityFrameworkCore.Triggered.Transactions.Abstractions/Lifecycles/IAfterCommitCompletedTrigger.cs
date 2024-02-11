@@ -1,7 +1,6 @@
-﻿namespace EntityFrameworkCore.Triggered.Transactions.Lifecycles
+﻿namespace EntityFrameworkCore.Triggered.Transactions.Lifecycles;
+
+public interface IAfterCommitCompletedTrigger
 {
-    public interface IAfterCommitCompletedTrigger
-    {
-        void AfterCommitCompleted();
-    }
+    void AfterCommitCompleted();
 }

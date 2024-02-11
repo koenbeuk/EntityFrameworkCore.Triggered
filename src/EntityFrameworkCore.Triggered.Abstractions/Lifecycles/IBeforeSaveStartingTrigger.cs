@@ -1,7 +1,6 @@
-﻿namespace EntityFrameworkCore.Triggered.Lifecycles
+﻿namespace EntityFrameworkCore.Triggered.Lifecycles;
+
+public interface IBeforeSaveStartingTrigger
 {
-    public interface IBeforeSaveStartingTrigger
-    {
-        void BeforeSaveStarting();
-    }
+    void BeforeSaveStarting();
 }

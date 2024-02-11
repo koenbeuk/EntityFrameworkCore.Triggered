@@ -6,235 +6,234 @@ using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
-namespace EntityFrameworkCore.Triggered.Tests.Infrastructure
+namespace EntityFrameworkCore.Triggered.Tests.Infrastructure;
+
+public class ServiceCollectionExtensionsTests
 {
-    public class ServiceCollectionExtensionsTests
+    class TestModel { public int Id { get; set; } }
+    class TestDbContext(DbContextOptions options) : DbContext(options)
     {
-        class TestModel { public int Id { get; set; } }
-        class TestDbContext(DbContextOptions options) : DbContext(options)
-        {
 
-            public DbSet<TestModel> TestModels { get; set; }
-        }
+        public DbSet<TestModel> TestModels { get; set; }
+    }
 
-        class TestDbContextFactory(IServiceProvider serviceProvider, DbContextOptions<ServiceCollectionExtensionsTests.TestDbContext> options, IDbContextFactorySource<ServiceCollectionExtensionsTests.TestDbContext> factorySource) : DbContextFactory<TestDbContext>(serviceProvider, options, factorySource)
-        {
-        }
+    class TestDbContextFactory(IServiceProvider serviceProvider, DbContextOptions<ServiceCollectionExtensionsTests.TestDbContext> options, IDbContextFactorySource<ServiceCollectionExtensionsTests.TestDbContext> factorySource) : DbContextFactory<TestDbContext>(serviceProvider, options, factorySource)
+    {
+    }
 
-        [Fact]
-        public void AddTriggeredDbContext_AddsTriggersAndCallsUsersAction()
-        {
-            var subject = new ServiceCollection();
-            var optionsActionsCalled = false;
-            subject.AddTriggeredDbContext<TestDbContext>(options => {
-                optionsActionsCalled = true;
-                options.UseInMemoryDatabase("test");
-                options.ConfigureWarnings(warningOptions => {
-                    warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
-                });
+    [Fact]
+    public void AddTriggeredDbContext_AddsTriggersAndCallsUsersAction()
+    {
+        var subject = new ServiceCollection();
+        var optionsActionsCalled = false;
+        subject.AddTriggeredDbContext<TestDbContext>(options => {
+            optionsActionsCalled = true;
+            options.UseInMemoryDatabase("test");
+            options.ConfigureWarnings(warningOptions => {
+                warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
             });
+        });
 
-            var serviceProvider = subject.BuildServiceProvider();
-            var context = serviceProvider.GetRequiredService<TestDbContext>();
+        var serviceProvider = subject.BuildServiceProvider();
+        var context = serviceProvider.GetRequiredService<TestDbContext>();
 
-            Assert.True(optionsActionsCalled);
-            Assert.NotNull(context.GetService<ITriggerService>());
-        }
+        Assert.True(optionsActionsCalled);
+        Assert.NotNull(context.GetService<ITriggerService>());
+    }
 
-        [Fact]
-        public void AddTriggeredDbContextPool_AddsTriggersAndCallsUsersAction()
-        {
-            var subject = new ServiceCollection();
-            var optionsActionsCalled = false;
-            subject.AddTriggeredDbContext<TestDbContext>(options => {
-                optionsActionsCalled = true;
-                options.UseInMemoryDatabase("test");
-                options.ConfigureWarnings(warningOptions => {
-                    warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
-                });
+    [Fact]
+    public void AddTriggeredDbContextPool_AddsTriggersAndCallsUsersAction()
+    {
+        var subject = new ServiceCollection();
+        var optionsActionsCalled = false;
+        subject.AddTriggeredDbContext<TestDbContext>(options => {
+            optionsActionsCalled = true;
+            options.UseInMemoryDatabase("test");
+            options.ConfigureWarnings(warningOptions => {
+                warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
             });
+        });
 
-            var serviceProvider = subject.BuildServiceProvider();
-            var context = serviceProvider.GetRequiredService<TestDbContext>();
+        var serviceProvider = subject.BuildServiceProvider();
+        var context = serviceProvider.GetRequiredService<TestDbContext>();
 
-            Assert.True(optionsActionsCalled);
-            Assert.NotNull(context.GetService<ITriggerService>());
-        }
-
-
-        [Fact]
-        public void AddTriggeredDbContext_ReusesScopedServiceProvider()
-        {
-            var subject = new ServiceCollection();
-            subject.AddTriggeredDbContext<TestDbContext>(options => {
-                options.UseInMemoryDatabase("test");
-                options.ConfigureWarnings(warningOptions => {
-                    warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
-                });
-            }).AddScoped<IBeforeSaveTrigger<TestModel>, TriggerStub<TestModel>>();
-
-            var serviceProvider = subject.BuildServiceProvider();
-
-            using var scope = serviceProvider.CreateScope();
-
-            var context = scope.ServiceProvider.GetRequiredService<TestDbContext>();
-            context.TestModels.Add(new TestModel());
-
-            context.SaveChanges();
-
-            var triggerStub = scope.ServiceProvider.GetRequiredService<IBeforeSaveTrigger<TestModel>>() as TriggerStub<TestModel>;
-            Assert.NotNull(triggerStub);
-            Assert.Single(triggerStub.BeforeSaveInvocations);
-        }
+        Assert.True(optionsActionsCalled);
+        Assert.NotNull(context.GetService<ITriggerService>());
+    }
 
 
-        [Fact]
-        public void AddTriggeredDbContextPool_ReusesScopedServiceProvider()
-        {
-            var subject = new ServiceCollection();
-            subject.AddTriggeredDbContextPool<TestDbContext>(options => {
-                options.UseInMemoryDatabase("test");
-                options.ConfigureWarnings(warningOptions => {
-                    warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
-                });
-            }).AddScoped<IBeforeSaveTrigger<TestModel>, TriggerStub<TestModel>>();
-
-            var serviceProvider = subject.BuildServiceProvider();
-
-            using var scope = serviceProvider.CreateScope();
-
-            var context = scope.ServiceProvider.GetRequiredService<TestDbContext>();
-            context.TestModels.Add(new TestModel());
-
-            context.SaveChanges();
-
-            var triggerStub = scope.ServiceProvider.GetRequiredService<IBeforeSaveTrigger<TestModel>>() as TriggerStub<TestModel>;
-            Assert.NotNull(triggerStub);
-            Assert.Single(triggerStub.BeforeSaveInvocations);
-        }
-
-        [Fact]
-        public void AddTriggeredDbContextPool_SupportsAScopedLifetime()
-        {
-            var subject = new ServiceCollection();
-            subject.AddTriggeredDbContextPool<TestDbContext>(options => {
-                options.UseInMemoryDatabase("test");
-                options.ConfigureWarnings(warningOptions => {
-                    warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
-                });
+    [Fact]
+    public void AddTriggeredDbContext_ReusesScopedServiceProvider()
+    {
+        var subject = new ServiceCollection();
+        subject.AddTriggeredDbContext<TestDbContext>(options => {
+            options.UseInMemoryDatabase("test");
+            options.ConfigureWarnings(warningOptions => {
+                warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
             });
+        }).AddScoped<IBeforeSaveTrigger<TestModel>, TriggerStub<TestModel>>();
 
-            var serviceProvider = subject.BuildServiceProvider();
+        var serviceProvider = subject.BuildServiceProvider();
 
-            using var scope = serviceProvider.CreateScope();
+        using var scope = serviceProvider.CreateScope();
 
-            var context1 = scope.ServiceProvider.GetRequiredService<TestDbContext>();
-            var context2 = scope.ServiceProvider.GetRequiredService<TestDbContext>();
+        var context = scope.ServiceProvider.GetRequiredService<TestDbContext>();
+        context.TestModels.Add(new TestModel());
 
-            Assert.Equal(context1, context1);
-        }
+        context.SaveChanges();
 
-        [Fact]
-        public void AddTriggeredDbContextPool_SupportAContractType()
-        {
-            var subject = new ServiceCollection();
-            subject.AddTriggeredDbContextPool<DbContext, TestDbContext>(options => {
-                options.UseInMemoryDatabase("test");
-                options.ConfigureWarnings(warningOptions => {
-                    warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
-                });
+        var triggerStub = scope.ServiceProvider.GetRequiredService<IBeforeSaveTrigger<TestModel>>() as TriggerStub<TestModel>;
+        Assert.NotNull(triggerStub);
+        Assert.Single(triggerStub.BeforeSaveInvocations);
+    }
+
+
+    [Fact]
+    public void AddTriggeredDbContextPool_ReusesScopedServiceProvider()
+    {
+        var subject = new ServiceCollection();
+        subject.AddTriggeredDbContextPool<TestDbContext>(options => {
+            options.UseInMemoryDatabase("test");
+            options.ConfigureWarnings(warningOptions => {
+                warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
             });
+        }).AddScoped<IBeforeSaveTrigger<TestModel>, TriggerStub<TestModel>>();
 
-            var serviceProvider = subject.BuildServiceProvider();
+        var serviceProvider = subject.BuildServiceProvider();
 
-            using var scope = serviceProvider.CreateScope();
+        using var scope = serviceProvider.CreateScope();
 
-            var context1 = scope.ServiceProvider.GetRequiredService<DbContext>();
-            var context2 = scope.ServiceProvider.GetRequiredService<TestDbContext>();
+        var context = scope.ServiceProvider.GetRequiredService<TestDbContext>();
+        context.TestModels.Add(new TestModel());
 
-            Assert.Equal(context1, context1);
-        }
+        context.SaveChanges();
 
-        [Fact]
-        public void AddTriggeredDbContextFactory_ReusesScopedServiceProvider()
-        {
-            var subject = new ServiceCollection();
-            subject.AddTriggeredDbContextFactory<TestDbContext>(options => {
-                options.UseInMemoryDatabase("test");
-                options.ConfigureWarnings(warningOptions => {
-                    warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
-                });
-            }).AddScoped<IBeforeSaveTrigger<TestModel>, TriggerStub<TestModel>>();
+        var triggerStub = scope.ServiceProvider.GetRequiredService<IBeforeSaveTrigger<TestModel>>() as TriggerStub<TestModel>;
+        Assert.NotNull(triggerStub);
+        Assert.Single(triggerStub.BeforeSaveInvocations);
+    }
 
-            var serviceProvider = subject.BuildServiceProvider();
+    [Fact]
+    public void AddTriggeredDbContextPool_SupportsAScopedLifetime()
+    {
+        var subject = new ServiceCollection();
+        subject.AddTriggeredDbContextPool<TestDbContext>(options => {
+            options.UseInMemoryDatabase("test");
+            options.ConfigureWarnings(warningOptions => {
+                warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
+            });
+        });
 
-            using var scope = serviceProvider.CreateScope();
+        var serviceProvider = subject.BuildServiceProvider();
 
-            var contextFactory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<TestDbContext>>();
-            var context = contextFactory.CreateDbContext();
+        using var scope = serviceProvider.CreateScope();
 
-            context.TestModels.Add(new TestModel());
+        var context1 = scope.ServiceProvider.GetRequiredService<TestDbContext>();
+        var context2 = scope.ServiceProvider.GetRequiredService<TestDbContext>();
 
-            context.SaveChanges();
+        Assert.Equal(context1, context1);
+    }
 
-            var triggerStub = scope.ServiceProvider.GetRequiredService<IBeforeSaveTrigger<TestModel>>() as TriggerStub<TestModel>;
-            Assert.NotNull(triggerStub);
-            Assert.Single(triggerStub.BeforeSaveInvocations);
-        }
+    [Fact]
+    public void AddTriggeredDbContextPool_SupportAContractType()
+    {
+        var subject = new ServiceCollection();
+        subject.AddTriggeredDbContextPool<DbContext, TestDbContext>(options => {
+            options.UseInMemoryDatabase("test");
+            options.ConfigureWarnings(warningOptions => {
+                warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
+            });
+        });
 
-        [Fact]
-        public void AddTriggeredDbContextFactory_WithCustomFactory_ReusesScopedServiceProvider()
-        {
-            var subject = new ServiceCollection();
-            subject.AddTriggeredDbContextFactory<TestDbContext, TestDbContextFactory>(options => {
-                options.UseInMemoryDatabase("test");
-                options.ConfigureWarnings(warningOptions => {
-                    warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
-                });
-            }).AddScoped<IBeforeSaveTrigger<TestModel>, TriggerStub<TestModel>>();
+        var serviceProvider = subject.BuildServiceProvider();
 
-            var serviceProvider = subject.BuildServiceProvider();
+        using var scope = serviceProvider.CreateScope();
 
-            using var scope = serviceProvider.CreateScope();
+        var context1 = scope.ServiceProvider.GetRequiredService<DbContext>();
+        var context2 = scope.ServiceProvider.GetRequiredService<TestDbContext>();
 
-            var contextFactory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<TestDbContext>>();
+        Assert.Equal(context1, context1);
+    }
 
-            var context = contextFactory.CreateDbContext();
+    [Fact]
+    public void AddTriggeredDbContextFactory_ReusesScopedServiceProvider()
+    {
+        var subject = new ServiceCollection();
+        subject.AddTriggeredDbContextFactory<TestDbContext>(options => {
+            options.UseInMemoryDatabase("test");
+            options.ConfigureWarnings(warningOptions => {
+                warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
+            });
+        }).AddScoped<IBeforeSaveTrigger<TestModel>, TriggerStub<TestModel>>();
 
-            context.TestModels.Add(new TestModel());
+        var serviceProvider = subject.BuildServiceProvider();
 
-            context.SaveChanges();
+        using var scope = serviceProvider.CreateScope();
 
-            var triggerStub = scope.ServiceProvider.GetRequiredService<IBeforeSaveTrigger<TestModel>>() as TriggerStub<TestModel>;
-            Assert.NotNull(triggerStub);
-            Assert.Single(triggerStub.BeforeSaveInvocations);
-        }
+        var contextFactory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<TestDbContext>>();
+        var context = contextFactory.CreateDbContext();
 
-        [Fact]
-        public void AddTriggeredPooledDbContextFactory_ReusesScopedServiceProvider()
-        {
-            var subject = new ServiceCollection();
-            subject.AddTriggeredPooledDbContextFactory<TestDbContext>(options => {
-                options.UseInMemoryDatabase("test");
-                options.ConfigureWarnings(warningOptions => {
-                    warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
-                });
-            }).AddScoped<IBeforeSaveTrigger<TestModel>, TriggerStub<TestModel>>();
+        context.TestModels.Add(new TestModel());
 
-            var serviceProvider = subject.BuildServiceProvider();
+        context.SaveChanges();
 
-            using var scope = serviceProvider.CreateScope();
+        var triggerStub = scope.ServiceProvider.GetRequiredService<IBeforeSaveTrigger<TestModel>>() as TriggerStub<TestModel>;
+        Assert.NotNull(triggerStub);
+        Assert.Single(triggerStub.BeforeSaveInvocations);
+    }
 
-            var contextFactory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<TestDbContext>>();
-            var context = contextFactory.CreateDbContext();
+    [Fact]
+    public void AddTriggeredDbContextFactory_WithCustomFactory_ReusesScopedServiceProvider()
+    {
+        var subject = new ServiceCollection();
+        subject.AddTriggeredDbContextFactory<TestDbContext, TestDbContextFactory>(options => {
+            options.UseInMemoryDatabase("test");
+            options.ConfigureWarnings(warningOptions => {
+                warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
+            });
+        }).AddScoped<IBeforeSaveTrigger<TestModel>, TriggerStub<TestModel>>();
 
-            context.TestModels.Add(new TestModel());
+        var serviceProvider = subject.BuildServiceProvider();
 
-            context.SaveChanges();
+        using var scope = serviceProvider.CreateScope();
 
-            var triggerStub = scope.ServiceProvider.GetRequiredService<IBeforeSaveTrigger<TestModel>>() as TriggerStub<TestModel>;
-            Assert.NotNull(triggerStub);
-            Assert.Single(triggerStub.BeforeSaveInvocations);
-        }
+        var contextFactory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<TestDbContext>>();
+
+        var context = contextFactory.CreateDbContext();
+
+        context.TestModels.Add(new TestModel());
+
+        context.SaveChanges();
+
+        var triggerStub = scope.ServiceProvider.GetRequiredService<IBeforeSaveTrigger<TestModel>>() as TriggerStub<TestModel>;
+        Assert.NotNull(triggerStub);
+        Assert.Single(triggerStub.BeforeSaveInvocations);
+    }
+
+    [Fact]
+    public void AddTriggeredPooledDbContextFactory_ReusesScopedServiceProvider()
+    {
+        var subject = new ServiceCollection();
+        subject.AddTriggeredPooledDbContextFactory<TestDbContext>(options => {
+            options.UseInMemoryDatabase("test");
+            options.ConfigureWarnings(warningOptions => {
+                warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
+            });
+        }).AddScoped<IBeforeSaveTrigger<TestModel>, TriggerStub<TestModel>>();
+
+        var serviceProvider = subject.BuildServiceProvider();
+
+        using var scope = serviceProvider.CreateScope();
+
+        var contextFactory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<TestDbContext>>();
+        var context = contextFactory.CreateDbContext();
+
+        context.TestModels.Add(new TestModel());
+
+        context.SaveChanges();
+
+        var triggerStub = scope.ServiceProvider.GetRequiredService<IBeforeSaveTrigger<TestModel>>() as TriggerStub<TestModel>;
+        Assert.NotNull(triggerStub);
+        Assert.Single(triggerStub.BeforeSaveInvocations);
     }
 }

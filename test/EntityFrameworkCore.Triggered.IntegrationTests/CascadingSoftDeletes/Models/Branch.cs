@@ -1,13 +1,12 @@
-﻿namespace EntityFrameworkCore.Triggered.IntegrationTests.CascadingSoftDeletes.Models
+﻿namespace EntityFrameworkCore.Triggered.IntegrationTests.CascadingSoftDeletes.Models;
+
+public class Branch
 {
-    public class Branch
-    {
-        public int Id { get; set; }
-        public int? ParentId { get; set; }
-        public DateTime? DeletedOn { get; set; }
+    public int Id { get; set; }
+    public int? ParentId { get; set; }
+    public DateTime? DeletedOn { get; set; }
 
-        public Branch Parent { get; set; }
-        public ICollection<Branch> Children { get; set; }
+    public Branch Parent { get; set; }
+    public ICollection<Branch> Children { get; set; }
 
-    }
 }

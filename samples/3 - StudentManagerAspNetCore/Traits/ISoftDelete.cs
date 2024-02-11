@@ -1,7 +1,6 @@
-﻿namespace StudentManager.Traits
+﻿namespace StudentManager.Traits;
+
+public interface ISoftDelete
 {
-    public interface ISoftDelete
-    {
-        DateTimeOffset? DeletedOn { get; set; }
-    }
+    DateTimeOffset? DeletedOn { get; set; }
 }

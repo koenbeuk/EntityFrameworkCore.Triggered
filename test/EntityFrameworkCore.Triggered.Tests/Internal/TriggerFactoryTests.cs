@@ -5,123 +5,122 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
-namespace EntityFrameworkCore.Triggered.Tests.Internal
+namespace EntityFrameworkCore.Triggered.Tests.Internal;
+
+public class TriggerFactoryTests
 {
-    public class TriggerFactoryTests
+    class SampleTrigger : IBeforeSaveTrigger<object>
     {
-        class SampleTrigger : IBeforeSaveTrigger<object>
+        public void BeforeSave(ITriggerContext<object> context) => throw new NotImplementedException();
+    }
+
+    class SampleTrigger2(TriggerFactory triggerFactory) : IBeforeSaveTrigger<object>
+    {
+        public TriggerFactory TriggerFactory { get; } = triggerFactory;
+
+        public void BeforeSave(ITriggerContext<object> context) => throw new NotImplementedException();
+    }
+
+    class SampleTrigger3<TDbContext>(TDbContext dbContext) : IBeforeSaveTrigger<object>
+        where TDbContext : DbContext
+    {
+        public TDbContext DbContext { get; } = dbContext;
+
+        public void BeforeSave(ITriggerContext<object> context) => throw new NotImplementedException();
+    }
+
+    public class SampleDbContext3 : DbContext
+    {
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            public void BeforeSave(ITriggerContext<object> context) => throw new NotImplementedException();
+            optionsBuilder
+                .UseInMemoryDatabase(nameof(SampleDbContext3))
+                .UseTriggers(triggerOptions =>
+                    triggerOptions
+                        .AddTrigger<SampleTrigger3<SampleDbContext3>>()
+                        .AddTrigger<SampleTrigger3<DbContext>>()
+                );
+            optionsBuilder.ConfigureWarnings(warningOptions => {
+                warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
+            });
         }
+    }
 
-        class SampleTrigger2(TriggerFactory triggerFactory) : IBeforeSaveTrigger<object>
-        {
-            public TriggerFactory TriggerFactory { get; } = triggerFactory;
+    [Fact]
+    public void Resolve_FromExternalServiceProvider_FindsType()
+    {
+        var serviceProvider = new ServiceCollection().BuildServiceProvider();
 
-            public void BeforeSave(ITriggerContext<object> context) => throw new NotImplementedException();
-        }
+        var applicationServiceProvider = new ServiceCollection()
+            .AddTransient<IBeforeSaveTrigger<object>, SampleTrigger>()
+            .BuildServiceProvider();
 
-        class SampleTrigger3<TDbContext>(TDbContext dbContext) : IBeforeSaveTrigger<object>
-            where TDbContext : DbContext
-        {
-            public TDbContext DbContext { get; } = dbContext;
+        var subject = new TriggerFactory(serviceProvider);
 
-            public void BeforeSave(ITriggerContext<object> context) => throw new NotImplementedException();
-        }
+        var triggers = subject.Resolve(applicationServiceProvider, typeof(IBeforeSaveTrigger<object>));
 
-        public class SampleDbContext3 : DbContext
-        {
-            protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-            {
-                optionsBuilder
-                    .UseInMemoryDatabase(nameof(SampleDbContext3))
-                    .UseTriggers(triggerOptions =>
-                        triggerOptions
-                            .AddTrigger<SampleTrigger3<SampleDbContext3>>()
-                            .AddTrigger<SampleTrigger3<DbContext>>()
-                    );
-                optionsBuilder.ConfigureWarnings(warningOptions => {
-                    warningOptions.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning);
-                });
-            }
-        }
+        Assert.Single(triggers);
+    }
 
-        [Fact]
-        public void Resolve_FromExternalServiceProvider_FindsType()
-        {
-            var serviceProvider = new ServiceCollection().BuildServiceProvider();
+    [Fact]
+    public void Resolve_FromInternalServices_FindsType()
+    {
+        var serviceProvider = new ServiceCollection()
+            .AddTransient(typeof(ITriggerInstanceFactory<IBeforeSaveTrigger<object>>), _ => new TriggerInstanceFactory<SampleTrigger>(null))
+            .BuildServiceProvider();
 
-            var applicationServiceProvider = new ServiceCollection()
-                .AddTransient<IBeforeSaveTrigger<object>, SampleTrigger>()
-                .BuildServiceProvider();
+        var applicationServiceProvider = new ServiceCollection().BuildServiceProvider();
 
-            var subject = new TriggerFactory(serviceProvider);
+        var subject = new TriggerFactory(serviceProvider);
 
-            var triggers = subject.Resolve(applicationServiceProvider, typeof(IBeforeSaveTrigger<object>));
+        var triggers = subject.Resolve(applicationServiceProvider, typeof(IBeforeSaveTrigger<object>));
 
-            Assert.Single(triggers);
-        }
+        Assert.Single(triggers);
+    }
 
-        [Fact]
-        public void Resolve_FromInternalServices_FindsType()
-        {
-            var serviceProvider = new ServiceCollection()
-                .AddTransient(typeof(ITriggerInstanceFactory<IBeforeSaveTrigger<object>>), _ => new TriggerInstanceFactory<SampleTrigger>(null))
-                .BuildServiceProvider();
+    [Fact]
+    public void Resolve_FromInternalServices_GetsConstructedUsingExternalServiceProvider()
+    {
+        var serviceProvider = new ServiceCollection()
+            .AddLogging()
+            .AddTransient(typeof(ITriggerInstanceFactory<IBeforeSaveTrigger<object>>), _ => new TriggerInstanceFactory<SampleTrigger2>(null))
+            .BuildServiceProvider();
 
-            var applicationServiceProvider = new ServiceCollection().BuildServiceProvider();
+        var subject = new TriggerFactory(serviceProvider);
 
-            var subject = new TriggerFactory(serviceProvider);
+        var applicationServiceProvider = new ServiceCollection()
+            .AddSingleton(subject)
+            .BuildServiceProvider();
 
-            var triggers = subject.Resolve(applicationServiceProvider, typeof(IBeforeSaveTrigger<object>));
+        var trigger = subject.Resolve(applicationServiceProvider, typeof(IBeforeSaveTrigger<object>)).FirstOrDefault() as SampleTrigger2;
 
-            Assert.Single(triggers);
-        }
+        Assert.NotNull(trigger);
+        Assert.Equal(subject, trigger.TriggerFactory);
+    }
 
-        [Fact]
-        public void Resolve_FromInternalServices_GetsConstructedUsingExternalServiceProvider()
-        {
-            var serviceProvider = new ServiceCollection()
-                .AddLogging()
-                .AddTransient(typeof(ITriggerInstanceFactory<IBeforeSaveTrigger<object>>), _ => new TriggerInstanceFactory<SampleTrigger2>(null))
-                .BuildServiceProvider();
+    [Fact]
+    public void Resolve_FromHybridServices_GetsPasedTheConcreteDbContext()
+    {
+        using var dbContext = new SampleDbContext3();
+        var factory = dbContext.GetService<TriggerFactory>();
+        var serviceProvider = new HybridServiceProvider(dbContext.GetInfrastructure(), dbContext);
 
-            var subject = new TriggerFactory(serviceProvider);
+        var trigger = factory.Resolve(serviceProvider, typeof(IBeforeSaveTrigger<object>)).FirstOrDefault() as SampleTrigger3<SampleDbContext3>;
 
-            var applicationServiceProvider = new ServiceCollection()
-                .AddSingleton(subject)
-                .BuildServiceProvider();
+        Assert.NotNull(trigger);
+        Assert.Equal(dbContext, trigger.DbContext);
+    }
 
-            var trigger = subject.Resolve(applicationServiceProvider, typeof(IBeforeSaveTrigger<object>)).FirstOrDefault() as SampleTrigger2;
+    [Fact]
+    public void Resolve_FromHybridServices_GetsPasedTheAbstractDbContext()
+    {
+        using var dbContext = new SampleDbContext3();
+        var factory = dbContext.GetService<TriggerFactory>();
+        var serviceProvider = new HybridServiceProvider(dbContext.GetInfrastructure(), dbContext);
 
-            Assert.NotNull(trigger);
-            Assert.Equal(subject, trigger.TriggerFactory);
-        }
+        var trigger = factory.Resolve(serviceProvider, typeof(IBeforeSaveTrigger<object>)).LastOrDefault() as SampleTrigger3<DbContext>;
 
-        [Fact]
-        public void Resolve_FromHybridServices_GetsPasedTheConcreteDbContext()
-        {
-            using var dbContext = new SampleDbContext3();
-            var factory = dbContext.GetService<TriggerFactory>();
-            var serviceProvider = new HybridServiceProvider(dbContext.GetInfrastructure(), dbContext);
-
-            var trigger = factory.Resolve(serviceProvider, typeof(IBeforeSaveTrigger<object>)).FirstOrDefault() as SampleTrigger3<SampleDbContext3>;
-
-            Assert.NotNull(trigger);
-            Assert.Equal(dbContext, trigger.DbContext);
-        }
-
-        [Fact]
-        public void Resolve_FromHybridServices_GetsPasedTheAbstractDbContext()
-        {
-            using var dbContext = new SampleDbContext3();
-            var factory = dbContext.GetService<TriggerFactory>();
-            var serviceProvider = new HybridServiceProvider(dbContext.GetInfrastructure(), dbContext);
-
-            var trigger = factory.Resolve(serviceProvider, typeof(IBeforeSaveTrigger<object>)).LastOrDefault() as SampleTrigger3<DbContext>;
-
-            Assert.NotNull(trigger);
-            Assert.Equal(dbContext, trigger.DbContext);
-        }
+        Assert.NotNull(trigger);
+        Assert.Equal(dbContext, trigger.DbContext);
     }
 }

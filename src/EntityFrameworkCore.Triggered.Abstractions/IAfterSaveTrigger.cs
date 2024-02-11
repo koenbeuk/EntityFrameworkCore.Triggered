@@ -1,8 +1,7 @@
-﻿namespace EntityFrameworkCore.Triggered
+﻿namespace EntityFrameworkCore.Triggered;
+
+public interface IAfterSaveTrigger<TEntity>
+    where TEntity : class
 {
-    public interface IAfterSaveTrigger<TEntity>
-        where TEntity : class
-    {
-        void AfterSave(ITriggerContext<TEntity> context);
-    }
+    void AfterSave(ITriggerContext<TEntity> context);
 }

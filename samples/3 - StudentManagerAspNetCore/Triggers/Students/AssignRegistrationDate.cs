@@ -1,9 +1,8 @@
 ﻿using EntityFrameworkCore.Triggered;
 
-namespace StudentManager.Triggers.Students
+namespace StudentManager.Triggers.Students;
+
+public class AssignRegistrationDate : IBeforeSaveTrigger<Student>
 {
-    public class AssignRegistrationDate : IBeforeSaveTrigger<Student>
-    {
-        public void BeforeSave(ITriggerContext<Student> context) => context.Entity.RegistrationDate = DateTime.Today;
-    }
+    public void BeforeSave(ITriggerContext<Student> context) => context.Entity.RegistrationDate = DateTime.Today;
 }

@@ -1,7 +1,6 @@
-﻿namespace EntityFrameworkCore.Triggered
+﻿namespace EntityFrameworkCore.Triggered;
+
+public class TriggerOptions
 {
-    public class TriggerOptions
-    {
-        public int MaxCascadeCycles { get; set; } = 100;
-    }
+    public int MaxCascadeCycles { get; set; } = 100;
 }

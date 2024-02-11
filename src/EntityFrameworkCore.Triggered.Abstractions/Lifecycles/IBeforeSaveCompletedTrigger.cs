@@ -1,7 +1,6 @@
-﻿namespace EntityFrameworkCore.Triggered.Lifecycles
+﻿namespace EntityFrameworkCore.Triggered.Lifecycles;
+
+public interface IBeforeSaveCompletedTrigger
 {
-    public interface IBeforeSaveCompletedTrigger
-    {
-        void BeforeSaveCompleted();
-    }
+    void BeforeSaveCompleted();
 }

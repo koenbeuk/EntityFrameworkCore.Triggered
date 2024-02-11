@@ -2,61 +2,60 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
-namespace StudentManager.Pages.Courses
+namespace StudentManager.Pages.Courses;
+
+public class EditModel(StudentManager.ApplicationDbContext context) : PageModel
 {
-    public class EditModel(StudentManager.ApplicationDbContext context) : PageModel
+    private readonly StudentManager.ApplicationDbContext _context = context;
+
+    [BindProperty]
+    public Course Course { get; set; }
+
+    public async Task<IActionResult> OnGetAsync(int? id)
     {
-        private readonly StudentManager.ApplicationDbContext _context = context;
-
-        [BindProperty]
-        public Course Course { get; set; }
-
-        public async Task<IActionResult> OnGetAsync(int? id)
+        if (id == null)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            return NotFound();
+        }
 
-            Course = await _context.Courses.FirstOrDefaultAsync(m => m.Id == id);
+        Course = await _context.Courses.FirstOrDefaultAsync(m => m.Id == id);
 
-            if (Course == null)
-            {
-                return NotFound();
-            }
+        if (Course == null)
+        {
+            return NotFound();
+        }
+        return Page();
+    }
+
+    // To protect from overposting attacks, enable the specific properties you want to bind to, for
+    // more details, see https://aka.ms/RazorPagesCRUD.
+    public async Task<IActionResult> OnPostAsync()
+    {
+        if (!ModelState.IsValid)
+        {
             return Page();
         }
 
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://aka.ms/RazorPagesCRUD.
-        public async Task<IActionResult> OnPostAsync()
+        _context.Attach(Course).State = EntityState.Modified;
+
+        try
         {
-            if (!ModelState.IsValid)
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!CourseExists(Course.Id))
             {
-                return Page();
+                return NotFound();
             }
-
-            _context.Attach(Course).State = EntityState.Modified;
-
-            try
+            else
             {
-                await _context.SaveChangesAsync();
+                throw;
             }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CourseExists(Course.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return RedirectToPage("./Index");
         }
 
-        private bool CourseExists(int id) => _context.Courses.Any(e => e.Id == id);
+        return RedirectToPage("./Index");
     }
+
+    private bool CourseExists(int id) => _context.Courses.Any(e => e.Id == id);
 }

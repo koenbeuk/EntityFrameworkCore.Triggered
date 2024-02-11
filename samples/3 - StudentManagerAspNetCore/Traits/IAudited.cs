@@ -1,7 +1,6 @@
-﻿namespace StudentManager.Traits
+﻿namespace StudentManager.Traits;
+
+public interface IAudited
 {
-    public interface IAudited
-    {
-        public int Id { get; set; }
-    }
+    public int Id { get; set; }
 }

@@ -1,8 +1,7 @@
-﻿namespace EntityFrameworkCore.Triggered.Transactions
+﻿namespace EntityFrameworkCore.Triggered.Transactions;
+
+public interface IBeforeRollbackTrigger<in TEntity>
+    where TEntity : class
 {
-    public interface IBeforeRollbackTrigger<in TEntity>
-        where TEntity : class
-    {
-        void BeforeRollback(ITriggerContext<TEntity> context);
-    }
+    void BeforeRollback(ITriggerContext<TEntity> context);
 }

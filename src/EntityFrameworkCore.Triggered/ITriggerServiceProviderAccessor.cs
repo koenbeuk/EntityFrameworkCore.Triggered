@@ -1,7 +1,6 @@
-﻿namespace EntityFrameworkCore.Triggered
+﻿namespace EntityFrameworkCore.Triggered;
+
+public interface ITriggerServiceProviderAccessor
 {
-    public interface ITriggerServiceProviderAccessor
-    {
-        IServiceProvider GetTriggerServiceProvider();
-    }
+    IServiceProvider GetTriggerServiceProvider();
 }

@@ -1,12 +1,11 @@
-﻿namespace EntityFrameworkCore.Triggered.IntegrationTests.LifetimeTests.Triggers.Users
-{
-    class TransientTrigger : IBeforeSaveTrigger<object>
-    {
-        public TransientTrigger(TriggerLifetimeTestScenario triggerLifetimeTestScenario)
-        {
-            triggerLifetimeTestScenario.TransientTriggerInstances++;
-        }
+﻿namespace EntityFrameworkCore.Triggered.IntegrationTests.LifetimeTests.Triggers.Users;
 
-        public void BeforeSave(ITriggerContext<object> context) { }
+class TransientTrigger : IBeforeSaveTrigger<object>
+{
+    public TransientTrigger(TriggerLifetimeTestScenario triggerLifetimeTestScenario)
+    {
+        triggerLifetimeTestScenario.TransientTriggerInstances++;
     }
+
+    public void BeforeSave(ITriggerContext<object> context) { }
 }

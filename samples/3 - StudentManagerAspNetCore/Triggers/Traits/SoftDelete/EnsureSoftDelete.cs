@@ -1,19 +1,18 @@
 ﻿using EntityFrameworkCore.Triggered;
 using StudentManager.Traits;
 
-namespace StudentManager.Triggers.Traits.SoftDelete
-{
-    class EnsureSoftDelete(ApplicationDbContext applicationContext) : IBeforeSaveTrigger<ISoftDelete>
-    {
-        readonly ApplicationDbContext _applicationContext = applicationContext;
+namespace StudentManager.Triggers.Traits.SoftDelete;
 
-        public void BeforeSave(ITriggerContext<ISoftDelete> context)
+class EnsureSoftDelete(ApplicationDbContext applicationContext) : IBeforeSaveTrigger<ISoftDelete>
+{
+    readonly ApplicationDbContext _applicationContext = applicationContext;
+
+    public void BeforeSave(ITriggerContext<ISoftDelete> context)
+    {
+        if (context.ChangeType == ChangeType.Deleted)
         {
-            if (context.ChangeType == ChangeType.Deleted)
-            {
-                context.Entity.DeletedOn = DateTimeOffset.Now;
-                _applicationContext.Entry(context.Entity).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
-            }
+            context.Entity.DeletedOn = DateTimeOffset.Now;
+            _applicationContext.Entry(context.Entity).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
         }
     }
 }

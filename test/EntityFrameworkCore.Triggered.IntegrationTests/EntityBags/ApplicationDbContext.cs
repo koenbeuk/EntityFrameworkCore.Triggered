@@ -1,9 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace EntityFrameworkCore.Triggered.IntegrationTests.EntityBags
+namespace EntityFrameworkCore.Triggered.IntegrationTests.EntityBags;
+
+public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
 {
-    public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
-    {
-        public DbSet<User> Users { get; set; }
-    }
+    public DbSet<User> Users { get; set; }
 }

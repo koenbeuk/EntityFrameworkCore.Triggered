@@ -1,9 +1,8 @@
-﻿namespace EntityFrameworkCore.Triggered
+﻿namespace EntityFrameworkCore.Triggered;
+
+public enum ChangeType
 {
-    public enum ChangeType
-    {
-        Added,
-        Modified,
-        Deleted
-    }
+    Added,
+    Modified,
+    Deleted
 }

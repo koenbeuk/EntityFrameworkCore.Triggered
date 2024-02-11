@@ -2,29 +2,28 @@
 using EntityFrameworkCore.Triggered.Internal;
 using EntityFrameworkCore.Triggered.Internal.Descriptors;
 
-namespace EntityFrameworkCore.Triggered.Transactions.Internal
+namespace EntityFrameworkCore.Triggered.Transactions.Internal;
+
+public class BeforeRollbackAsyncTriggerDescriptor : IAsyncTriggerTypeDescriptor
 {
-    public class BeforeRollbackAsyncTriggerDescriptor : IAsyncTriggerTypeDescriptor
+    readonly Func<object, object, CancellationToken, Task> _invocationDelegate;
+    readonly Type _triggerType;
+
+    public BeforeRollbackAsyncTriggerDescriptor(Type entityType)
     {
-        readonly Func<object, object, CancellationToken, Task> _invocationDelegate;
-        readonly Type _triggerType;
+        var triggerType = typeof(IBeforeRollbackAsyncTrigger<>).MakeGenericType(entityType);
+        var triggerMethod = triggerType.GetMethod(nameof(IBeforeRollbackAsyncTrigger<object>.BeforeRollbackAsync));
 
-        public BeforeRollbackAsyncTriggerDescriptor(Type entityType)
-        {
-            var triggerType = typeof(IBeforeRollbackAsyncTrigger<>).MakeGenericType(entityType);
-            var triggerMethod = triggerType.GetMethod(nameof(IBeforeRollbackAsyncTrigger<object>.BeforeRollbackAsync));
+        _triggerType = triggerType;
+        _invocationDelegate = TriggerTypeDescriptorHelpers.GetAsyncWeakDelegate(triggerType, entityType, triggerMethod!);
+    }
 
-            _triggerType = triggerType;
-            _invocationDelegate = TriggerTypeDescriptorHelpers.GetAsyncWeakDelegate(triggerType, entityType, triggerMethod!);
-        }
+    public Type TriggerType => _triggerType;
 
-        public Type TriggerType => _triggerType;
+    public Task Invoke(object trigger, object triggerContext, Exception? exception, CancellationToken cancellationToken)
+    {
+        Debug.Assert(exception == null);
 
-        public Task Invoke(object trigger, object triggerContext, Exception? exception, CancellationToken cancellationToken)
-        {
-            Debug.Assert(exception == null);
-
-            return _invocationDelegate(trigger, triggerContext, cancellationToken);
-        }
+        return _invocationDelegate(trigger, triggerContext, cancellationToken);
     }
 }

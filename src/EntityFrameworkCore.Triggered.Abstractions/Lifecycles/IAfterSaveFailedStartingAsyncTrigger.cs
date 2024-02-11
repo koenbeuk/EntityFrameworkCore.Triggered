@@ -1,7 +1,6 @@
-﻿namespace EntityFrameworkCore.Triggered.Lifecycles
+﻿namespace EntityFrameworkCore.Triggered.Lifecycles;
+
+public interface IAfterSaveFailedStartingAsyncTrigger
 {
-    public interface IAfterSaveFailedStartingAsyncTrigger
-    {
-        Task AfterSaveFailedStartingAsync(Exception exception, CancellationToken cancellationToken);
-    }
+    Task AfterSaveFailedStartingAsync(Exception exception, CancellationToken cancellationToken);
 }

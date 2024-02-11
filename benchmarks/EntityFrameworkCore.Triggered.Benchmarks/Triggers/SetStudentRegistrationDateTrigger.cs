@@ -1,7 +1,6 @@
-﻿namespace EntityFrameworkCore.Triggered.Benchmarks.Triggers
+﻿namespace EntityFrameworkCore.Triggered.Benchmarks.Triggers;
+
+public class SetStudentRegistrationDateTrigger : IBeforeSaveTrigger<Student>
 {
-    public class SetStudentRegistrationDateTrigger : IBeforeSaveTrigger<Student>
-    {
-        public void BeforeSave(ITriggerContext<Student> context) => context.Entity.RegistrationDate = DateTimeOffset.Now;
-    }
+    public void BeforeSave(ITriggerContext<Student> context) => context.Entity.RegistrationDate = DateTimeOffset.Now;
 }

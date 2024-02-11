@@ -1,13 +1,12 @@
-﻿namespace EntityFrameworkCore.Triggered.IntegrationTests.LifetimeTests.Triggers.Users
+﻿namespace EntityFrameworkCore.Triggered.IntegrationTests.LifetimeTests.Triggers.Users;
+
+
+class SingletonTrigger : IBeforeSaveTrigger<object>
 {
-
-    class SingletonTrigger : IBeforeSaveTrigger<object>
+    public SingletonTrigger(TriggerLifetimeTestScenario triggerLifetimeTestScenario)
     {
-        public SingletonTrigger(TriggerLifetimeTestScenario triggerLifetimeTestScenario)
-        {
-            triggerLifetimeTestScenario.SingletonTriggerInstances++;
-        }
-
-        public void BeforeSave(ITriggerContext<object> context) { }
+        triggerLifetimeTestScenario.SingletonTriggerInstances++;
     }
+
+    public void BeforeSave(ITriggerContext<object> context) { }
 }

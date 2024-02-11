@@ -2,133 +2,132 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace EntityFrameworkCore.Triggered.Benchmarks
+namespace EntityFrameworkCore.Triggered.Benchmarks;
+
+[MemoryDiagnoser]
+public class EmbracingFeaturesBenchmarks
 {
-    [MemoryDiagnoser]
-    public class EmbracingFeaturesBenchmarks
+    private IServiceProvider _serviceProvider;
+
+    [GlobalSetup]
+    public void GlobalSetup() => _serviceProvider = new ServiceCollection()
+            .AddDbContext<ApplicationContext>(options => {
+                options
+                    .UseInMemoryDatabase(nameof(WithDbContext));
+            })
+            .AddTriggeredDbContext<TriggeredApplicationContext>(options => {
+                options
+                    .UseInMemoryDatabase(nameof(WithTriggeredDbContext))
+                    .UseTriggers(triggerOptions => {
+                        triggerOptions.AddTrigger<Triggers.SetStudentRegistrationDateTrigger>();
+                        triggerOptions.AddTrigger<Triggers.SignStudentUpForMandatoryCourses>();
+                    });
+            })
+            .BuildServiceProvider();
+
+    [Params(50)]
+    public int OuterBatches;
+
+    [Params(1, 10, 100)]
+    public int InnerBatches;
+
+    private void Validate(IApplicationContextContract applicationContextContract)
     {
-        private IServiceProvider _serviceProvider;
+        var studentCoursesCount = applicationContextContract.StudentCourses.Count();
+        var expectedCoursesCount = OuterBatches * InnerBatches;
 
-        [GlobalSetup]
-        public void GlobalSetup() => _serviceProvider = new ServiceCollection()
-                .AddDbContext<ApplicationContext>(options => {
-                    options
-                        .UseInMemoryDatabase(nameof(WithDbContext));
-                })
-                .AddTriggeredDbContext<TriggeredApplicationContext>(options => {
-                    options
-                        .UseInMemoryDatabase(nameof(WithTriggeredDbContext))
-                        .UseTriggers(triggerOptions => {
-                            triggerOptions.AddTrigger<Triggers.SetStudentRegistrationDateTrigger>();
-                            triggerOptions.AddTrigger<Triggers.SignStudentUpForMandatoryCourses>();
-                        });
-                })
-                .BuildServiceProvider();
-
-        [Params(50)]
-        public int OuterBatches;
-
-        [Params(1, 10, 100)]
-        public int InnerBatches;
-
-        private void Validate(IApplicationContextContract applicationContextContract)
+        if (studentCoursesCount != expectedCoursesCount)
         {
-            var studentCoursesCount = applicationContextContract.StudentCourses.Count();
-            var expectedCoursesCount = OuterBatches * InnerBatches;
+            throw new InvalidOperationException($"Found {studentCoursesCount}, expected {expectedCoursesCount}");
+        }
+    }
 
-            if (studentCoursesCount != expectedCoursesCount)
-            {
-                throw new InvalidOperationException($"Found {studentCoursesCount}, expected {expectedCoursesCount}");
-            }
+    [Benchmark(Baseline = true)]
+    public void WithDbContext()
+    {
+        // setup
+        {
+            using var scope = _serviceProvider.CreateScope();
+            using var context = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
+
+            context.Database.EnsureDeleted();
+
+            context.Courses.Add(new Course { Id = Guid.NewGuid(), DisplayName = "Test", IsMandatory = true });
+            context.SaveChanges();
         }
 
-        [Benchmark(Baseline = true)]
-        public void WithDbContext()
+        // execute
+        for (var outerBatch = 0; outerBatch < OuterBatches; outerBatch++)
         {
-            // setup
+            using var scope = _serviceProvider.CreateScope();
+            using var context = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
+
+            for (var innerBatch = 0; innerBatch < InnerBatches; innerBatch++)
             {
-                using var scope = _serviceProvider.CreateScope();
-                using var context = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
+                var student = new Student { Id = Guid.NewGuid(), DisplayName = "Test" };
+                student.RegistrationDate = DateTimeOffset.Now;
 
-                context.Database.EnsureDeleted();
+                context.Add(student);
 
-                context.Courses.Add(new Course { Id = Guid.NewGuid(), DisplayName = "Test", IsMandatory = true });
-                context.SaveChanges();
-            }
+                var mandatoryCourses = context.Courses.Where(x => x.IsMandatory).ToList();
 
-            // execute
-            for (var outerBatch = 0; outerBatch < OuterBatches; outerBatch++)
-            {
-                using var scope = _serviceProvider.CreateScope();
-                using var context = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
-
-                for (var innerBatch = 0; innerBatch < InnerBatches; innerBatch++)
+                foreach (var mandatoryCourse in mandatoryCourses)
                 {
-                    var student = new Student { Id = Guid.NewGuid(), DisplayName = "Test" };
-                    student.RegistrationDate = DateTimeOffset.Now;
-
-                    context.Add(student);
-
-                    var mandatoryCourses = context.Courses.Where(x => x.IsMandatory).ToList();
-
-                    foreach (var mandatoryCourse in mandatoryCourses)
-                    {
-                        context.StudentCourses.Add(new StudentCourse {
-                            CourseId = mandatoryCourse.Id,
-                            StudentId = student.Id
-                        });
-                    }
+                    context.StudentCourses.Add(new StudentCourse {
+                        CourseId = mandatoryCourse.Id,
+                        StudentId = student.Id
+                    });
                 }
-
-                context.SaveChanges();
             }
 
-            // validate
-            {
-                using var scope = _serviceProvider.CreateScope();
-                using var context = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
-
-                Validate(context);
-            }
+            context.SaveChanges();
         }
 
-        [Benchmark]
-        public void WithTriggeredDbContext()
+        // validate
         {
-            // setup
+            using var scope = _serviceProvider.CreateScope();
+            using var context = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
+
+            Validate(context);
+        }
+    }
+
+    [Benchmark]
+    public void WithTriggeredDbContext()
+    {
+        // setup
+        {
+            using var scope = _serviceProvider.CreateScope();
+            using var context = scope.ServiceProvider.GetRequiredService<TriggeredApplicationContext>();
+
+            context.Database.EnsureDeleted();
+
+            context.Courses.Add(new Course { Id = Guid.NewGuid(), DisplayName = "Test", IsMandatory = true });
+            context.SaveChanges();
+        }
+
+        // execute
+        for (var outerBatch = 0; outerBatch < OuterBatches; outerBatch++)
+        {
+            using var scope = _serviceProvider.CreateScope();
+            using var context = scope.ServiceProvider.GetRequiredService<TriggeredApplicationContext>();
+
+            for (var innerBatch = 0; innerBatch < InnerBatches; innerBatch++)
             {
-                using var scope = _serviceProvider.CreateScope();
-                using var context = scope.ServiceProvider.GetRequiredService<TriggeredApplicationContext>();
-
-                context.Database.EnsureDeleted();
-
-                context.Courses.Add(new Course { Id = Guid.NewGuid(), DisplayName = "Test", IsMandatory = true });
-                context.SaveChanges();
+                var student = new Student { Id = Guid.NewGuid(), DisplayName = "Test" };
+                context.Add(student);
             }
 
-            // execute
-            for (var outerBatch = 0; outerBatch < OuterBatches; outerBatch++)
-            {
-                using var scope = _serviceProvider.CreateScope();
-                using var context = scope.ServiceProvider.GetRequiredService<TriggeredApplicationContext>();
-
-                for (var innerBatch = 0; innerBatch < InnerBatches; innerBatch++)
-                {
-                    var student = new Student { Id = Guid.NewGuid(), DisplayName = "Test" };
-                    context.Add(student);
-                }
-
-                context.SaveChanges();
-            }
+            context.SaveChanges();
+        }
 
 
-            // validate
-            {
-                using var scope = _serviceProvider.CreateScope();
-                using var context = scope.ServiceProvider.GetRequiredService<TriggeredApplicationContext>();
+        // validate
+        {
+            using var scope = _serviceProvider.CreateScope();
+            using var context = scope.ServiceProvider.GetRequiredService<TriggeredApplicationContext>();
 
-                Validate(context);
-            }
+            Validate(context);
         }
     }
 }

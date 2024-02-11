@@ -7,314 +7,313 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace EntityFrameworkCore.Triggered.Infrastructure.Internal
+namespace EntityFrameworkCore.Triggered.Infrastructure.Internal;
+
+public class TriggersOptionExtension : IDbContextOptionsExtension
 {
-    public class TriggersOptionExtension : IDbContextOptionsExtension
+    sealed class ExtensionInfo(IDbContextOptionsExtension extension) : DbContextOptionsExtensionInfo(extension)
     {
-        sealed class ExtensionInfo(IDbContextOptionsExtension extension) : DbContextOptionsExtensionInfo(extension)
+        private string? _logFragment;
+
+        public override bool IsDatabaseProvider => false;
+        public override string LogFragment
         {
-            private string? _logFragment;
-
-            public override bool IsDatabaseProvider => false;
-            public override string LogFragment
+            get
             {
-                get
-                {
-                    _logFragment ??= string.Empty;
+                _logFragment ??= string.Empty;
 
-                    return _logFragment;
-                }
+                return _logFragment;
             }
-
-            public new TriggersOptionExtension Extension => (TriggersOptionExtension)base.Extension;
-
-            public override void PopulateDebugInfo(IDictionary<string, string> debugInfo)
-            {
-                ArgumentNullException.ThrowIfNull(debugInfo);
-
-                debugInfo["Triggers:TriggersCount"] = (Extension._triggers?.Count() ?? 0).ToString();
-                debugInfo["Triggers:TriggerTypesCount"] = (Extension._triggerTypes?.Count() ?? 0).ToString();
-                debugInfo["Triggers:MaxCascadeCycles"] = Extension._maxCascadeCycles.ToString();
-                debugInfo["Triggers:CascadeBehavior"] = Extension._cascadeBehavior.ToString();
-            }
-
-            public override int GetServiceProviderHashCode()
-            {
-                var hashCode = new HashCode();
-
-                if (Extension._triggers != null)
-                {
-                    foreach (var trigger in Extension._triggers)
-                    {
-                        hashCode.Add(trigger);
-                    }
-                }
-
-                if (Extension._triggerTypes != null)
-                {
-                    foreach (var triggerType in Extension._triggerTypes)
-                    {
-                        hashCode.Add(triggerType);
-                    }
-                }
-
-                hashCode.Add(Extension._maxCascadeCycles);
-                hashCode.Add(Extension._cascadeBehavior);
-
-                if (Extension._serviceProviderTransform != null)
-                {
-                    hashCode.Add(Extension._serviceProviderTransform);
-                }
-
-                return hashCode.ToHashCode();
-            }
-
-            public override bool ShouldUseSameServiceProvider(DbContextOptionsExtensionInfo other)
-                => other is ExtensionInfo otherInfo
-                    && Enumerable.SequenceEqual(Extension._triggers ?? [], otherInfo.Extension._triggers ?? [])
-                    && Enumerable.SequenceEqual(Extension._triggerTypes ?? [], otherInfo.Extension._triggerTypes ?? [])
-                    && Extension._maxCascadeCycles == otherInfo.Extension._maxCascadeCycles
-                    && Extension._cascadeBehavior == otherInfo.Extension._cascadeBehavior
-                    && Extension._serviceProviderTransform == otherInfo.Extension._serviceProviderTransform;
         }
 
-        private ExtensionInfo? _info;
-        private IEnumerable<(object typeOrInstance, ServiceLifetime lifetime)>? _triggers;
-        private IEnumerable<Type> _triggerTypes;
-        private int _maxCascadeCycles = 100;
-        private CascadeBehavior _cascadeBehavior = CascadeBehavior.EntityAndType;
-        private Func<IServiceProvider, IServiceProvider>? _serviceProviderTransform;
+        public new TriggersOptionExtension Extension => (TriggersOptionExtension)base.Extension;
 
-        public TriggersOptionExtension()
+        public override void PopulateDebugInfo(IDictionary<string, string> debugInfo)
         {
-            _triggerTypes = [
-                typeof(IBeforeSaveTrigger<>),
-                typeof(IBeforeSaveAsyncTrigger<>),
-                typeof(IAfterSaveTrigger<>),
-                typeof(IAfterSaveAsyncTrigger<>),
-                typeof(IAfterSaveFailedTrigger<>),
-                typeof(IAfterSaveFailedAsyncTrigger<>),
-                typeof(IBeforeSaveStartingTrigger),
-                typeof(IBeforeSaveStartingAsyncTrigger),
-                typeof(IBeforeSaveCompletedTrigger),
-                typeof(IBeforeSaveCompletedAsyncTrigger),
-                typeof(IAfterSaveFailedStartingTrigger),
-                typeof(IAfterSaveFailedStartingAsyncTrigger),
-                typeof(IAfterSaveFailedCompletedTrigger),
-                typeof(IAfterSaveFailedCompletedAsyncTrigger),
-                typeof(IAfterSaveStartingTrigger),
-                typeof(IAfterSaveStartingAsyncTrigger),
-                typeof(IAfterSaveCompletedTrigger),
-                typeof(IAfterSaveCompletedAsyncTrigger)
-            ];
+            ArgumentNullException.ThrowIfNull(debugInfo);
+
+            debugInfo["Triggers:TriggersCount"] = (Extension._triggers?.Count() ?? 0).ToString();
+            debugInfo["Triggers:TriggerTypesCount"] = (Extension._triggerTypes?.Count() ?? 0).ToString();
+            debugInfo["Triggers:MaxCascadeCycles"] = Extension._maxCascadeCycles.ToString();
+            debugInfo["Triggers:CascadeBehavior"] = Extension._cascadeBehavior.ToString();
         }
 
-        public TriggersOptionExtension(TriggersOptionExtension copyFrom)
+        public override int GetServiceProviderHashCode()
         {
-            if (copyFrom._triggers != null)
+            var hashCode = new HashCode();
+
+            if (Extension._triggers != null)
             {
-                _triggers = copyFrom._triggers;
+                foreach (var trigger in Extension._triggers)
+                {
+                    hashCode.Add(trigger);
+                }
             }
 
-            _triggerTypes = copyFrom._triggerTypes;
-            _maxCascadeCycles = copyFrom._maxCascadeCycles;
-            _cascadeBehavior = copyFrom._cascadeBehavior;
-            _serviceProviderTransform = copyFrom._serviceProviderTransform;
+            if (Extension._triggerTypes != null)
+            {
+                foreach (var triggerType in Extension._triggerTypes)
+                {
+                    hashCode.Add(triggerType);
+                }
+            }
+
+            hashCode.Add(Extension._maxCascadeCycles);
+            hashCode.Add(Extension._cascadeBehavior);
+
+            if (Extension._serviceProviderTransform != null)
+            {
+                hashCode.Add(Extension._serviceProviderTransform);
+            }
+
+            return hashCode.ToHashCode();
         }
 
-        public DbContextOptionsExtensionInfo Info
-            => _info ??= new ExtensionInfo(this);
+        public override bool ShouldUseSameServiceProvider(DbContextOptionsExtensionInfo other)
+            => other is ExtensionInfo otherInfo
+                && Enumerable.SequenceEqual(Extension._triggers ?? [], otherInfo.Extension._triggers ?? [])
+                && Enumerable.SequenceEqual(Extension._triggerTypes ?? [], otherInfo.Extension._triggerTypes ?? [])
+                && Extension._maxCascadeCycles == otherInfo.Extension._maxCascadeCycles
+                && Extension._cascadeBehavior == otherInfo.Extension._cascadeBehavior
+                && Extension._serviceProviderTransform == otherInfo.Extension._serviceProviderTransform;
+    }
 
-        public int MaxCascadeCycles => _maxCascadeCycles;
-        public CascadeBehavior CascadeBehavior => _cascadeBehavior;
-        public IEnumerable<(object typeOrInstance, ServiceLifetime lifetime)> Triggers => _triggers ?? [];
+    private ExtensionInfo? _info;
+    private IEnumerable<(object typeOrInstance, ServiceLifetime lifetime)>? _triggers;
+    private IEnumerable<Type> _triggerTypes;
+    private int _maxCascadeCycles = 100;
+    private CascadeBehavior _cascadeBehavior = CascadeBehavior.EntityAndType;
+    private Func<IServiceProvider, IServiceProvider>? _serviceProviderTransform;
 
-        public void ApplyServices(IServiceCollection services)
+    public TriggersOptionExtension()
+    {
+        _triggerTypes = [
+            typeof(IBeforeSaveTrigger<>),
+            typeof(IBeforeSaveAsyncTrigger<>),
+            typeof(IAfterSaveTrigger<>),
+            typeof(IAfterSaveAsyncTrigger<>),
+            typeof(IAfterSaveFailedTrigger<>),
+            typeof(IAfterSaveFailedAsyncTrigger<>),
+            typeof(IBeforeSaveStartingTrigger),
+            typeof(IBeforeSaveStartingAsyncTrigger),
+            typeof(IBeforeSaveCompletedTrigger),
+            typeof(IBeforeSaveCompletedAsyncTrigger),
+            typeof(IAfterSaveFailedStartingTrigger),
+            typeof(IAfterSaveFailedStartingAsyncTrigger),
+            typeof(IAfterSaveFailedCompletedTrigger),
+            typeof(IAfterSaveFailedCompletedAsyncTrigger),
+            typeof(IAfterSaveStartingTrigger),
+            typeof(IAfterSaveStartingAsyncTrigger),
+            typeof(IAfterSaveCompletedTrigger),
+            typeof(IAfterSaveCompletedAsyncTrigger)
+        ];
+    }
+
+    public TriggersOptionExtension(TriggersOptionExtension copyFrom)
+    {
+        if (copyFrom._triggers != null)
         {
-            services.AddScoped(serviceProvider => new ApplicationTriggerServiceProviderAccessor(serviceProvider, _serviceProviderTransform));
-            services.AddScoped<IResettableService>(serviceProvider => serviceProvider.GetRequiredService<ApplicationTriggerServiceProviderAccessor>());
-            services.TryAddScoped<ITriggerServiceProviderAccessor>(serviceProvider => serviceProvider.GetRequiredService<ApplicationTriggerServiceProviderAccessor>());
+            _triggers = copyFrom._triggers;
+        }
 
-            services.TryAddSingleton<ITriggerTypeRegistryService, TriggerTypeRegistryService>();
+        _triggerTypes = copyFrom._triggerTypes;
+        _maxCascadeCycles = copyFrom._maxCascadeCycles;
+        _cascadeBehavior = copyFrom._cascadeBehavior;
+        _serviceProviderTransform = copyFrom._serviceProviderTransform;
+    }
 
-            services.AddScoped<TriggerDiscoveryService>();
-            services.AddScoped<IResettableService>(serviceProvider => serviceProvider.GetRequiredService<TriggerDiscoveryService>());
-            services.TryAddScoped<ITriggerDiscoveryService>(serviceProvider => serviceProvider.GetRequiredService<TriggerDiscoveryService>());
+    public DbContextOptionsExtensionInfo Info
+        => _info ??= new ExtensionInfo(this);
 
-            services.AddScoped<TriggerService>();
-            services.AddScoped<IResettableService>(serviceProvider => serviceProvider.GetRequiredService<TriggerService>());
-            services.TryAddScoped<ITriggerService>(serviceProvider => serviceProvider.GetRequiredService<TriggerService>());
+    public int MaxCascadeCycles => _maxCascadeCycles;
+    public CascadeBehavior CascadeBehavior => _cascadeBehavior;
+    public IEnumerable<(object typeOrInstance, ServiceLifetime lifetime)> Triggers => _triggers ?? [];
 
-            services.AddScoped<TriggerFactory>();
+    public void ApplyServices(IServiceCollection services)
+    {
+        services.AddScoped(serviceProvider => new ApplicationTriggerServiceProviderAccessor(serviceProvider, _serviceProviderTransform));
+        services.AddScoped<IResettableService>(serviceProvider => serviceProvider.GetRequiredService<ApplicationTriggerServiceProviderAccessor>());
+        services.TryAddScoped<ITriggerServiceProviderAccessor>(serviceProvider => serviceProvider.GetRequiredService<ApplicationTriggerServiceProviderAccessor>());
 
-            services.TryAddScoped<IInterceptor, TriggerSessionSaveChangesInterceptor>();
+        services.TryAddSingleton<ITriggerTypeRegistryService, TriggerTypeRegistryService>();
 
-            services.Configure<TriggerOptions>(triggerServiceOptions => {
-                triggerServiceOptions.MaxCascadeCycles = _maxCascadeCycles;
-            });
+        services.AddScoped<TriggerDiscoveryService>();
+        services.AddScoped<IResettableService>(serviceProvider => serviceProvider.GetRequiredService<TriggerDiscoveryService>());
+        services.TryAddScoped<ITriggerDiscoveryService>(serviceProvider => serviceProvider.GetRequiredService<TriggerDiscoveryService>());
 
-            var cascadeStrategyType = _cascadeBehavior switch {
-                CascadeBehavior.None => typeof(NoCascadeStrategy),
-                CascadeBehavior.EntityAndType => typeof(EntityAndTypeCascadeStrategy),
-                _ => throw new InvalidOperationException("Unsupported cascading mode")
-            };
+        services.AddScoped<TriggerService>();
+        services.AddScoped<IResettableService>(serviceProvider => serviceProvider.GetRequiredService<TriggerService>());
+        services.TryAddScoped<ITriggerService>(serviceProvider => serviceProvider.GetRequiredService<TriggerService>());
 
-            services.TryAddTransient(typeof(ICascadeStrategy), cascadeStrategyType);
+        services.AddScoped<TriggerFactory>();
 
-            if (_triggers != null && _triggerTypes != null)
+        services.TryAddScoped<IInterceptor, TriggerSessionSaveChangesInterceptor>();
+
+        services.Configure<TriggerOptions>(triggerServiceOptions => {
+            triggerServiceOptions.MaxCascadeCycles = _maxCascadeCycles;
+        });
+
+        var cascadeStrategyType = _cascadeBehavior switch {
+            CascadeBehavior.None => typeof(NoCascadeStrategy),
+            CascadeBehavior.EntityAndType => typeof(EntityAndTypeCascadeStrategy),
+            _ => throw new InvalidOperationException("Unsupported cascading mode")
+        };
+
+        services.TryAddTransient(typeof(ICascadeStrategy), cascadeStrategyType);
+
+        if (_triggers != null && _triggerTypes != null)
+        {
+            foreach (var (typeOrInstance, lifetime) in _triggers)
             {
-                foreach (var (typeOrInstance, lifetime) in _triggers)
+                var (triggerServiceType, triggerServiceInstance) = typeOrInstance switch {
+                    Type type => (type, null),
+                    object instance => (instance.GetType(), instance),
+                    _ => throw new InvalidOperationException("Unknown type registration")
+                };
+
+                var instanceParamExpression = Expression.Parameter(typeof(object), "object");
+
+                Func<object?, object>? triggerInstanceFactoryBuilder = null;
+
+                foreach (var triggerType in _triggerTypes.Distinct())
                 {
-                    var (triggerServiceType, triggerServiceInstance) = typeOrInstance switch {
-                        Type type => (type, null),
-                        object instance => (instance.GetType(), instance),
-                        _ => throw new InvalidOperationException("Unknown type registration")
-                    };
+                    var triggerTypeImplementations = triggerType.IsGenericTypeDefinition
+                        ? TypeHelpers.FindGenericInterfaces(triggerServiceType, triggerType)
+                        : triggerServiceType.GetInterfaces().Where(x => x == triggerType);
 
-                    var instanceParamExpression = Expression.Parameter(typeof(object), "object");
-
-                    Func<object?, object>? triggerInstanceFactoryBuilder = null;
-
-                    foreach (var triggerType in _triggerTypes.Distinct())
+                    foreach (var triggerTypeImplementation in triggerTypeImplementations)
                     {
-                        var triggerTypeImplementations = triggerType.IsGenericTypeDefinition
-                            ? TypeHelpers.FindGenericInterfaces(triggerServiceType, triggerType)
-                            : triggerServiceType.GetInterfaces().Where(x => x == triggerType);
-
-                        foreach (var triggerTypeImplementation in triggerTypeImplementations)
-                        {
-                            triggerInstanceFactoryBuilder ??=
-                                    Expression.Lambda<Func<object?, object>>(
-                                            Expression.New(
-                                                typeof(TriggerInstanceFactory<>).MakeGenericType(triggerServiceType).GetConstructor([typeof(object)])!,
-                                                instanceParamExpression
-                                            ),
+                        triggerInstanceFactoryBuilder ??=
+                                Expression.Lambda<Func<object?, object>>(
+                                        Expression.New(
+                                            typeof(TriggerInstanceFactory<>).MakeGenericType(triggerServiceType).GetConstructor([typeof(object)])!,
                                             instanceParamExpression
-                                    )
-                                    .Compile();
+                                        ),
+                                        instanceParamExpression
+                                )
+                                .Compile();
 
-                            var triggerTypeImplementationFactoryType = typeof(ITriggerInstanceFactory<>).MakeGenericType(triggerTypeImplementation);
-                            services.Add(new ServiceDescriptor(triggerTypeImplementationFactoryType, _ => triggerInstanceFactoryBuilder(triggerServiceInstance), lifetime));
-                            services.AddScoped(typeof(IResettableService), serviceProvider => serviceProvider.GetRequiredService(triggerTypeImplementationFactoryType));
-                        }
+                        var triggerTypeImplementationFactoryType = typeof(ITriggerInstanceFactory<>).MakeGenericType(triggerTypeImplementation);
+                        services.Add(new ServiceDescriptor(triggerTypeImplementationFactoryType, _ => triggerInstanceFactoryBuilder(triggerServiceInstance), lifetime));
+                        services.AddScoped(typeof(IResettableService), serviceProvider => serviceProvider.GetRequiredService(triggerTypeImplementationFactoryType));
                     }
                 }
             }
         }
+    }
 
-        public void Validate(IDbContextOptions options) { }
+    public void Validate(IDbContextOptions options) { }
 
-        protected TriggersOptionExtension Clone() => new(this);
+    protected TriggersOptionExtension Clone() => new(this);
 
-        private bool TypeIsValidTrigger(Type type)
+    private bool TypeIsValidTrigger(Type type)
+    {
+        if (TypeHelpers.FindGenericInterfaces(type, typeof(IBeforeSaveTrigger<>)) != null || TypeHelpers.FindGenericInterfaces(type, typeof(IAfterSaveTrigger<>)) != null)
         {
-            if (TypeHelpers.FindGenericInterfaces(type, typeof(IBeforeSaveTrigger<>)) != null || TypeHelpers.FindGenericInterfaces(type, typeof(IAfterSaveTrigger<>)) != null)
-            {
-                return true;
-            }
-            else if (_triggerTypes != null)
-            {
-                return _triggerTypes.Any(triggerType => TypeHelpers.FindGenericInterfaces(type, triggerType) != null);
-            }
-            else
-            {
-                return false;
-            }
+            return true;
+        }
+        else if (_triggerTypes != null)
+        {
+            return _triggerTypes.Any(triggerType => TypeHelpers.FindGenericInterfaces(type, triggerType) != null);
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public TriggersOptionExtension WithCascadeBehavior(CascadeBehavior cascadeBehavior)
+    {
+        var clone = Clone();
+
+        clone._cascadeBehavior = cascadeBehavior;
+
+        return clone;
+    }
+
+    public TriggersOptionExtension WithMaxCascadeCycles(int maxCascadeCycles)
+    {
+        var clone = Clone();
+
+        clone._maxCascadeCycles = maxCascadeCycles;
+
+        return clone;
+    }
+
+    public TriggersOptionExtension WithAdditionalTrigger(Type triggerType, ServiceLifetime lifetime)
+    {
+        if (!TypeIsValidTrigger(triggerType))
+        {
+            throw new ArgumentException("A trigger needs to implement either or both IBeforeSaveChangeTrigger or IAfterSaveChangeTriggerHandler", nameof(triggerType));
         }
 
-        public TriggersOptionExtension WithCascadeBehavior(CascadeBehavior cascadeBehavior)
+        var clone = Clone();
+        var triggerEnumerable = Enumerable.Repeat(((object)triggerType, lifetime), 1);
+
+        if (clone._triggers == null)
         {
-            var clone = Clone();
-
-            clone._cascadeBehavior = cascadeBehavior;
-
-            return clone;
+            clone._triggers = triggerEnumerable;
+        }
+        else
+        {
+            clone._triggers = clone._triggers.Concat(triggerEnumerable);
         }
 
-        public TriggersOptionExtension WithMaxCascadeCycles(int maxCascadeCycles)
+
+        return clone;
+    }
+
+    public TriggersOptionExtension WithAdditionalTrigger(object instance)
+    {
+        ArgumentNullException.ThrowIfNull(instance);
+
+        if (!TypeIsValidTrigger(instance.GetType()))
         {
-            var clone = Clone();
-
-            clone._maxCascadeCycles = maxCascadeCycles;
-
-            return clone;
+            throw new ArgumentException("A trigger needs to implement either or both IBeforeSaveChangeTrigger or IAfterSaveChangeTriggerHandler", nameof(instance));
         }
 
-        public TriggersOptionExtension WithAdditionalTrigger(Type triggerType, ServiceLifetime lifetime)
+        var clone = Clone();
+        var triggersEnumerable = Enumerable.Repeat((instance, ServiceLifetime.Singleton), 1);
+
+        if (clone._triggers == null)
         {
-            if (!TypeIsValidTrigger(triggerType))
-            {
-                throw new ArgumentException("A trigger needs to implement either or both IBeforeSaveChangeTrigger or IAfterSaveChangeTriggerHandler", nameof(triggerType));
-            }
-
-            var clone = Clone();
-            var triggerEnumerable = Enumerable.Repeat(((object)triggerType, lifetime), 1);
-
-            if (clone._triggers == null)
-            {
-                clone._triggers = triggerEnumerable;
-            }
-            else
-            {
-                clone._triggers = clone._triggers.Concat(triggerEnumerable);
-            }
-
-
-            return clone;
+            clone._triggers = triggersEnumerable;
+        }
+        else
+        {
+            clone._triggers = clone._triggers.Concat(triggersEnumerable);
         }
 
-        public TriggersOptionExtension WithAdditionalTrigger(object instance)
+
+        return clone;
+    }
+
+    public TriggersOptionExtension WithAdditionalTriggerType(Type triggerType)
+    {
+        ArgumentNullException.ThrowIfNull(triggerType);
+
+
+        var clone = Clone();
+        var triggerTypesEnumerable = Enumerable.Repeat(triggerType, 1);
+
+        if (clone._triggerTypes == null)
         {
-            ArgumentNullException.ThrowIfNull(instance);
-
-            if (!TypeIsValidTrigger(instance.GetType()))
-            {
-                throw new ArgumentException("A trigger needs to implement either or both IBeforeSaveChangeTrigger or IAfterSaveChangeTriggerHandler", nameof(instance));
-            }
-
-            var clone = Clone();
-            var triggersEnumerable = Enumerable.Repeat((instance, ServiceLifetime.Singleton), 1);
-
-            if (clone._triggers == null)
-            {
-                clone._triggers = triggersEnumerable;
-            }
-            else
-            {
-                clone._triggers = clone._triggers.Concat(triggersEnumerable);
-            }
-
-
-            return clone;
+            clone._triggerTypes = triggerTypesEnumerable;
+        }
+        else
+        {
+            clone._triggerTypes = clone._triggerTypes.Concat(triggerTypesEnumerable);
         }
 
-        public TriggersOptionExtension WithAdditionalTriggerType(Type triggerType)
-        {
-            ArgumentNullException.ThrowIfNull(triggerType);
 
+        return clone;
+    }
 
-            var clone = Clone();
-            var triggerTypesEnumerable = Enumerable.Repeat(triggerType, 1);
+    public TriggersOptionExtension WithApplicationScopedServiceProviderAccessor(Func<IServiceProvider, IServiceProvider> serviceProviderTransform)
+    {
+        var clone = Clone();
+        clone._serviceProviderTransform = serviceProviderTransform;
 
-            if (clone._triggerTypes == null)
-            {
-                clone._triggerTypes = triggerTypesEnumerable;
-            }
-            else
-            {
-                clone._triggerTypes = clone._triggerTypes.Concat(triggerTypesEnumerable);
-            }
-
-
-            return clone;
-        }
-
-        public TriggersOptionExtension WithApplicationScopedServiceProviderAccessor(Func<IServiceProvider, IServiceProvider> serviceProviderTransform)
-        {
-            var clone = Clone();
-            clone._serviceProviderTransform = serviceProviderTransform;
-
-            return clone;
-        }
+        return clone;
     }
 }

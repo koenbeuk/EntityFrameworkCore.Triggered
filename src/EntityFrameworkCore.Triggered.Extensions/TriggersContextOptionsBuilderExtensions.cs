@@ -2,35 +2,34 @@
 using EntityFrameworkCore.Triggered.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Microsoft.EntityFrameworkCore
+namespace Microsoft.EntityFrameworkCore;
+
+public static class TriggersContextOptionsBuilderExtensions
 {
-    public static class TriggersContextOptionsBuilderExtensions
+    public static TriggersContextOptionsBuilder AddAssemblyTriggers(this TriggersContextOptionsBuilder builder)
+        => AddAssemblyTriggers(builder, Assembly.GetCallingAssembly());
+
+    public static TriggersContextOptionsBuilder AddAssemblyTriggers(this TriggersContextOptionsBuilder builder, ServiceLifetime lifetime)
+        => AddAssemblyTriggers(builder, lifetime, Assembly.GetCallingAssembly());
+
+    public static TriggersContextOptionsBuilder AddAssemblyTriggers(this TriggersContextOptionsBuilder builder, params Assembly[] assemblies)
+        => AddAssemblyTriggers(builder, ServiceLifetime.Scoped, assemblies);
+
+    public static TriggersContextOptionsBuilder AddAssemblyTriggers(this TriggersContextOptionsBuilder builder, ServiceLifetime lifetime, params Assembly[] assemblies)
     {
-        public static TriggersContextOptionsBuilder AddAssemblyTriggers(this TriggersContextOptionsBuilder builder)
-            => AddAssemblyTriggers(builder, Assembly.GetCallingAssembly());
+        ArgumentNullException.ThrowIfNull(assemblies);
 
-        public static TriggersContextOptionsBuilder AddAssemblyTriggers(this TriggersContextOptionsBuilder builder, ServiceLifetime lifetime)
-            => AddAssemblyTriggers(builder, lifetime, Assembly.GetCallingAssembly());
+        var assemblyTypes = assemblies
+            .SelectMany(x => x.GetTypes())
+            .Where(x => x.IsClass)
+            .Where(x => !x.IsAbstract);
 
-        public static TriggersContextOptionsBuilder AddAssemblyTriggers(this TriggersContextOptionsBuilder builder, params Assembly[] assemblies)
-            => AddAssemblyTriggers(builder, ServiceLifetime.Scoped, assemblies);
-
-        public static TriggersContextOptionsBuilder AddAssemblyTriggers(this TriggersContextOptionsBuilder builder, ServiceLifetime lifetime, params Assembly[] assemblies)
+        foreach (var assemblyType in assemblyTypes)
         {
-            ArgumentNullException.ThrowIfNull(assemblies);
-
-            var assemblyTypes = assemblies
-                .SelectMany(x => x.GetTypes())
-                .Where(x => x.IsClass)
-                .Where(x => !x.IsAbstract);
-
-            foreach (var assemblyType in assemblyTypes)
-            {
-                builder.AddTrigger(assemblyType, lifetime);
-            }
-
-            return builder;
+            builder.AddTrigger(assemblyType, lifetime);
         }
 
+        return builder;
     }
+
 }

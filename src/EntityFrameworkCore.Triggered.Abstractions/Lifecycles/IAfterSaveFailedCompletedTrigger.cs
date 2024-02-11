@@ -1,7 +1,6 @@
-﻿namespace EntityFrameworkCore.Triggered.Lifecycles
+﻿namespace EntityFrameworkCore.Triggered.Lifecycles;
+
+public interface IAfterSaveFailedCompletedTrigger
 {
-    public interface IAfterSaveFailedCompletedTrigger
-    {
-        void AfterSaveFailedCompleted(Exception exception);
-    }
+    void AfterSaveFailedCompleted(Exception exception);
 }

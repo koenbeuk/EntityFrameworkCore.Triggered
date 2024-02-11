@@ -1,7 +1,6 @@
-﻿namespace EntityFrameworkCore.Triggered.Internal
+﻿namespace EntityFrameworkCore.Triggered.Internal;
+
+public interface ITriggerTypeRegistryService
 {
-    public interface ITriggerTypeRegistryService
-    {
-        TriggerTypeRegistry<TTriggerTypeDescriptor> ResolveRegistry<TTriggerTypeDescriptor>(Type openTriggerType, Type entityType, Func<Type, TTriggerTypeDescriptor> triggerTypeDescriptorFactory);
-    }
+    TriggerTypeRegistry<TTriggerTypeDescriptor> ResolveRegistry<TTriggerTypeDescriptor>(Type openTriggerType, Type entityType, Func<Type, TTriggerTypeDescriptor> triggerTypeDescriptorFactory);
 }

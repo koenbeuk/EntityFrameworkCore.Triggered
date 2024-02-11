@@ -1,7 +1,6 @@
-﻿namespace EntityFrameworkCore.Triggered.IntegrationTests.LifetimeTests
+﻿namespace EntityFrameworkCore.Triggered.IntegrationTests.LifetimeTests;
+
+public class User
 {
-    public class User
-    {
-        public int Id { get; set; }
-    }
+    public int Id { get; set; }
 }

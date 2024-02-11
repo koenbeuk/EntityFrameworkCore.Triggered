@@ -1,10 +1,9 @@
-﻿namespace EntityFrameworkCore.Triggered
+﻿namespace EntityFrameworkCore.Triggered;
+
+public interface ITriggerPriority
 {
-    public interface ITriggerPriority
-    {
-        /// <summary>
-        /// Get the priority number (lower means earlier) for when this trigger is supposed to be invoked
-        /// </summary>
-        public int Priority { get; }
-    }
+    /// <summary>
+    /// Get the priority number (lower means earlier) for when this trigger is supposed to be invoked
+    /// </summary>
+    public int Priority { get; }
 }

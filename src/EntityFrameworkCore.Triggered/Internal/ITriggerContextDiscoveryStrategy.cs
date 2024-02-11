@@ -1,9 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 
-namespace EntityFrameworkCore.Triggered.Internal
+namespace EntityFrameworkCore.Triggered.Internal;
+
+public interface ITriggerContextDiscoveryStrategy
 {
-    public interface ITriggerContextDiscoveryStrategy
-    {
-        IEnumerable<IEnumerable<TriggerContextDescriptor>> Discover(TriggerSessionConfiguration configuration, TriggerContextTracker tracker, ILogger logger);
-    }
+    IEnumerable<IEnumerable<TriggerContextDescriptor>> Discover(TriggerSessionConfiguration configuration, TriggerContextTracker tracker, ILogger logger);
 }

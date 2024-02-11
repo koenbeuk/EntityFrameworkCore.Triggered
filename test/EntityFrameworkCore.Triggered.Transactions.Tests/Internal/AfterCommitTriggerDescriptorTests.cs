@@ -2,29 +2,28 @@
 using EntityFrameworkCore.Triggered.Transactions.Tests.Stubs;
 using Xunit;
 
-namespace EntityFrameworkCore.Triggered.Transactions.Tests.Internal
+namespace EntityFrameworkCore.Triggered.Transactions.Tests.Internal;
+
+public class AfterCommitTriggerDescriptorTests
 {
-    public class AfterCommitTriggerDescriptorTests
+    [Fact]
+    public void TriggerType_ReturnsConstructuredTriggerType()
     {
-        [Fact]
-        public void TriggerType_ReturnsConstructuredTriggerType()
-        {
-            var entityType = typeof(string);
-            var subject = new AfterCommitTriggerDescriptor(entityType);
+        var entityType = typeof(string);
+        var subject = new AfterCommitTriggerDescriptor(entityType);
 
-            Assert.Equal(typeof(IAfterCommitTrigger<string>), subject.TriggerType);
-        }
+        Assert.Equal(typeof(IAfterCommitTrigger<string>), subject.TriggerType);
+    }
 
-        [Fact]
-        public void Execute_ForwardsCall()
-        {
-            var entityType = typeof(string);
-            var triggerStub = new TriggerStub<string>();
-            var subject = new AfterCommitTriggerDescriptor(entityType);
+    [Fact]
+    public void Execute_ForwardsCall()
+    {
+        var entityType = typeof(string);
+        var triggerStub = new TriggerStub<string>();
+        var subject = new AfterCommitTriggerDescriptor(entityType);
 
-            subject.Invoke(triggerStub, new TriggerContextStub<string>(), null);
+        subject.Invoke(triggerStub, new TriggerContextStub<string>(), null);
 
-            Assert.Single(triggerStub.AfterCommitInvocations);
-        }
+        Assert.Single(triggerStub.AfterCommitInvocations);
     }
 }

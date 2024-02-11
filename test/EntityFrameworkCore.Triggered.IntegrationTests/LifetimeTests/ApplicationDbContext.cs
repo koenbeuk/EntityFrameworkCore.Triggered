@@ -1,9 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace EntityFrameworkCore.Triggered.IntegrationTests.LifetimeTests
+namespace EntityFrameworkCore.Triggered.IntegrationTests.LifetimeTests;
+
+public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
 {
-    public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
-    {
-        public DbSet<User> Users { get; set; }
-    }
+    public DbSet<User> Users { get; set; }
 }

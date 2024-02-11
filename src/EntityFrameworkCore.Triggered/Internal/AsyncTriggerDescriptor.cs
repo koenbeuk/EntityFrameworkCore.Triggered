@@ -1,34 +1,33 @@
 ﻿using EntityFrameworkCore.Triggered.Internal.Descriptors;
 
-namespace EntityFrameworkCore.Triggered.Internal
+namespace EntityFrameworkCore.Triggered.Internal;
+
+public class AsyncTriggerDescriptor
 {
-    public class AsyncTriggerDescriptor
+    readonly IAsyncTriggerTypeDescriptor _triggerTypeDescriptor;
+    readonly object _trigger;
+    readonly int _priority;
+
+    public AsyncTriggerDescriptor(IAsyncTriggerTypeDescriptor triggerTypeDescriptor, object trigger)
     {
-        readonly IAsyncTriggerTypeDescriptor _triggerTypeDescriptor;
-        readonly object _trigger;
-        readonly int _priority;
+        _triggerTypeDescriptor = triggerTypeDescriptor ?? throw new ArgumentNullException(nameof(triggerTypeDescriptor));
+        _trigger = trigger ?? throw new ArgumentNullException(nameof(trigger));
 
-        public AsyncTriggerDescriptor(IAsyncTriggerTypeDescriptor triggerTypeDescriptor, object trigger)
+        if (_trigger is ITriggerPriority triggerPriority)
         {
-            _triggerTypeDescriptor = triggerTypeDescriptor ?? throw new ArgumentNullException(nameof(triggerTypeDescriptor));
-            _trigger = trigger ?? throw new ArgumentNullException(nameof(trigger));
-
-            if (_trigger is ITriggerPriority triggerPriority)
-            {
-                _priority = triggerPriority.Priority;
-            }
-            else
-            {
-                _priority = 0;
-            }
+            _priority = triggerPriority.Priority;
         }
-
-        public IAsyncTriggerTypeDescriptor TypeDescriptor => _triggerTypeDescriptor;
-        public object Trigger => _trigger;
-        public int Priority => _priority;
-
-        public Task Invoke(object triggerContext, Exception? exception, CancellationToken cancellationToken)
-            => _triggerTypeDescriptor.Invoke(_trigger, triggerContext, exception, cancellationToken);
-
+        else
+        {
+            _priority = 0;
+        }
     }
+
+    public IAsyncTriggerTypeDescriptor TypeDescriptor => _triggerTypeDescriptor;
+    public object Trigger => _trigger;
+    public int Priority => _priority;
+
+    public Task Invoke(object triggerContext, Exception? exception, CancellationToken cancellationToken)
+        => _triggerTypeDescriptor.Invoke(_trigger, triggerContext, exception, cancellationToken);
+
 }

@@ -93,7 +93,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Infrastructure
 
             var triggerStub = scope.ServiceProvider.GetRequiredService<IBeforeSaveTrigger<TestModel>>() as TriggerStub<TestModel>;
             Assert.NotNull(triggerStub);
-            Assert.Equal(1, triggerStub.BeforeSaveInvocations.Count);
+            Assert.Single(triggerStub.BeforeSaveInvocations);
         }
 
 
@@ -119,7 +119,7 @@ namespace EntityFrameworkCore.Triggered.Tests.Infrastructure
 
             var triggerStub = scope.ServiceProvider.GetRequiredService<IBeforeSaveTrigger<TestModel>>() as TriggerStub<TestModel>;
             Assert.NotNull(triggerStub);
-            Assert.Equal(1, triggerStub.BeforeSaveInvocations.Count);
+            Assert.Single(triggerStub.BeforeSaveInvocations);
         }
 
         [Fact]

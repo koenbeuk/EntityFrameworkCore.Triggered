@@ -1,6 +1,4 @@
-﻿using System.Linq;
-
-namespace EntityFrameworkCore.Triggered.Benchmarks.Triggers
+﻿namespace EntityFrameworkCore.Triggered.Benchmarks.Triggers
 {
     public class SignStudentUpForMandatoryCourses(TriggeredApplicationContext applicationContext) : IBeforeSaveTrigger<Student>
     {

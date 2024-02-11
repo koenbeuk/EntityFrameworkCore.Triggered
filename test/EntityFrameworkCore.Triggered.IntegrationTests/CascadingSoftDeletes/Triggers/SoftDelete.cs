@@ -1,5 +1,4 @@
-﻿using System;
-using EntityFrameworkCore.Triggered.Extensions;
+﻿using EntityFrameworkCore.Triggered.Extensions;
 using EntityFrameworkCore.Triggered.IntegrationTests.CascadingSoftDeletes.Models;
 
 namespace EntityFrameworkCore.Triggered.IntegrationTests.CascadingSoftDeletes.Triggers

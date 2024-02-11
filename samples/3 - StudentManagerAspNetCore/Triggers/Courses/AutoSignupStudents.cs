@@ -1,7 +1,4 @@
-﻿using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using EntityFrameworkCore.Triggered;
+﻿using EntityFrameworkCore.Triggered;
 using Microsoft.EntityFrameworkCore;
 
 namespace StudentManager.Triggers.Courses

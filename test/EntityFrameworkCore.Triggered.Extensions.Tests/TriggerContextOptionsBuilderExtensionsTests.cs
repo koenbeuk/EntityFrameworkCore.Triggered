@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using EntityFrameworkCore.Triggered.Infrastructure;
+﻿using EntityFrameworkCore.Triggered.Infrastructure;
 using EntityFrameworkCore.Triggered.Infrastructure.Internal;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;

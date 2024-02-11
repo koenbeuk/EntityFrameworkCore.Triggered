@@ -1,5 +1,4 @@
-﻿using System;
-using EntityFrameworkCore.Triggered.Internal;
+﻿using EntityFrameworkCore.Triggered.Internal;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Xunit;

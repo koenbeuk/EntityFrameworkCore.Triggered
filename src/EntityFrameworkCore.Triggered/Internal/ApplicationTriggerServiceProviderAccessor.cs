@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore.Infrastructure;
+﻿using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace EntityFrameworkCore.Triggered.Internal

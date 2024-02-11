@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace EntityFrameworkCore.Triggered.Extensions.Tests
+﻿namespace EntityFrameworkCore.Triggered.Extensions.Tests
 {
     public abstract class AbstractTrigger : IBeforeSaveTrigger<object>
     {

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using StudentManager.Traits;
+﻿using StudentManager.Traits;
 
 namespace StudentManager
 {

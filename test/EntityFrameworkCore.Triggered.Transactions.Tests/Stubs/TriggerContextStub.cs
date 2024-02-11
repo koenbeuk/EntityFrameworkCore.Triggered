@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace EntityFrameworkCore.Triggered.Transactions.Tests.Stubs
+﻿namespace EntityFrameworkCore.Triggered.Transactions.Tests.Stubs
 {
     public class TriggerContextStub<TEntity> : ITriggerContext<TEntity>
         where TEntity : class

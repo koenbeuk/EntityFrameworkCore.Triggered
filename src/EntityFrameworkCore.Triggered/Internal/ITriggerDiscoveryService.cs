@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using EntityFrameworkCore.Triggered.Internal.Descriptors;
+﻿using EntityFrameworkCore.Triggered.Internal.Descriptors;
 
 namespace EntityFrameworkCore.Triggered.Internal
 {

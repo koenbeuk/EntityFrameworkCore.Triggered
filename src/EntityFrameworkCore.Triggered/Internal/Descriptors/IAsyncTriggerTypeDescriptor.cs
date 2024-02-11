@@ -1,8 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace EntityFrameworkCore.Triggered.Internal.Descriptors
+﻿namespace EntityFrameworkCore.Triggered.Internal.Descriptors
 {
     public interface IAsyncTriggerTypeDescriptor
     {

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using EntityFrameworkCore.Triggered.Internal;
+﻿using EntityFrameworkCore.Triggered.Internal;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace EntityFrameworkCore.Triggered

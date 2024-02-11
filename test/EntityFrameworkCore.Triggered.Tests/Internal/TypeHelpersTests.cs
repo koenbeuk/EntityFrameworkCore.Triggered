@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using EntityFrameworkCore.Triggered.Infrastructure.Internal;
+﻿using EntityFrameworkCore.Triggered.Infrastructure.Internal;
 using Xunit;
 
 namespace EntityFrameworkCore.Triggered.Tests.Internal

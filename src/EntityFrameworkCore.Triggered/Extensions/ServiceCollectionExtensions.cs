@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using EntityFrameworkCore.Triggered.Internal;
+﻿using EntityFrameworkCore.Triggered.Internal;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection.Extensions;

@@ -1,5 +1,4 @@
-﻿using System;
-using EntityFrameworkCore.Triggered;
+﻿using EntityFrameworkCore.Triggered;
 
 namespace BlazorTests.Triggers.Counts
 {

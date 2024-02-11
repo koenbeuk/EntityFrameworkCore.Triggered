@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using EntityFrameworkCore.Triggered.Internal;
+﻿using EntityFrameworkCore.Triggered.Internal;
 using EntityFrameworkCore.Triggered.Transactions;
 using EntityFrameworkCore.Triggered.Transactions.Internal;
 using EntityFrameworkCore.Triggered.Transactions.Lifecycles;

@@ -1,5 +1,4 @@
-﻿using System;
-using EntityFrameworkCore.Triggered.Extensions;
+﻿using EntityFrameworkCore.Triggered.Extensions;
 using EntityFrameworkCore.Triggered.IntegrationTests.SampleStore.Models;
 
 namespace EntityFrameworkCore.Triggered.IntegrationTests.SampleStore.Triggers.Users

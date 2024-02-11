@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace EntityFrameworkCore.Triggered
+﻿namespace EntityFrameworkCore.Triggered
 {
     public interface ITriggerContext<out TEntity>
         where TEntity : class

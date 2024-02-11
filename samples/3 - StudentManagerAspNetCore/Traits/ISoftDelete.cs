@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace StudentManager.Traits
+﻿namespace StudentManager.Traits
 {
     public interface ISoftDelete
     {

@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using EntityFrameworkCore.Triggered.Internal;
+﻿using EntityFrameworkCore.Triggered.Internal;
 using EntityFrameworkCore.Triggered.Internal.Descriptors;
 using Xunit;
 

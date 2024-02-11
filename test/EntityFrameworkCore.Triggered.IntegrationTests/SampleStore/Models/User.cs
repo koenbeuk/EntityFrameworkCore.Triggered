@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace EntityFrameworkCore.Triggered.IntegrationTests.SampleStore.Models
+﻿namespace EntityFrameworkCore.Triggered.IntegrationTests.SampleStore.Models
 {
     public class User
     {

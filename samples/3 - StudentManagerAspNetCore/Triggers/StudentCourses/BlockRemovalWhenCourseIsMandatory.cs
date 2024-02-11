@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using EntityFrameworkCore.Triggered;
+﻿using EntityFrameworkCore.Triggered;
 
 namespace StudentManager.Triggers.StudentCourses
 {

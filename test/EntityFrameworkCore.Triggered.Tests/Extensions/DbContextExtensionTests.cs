@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using EntityFrameworkCore.Triggered.Extensions;
+﻿using EntityFrameworkCore.Triggered.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;

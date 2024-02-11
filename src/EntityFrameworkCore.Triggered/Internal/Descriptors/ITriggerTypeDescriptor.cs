@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace EntityFrameworkCore.Triggered.Internal.Descriptors
+﻿namespace EntityFrameworkCore.Triggered.Internal.Descriptors
 {
 
     public interface ITriggerTypeDescriptor

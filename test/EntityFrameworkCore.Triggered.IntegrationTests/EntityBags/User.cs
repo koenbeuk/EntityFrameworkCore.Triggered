@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace EntityFrameworkCore.Triggered.IntegrationTests.EntityBags
+﻿namespace EntityFrameworkCore.Triggered.IntegrationTests.EntityBags
 {
     public class User
     {

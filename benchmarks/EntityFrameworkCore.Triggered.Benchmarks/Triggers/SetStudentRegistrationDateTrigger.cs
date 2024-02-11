@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace EntityFrameworkCore.Triggered.Benchmarks.Triggers
+﻿namespace EntityFrameworkCore.Triggered.Benchmarks.Triggers
 {
     public class SetStudentRegistrationDateTrigger : IBeforeSaveTrigger<Student>
     {

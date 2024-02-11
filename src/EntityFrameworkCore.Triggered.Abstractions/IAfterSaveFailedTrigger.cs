@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace EntityFrameworkCore.Triggered
+﻿namespace EntityFrameworkCore.Triggered
 {
     public interface IAfterSaveFailedTrigger<TEntity>
         where TEntity : class

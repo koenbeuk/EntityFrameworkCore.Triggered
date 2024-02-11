@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace EntityFrameworkCore.Triggered.IntegrationTests.CascadingSoftDeletes.Models
+﻿namespace EntityFrameworkCore.Triggered.IntegrationTests.CascadingSoftDeletes.Models
 {
     public class Branch
     {

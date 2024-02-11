@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using EntityFrameworkCore.Triggered.Internal;
+﻿using EntityFrameworkCore.Triggered.Internal;
 using EntityFrameworkCore.Triggered.Internal.Descriptors;
 using Microsoft.Extensions.DependencyInjection;
 

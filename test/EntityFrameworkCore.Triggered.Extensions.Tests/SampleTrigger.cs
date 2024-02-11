@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using EntityFrameworkCore.Triggered.Lifecycles;
+﻿using EntityFrameworkCore.Triggered.Lifecycles;
 
 namespace EntityFrameworkCore.Triggered.Extensions.Tests
 {

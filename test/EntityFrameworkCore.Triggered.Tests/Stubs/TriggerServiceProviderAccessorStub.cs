@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace EntityFrameworkCore.Triggered.Tests.Stubs
+﻿namespace EntityFrameworkCore.Triggered.Tests.Stubs
 {
     public class TriggerServiceProviderAccessorStub(IServiceProvider serviceProvider) : ITriggerServiceProviderAccessor
     {

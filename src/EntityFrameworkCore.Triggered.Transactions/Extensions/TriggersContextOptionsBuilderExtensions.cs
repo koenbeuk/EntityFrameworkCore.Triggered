@@ -1,5 +1,4 @@
-﻿using System;
-using EntityFrameworkCore.Triggered.Infrastructure;
+﻿using EntityFrameworkCore.Triggered.Infrastructure;
 using EntityFrameworkCore.Triggered.Transactions;
 using EntityFrameworkCore.Triggered.Transactions.Lifecycles;
 

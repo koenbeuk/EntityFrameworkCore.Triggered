@@ -1,7 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-
-namespace EntityFrameworkCore.Triggered
+﻿namespace EntityFrameworkCore.Triggered
 {
     public interface IBeforeSaveAsyncTrigger<in TEntity>
         where TEntity : class

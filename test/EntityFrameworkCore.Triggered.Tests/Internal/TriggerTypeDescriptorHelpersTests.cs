@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using EntityFrameworkCore.Triggered.Internal;
+﻿using EntityFrameworkCore.Triggered.Internal;
 using EntityFrameworkCore.Triggered.Tests.Stubs;
 using Xunit;
 

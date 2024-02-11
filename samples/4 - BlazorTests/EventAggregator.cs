@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace BlazorTests
+﻿namespace BlazorTests
 {
     /// <summary>
     /// This is NOT a production ready EventAggregator and only used for demo purposes

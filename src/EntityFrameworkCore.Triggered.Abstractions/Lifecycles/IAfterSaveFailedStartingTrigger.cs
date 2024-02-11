@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace EntityFrameworkCore.Triggered.Lifecycles
+﻿namespace EntityFrameworkCore.Triggered.Lifecycles
 {
     public interface IAfterSaveFailedStartingTrigger
     {

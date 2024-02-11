@@ -1,5 +1,4 @@
-﻿using System;
-using EntityFrameworkCore.Triggered;
+﻿using EntityFrameworkCore.Triggered;
 using StudentManager.Traits;
 
 namespace StudentManager.Triggers.Traits.SoftDelete

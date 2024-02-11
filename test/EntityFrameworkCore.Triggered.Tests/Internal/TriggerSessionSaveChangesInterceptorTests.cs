@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using EntityFrameworkCore.Triggered.Tests.Stubs;
+﻿using EntityFrameworkCore.Triggered.Tests.Stubs;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;

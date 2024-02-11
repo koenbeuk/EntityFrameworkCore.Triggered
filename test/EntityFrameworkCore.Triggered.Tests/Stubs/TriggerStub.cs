@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace EntityFrameworkCore.Triggered.Tests.Stubs
+﻿namespace EntityFrameworkCore.Triggered.Tests.Stubs
 {
     public class TriggerStub<TEntity> :
         IBeforeSaveTrigger<TEntity>,

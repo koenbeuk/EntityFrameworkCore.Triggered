@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace EntityFrameworkCore.Triggered.IntegrationTests.EntityBags.Triggers
+﻿namespace EntityFrameworkCore.Triggered.IntegrationTests.EntityBags.Triggers
 {
     public class SoftDeleteTrigger(ApplicationDbContext dbContext) : IBeforeSaveTrigger<User>
     {

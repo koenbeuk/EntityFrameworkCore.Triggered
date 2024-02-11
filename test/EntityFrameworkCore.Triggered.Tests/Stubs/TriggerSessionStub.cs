@@ -1,8 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace EntityFrameworkCore.Triggered.Tests.Stubs
+﻿namespace EntityFrameworkCore.Triggered.Tests.Stubs
 {
     public class TriggerSessionStub : ITriggerSession
     {

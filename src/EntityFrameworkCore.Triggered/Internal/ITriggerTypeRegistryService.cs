@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace EntityFrameworkCore.Triggered.Internal
+﻿namespace EntityFrameworkCore.Triggered.Internal
 {
     public interface ITriggerTypeRegistryService
     {

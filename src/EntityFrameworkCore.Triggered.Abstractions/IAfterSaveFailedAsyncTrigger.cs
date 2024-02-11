@@ -1,8 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace EntityFrameworkCore.Triggered
+﻿namespace EntityFrameworkCore.Triggered
 {
     public interface IAfterSaveFailedAsyncTrigger<TEntity>
         where TEntity : class

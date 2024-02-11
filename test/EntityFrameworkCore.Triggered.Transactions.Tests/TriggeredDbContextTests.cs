@@ -1,5 +1,4 @@
-﻿using System;
-using EntityFrameworkCore.Triggered.Extensions;
+﻿using EntityFrameworkCore.Triggered.Extensions;
 using EntityFrameworkCore.Triggered.Transactions.Tests.Stubs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;

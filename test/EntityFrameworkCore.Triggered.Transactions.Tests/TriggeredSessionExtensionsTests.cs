@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using EntityFrameworkCore.Triggered.Transactions.Tests.Stubs;
+﻿using EntityFrameworkCore.Triggered.Transactions.Tests.Stubs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;

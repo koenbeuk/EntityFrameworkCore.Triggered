@@ -1,7 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-
-namespace EntityFrameworkCore.Triggered.Transactions
+﻿namespace EntityFrameworkCore.Triggered.Transactions
 {
     public interface IBeforeCommitAsyncTrigger<in TEntity>
         where TEntity : class

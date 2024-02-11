@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using EntityFrameworkCore.Triggered;
+﻿using EntityFrameworkCore.Triggered;
 
 namespace PrimarySchool.Triggers
 {

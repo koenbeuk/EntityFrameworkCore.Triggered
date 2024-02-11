@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using EntityFrameworkCore.Triggered.Internal.Descriptors;
+﻿using EntityFrameworkCore.Triggered.Internal.Descriptors;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace EntityFrameworkCore.Triggered.Internal

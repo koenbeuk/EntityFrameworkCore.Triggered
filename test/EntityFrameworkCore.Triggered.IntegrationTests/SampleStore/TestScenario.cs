@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using EntityFrameworkCore.Triggered.IntegrationTests.SampleStore.Models;
+﻿using EntityFrameworkCore.Triggered.IntegrationTests.SampleStore.Models;
 using ScenarioTests;
 using Xunit;
 

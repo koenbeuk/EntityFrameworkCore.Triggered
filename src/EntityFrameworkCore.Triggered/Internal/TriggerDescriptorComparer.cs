@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace EntityFrameworkCore.Triggered.Internal
+﻿namespace EntityFrameworkCore.Triggered.Internal
 {
     public sealed class TriggerDescriptorComparer : IComparer<TriggerDescriptor>, IComparer<AsyncTriggerDescriptor>
     {

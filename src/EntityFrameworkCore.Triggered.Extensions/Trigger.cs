@@ -1,8 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace EntityFrameworkCore.Triggered.Extensions
+﻿namespace EntityFrameworkCore.Triggered.Extensions
 {
     public class Trigger<TEntity> :
         IBeforeSaveTrigger<TEntity>,

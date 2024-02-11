@@ -1,6 +1,7 @@
 <Project>
 
   <PropertyGroup>
+	<TargetFramework>net6.0</TargetFramework>
 	<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 	<LangVersion>9.0</LangVersion>
 	<Nullable>enable</Nullable>

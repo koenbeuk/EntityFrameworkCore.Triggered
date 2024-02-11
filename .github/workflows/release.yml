@@ -25,7 +25,7 @@ jobs:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 6.0.x
+          dotnet-version: 8.0.x
       - name: Create Release NuGet package
         run: |
           arrTag=(${GITHUB_REF//\// })

@@ -21,23 +21,13 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        version: [1, 2, 3]
-        include:
-          - version: 1
-            configuration: ReleaseV1
-          - version: 2
-            configuration: ReleaseV2
-          - version: 3  
-            configuration: Release
     runs-on:  ${{ matrix.os }}
-
     steps:
       - uses: actions/checkout@v2
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 6.0.x
-          include-prerelease: True
+          dotnet-version: 8.0.x
       - name: Install dependencies
         run: dotnet restore EntityFrameworkCore.Triggered.sln -p:Configuration=${{ matrix.configuration }}
       - name: Build
@@ -66,7 +56,7 @@ jobs:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 6.0.x
+          dotnet-version: 8.0.x
           include-prerelease: True
       - name: Install dependencies
         run: dotnet restore EntityFrameworkCore.Triggered.Samples.slnf

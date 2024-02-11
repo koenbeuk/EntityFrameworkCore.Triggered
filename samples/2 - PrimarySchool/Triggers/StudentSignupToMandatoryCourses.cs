@@ -14,7 +14,7 @@ namespace PrimarySchool.Triggers
             _applicationContext = applicationContext;
         }
 
-        public Task BeforeSave(ITriggerContext<Student> context, CancellationToken cancellationToken)
+        public void BeforeSave(ITriggerContext<Student> context)
         {
             var mandatoryCourses = _applicationContext.Courses
                 .Where(x => x.IsMandatory)
@@ -28,8 +28,6 @@ namespace PrimarySchool.Triggers
                     _applicationContext.StudentCourses.Add(new StudentCourse { StudentId = context.Entity.Id, CourseId = mandatoryCourse.Id });
                 }
             }
-
-            return Task.CompletedTask;
         }
     }
 }

@@ -17,7 +17,7 @@ namespace StudentManager.Triggers.Traits.Audited
             _applicationContext = applicationContext;
         }
 
-        public Task BeforeSave(ITriggerContext<IAudited> context, CancellationToken cancellationToken)
+        public void BeforeSave(ITriggerContext<IAudited> context)
         {
             var recordBuilder = new StringBuilder();
 
@@ -37,8 +37,6 @@ namespace StudentManager.Triggers.Traits.Audited
                 RecordDate = DateTimeOffset.Now,
                 Record = recordBuilder.ToString()
             });
-
-            return Task.CompletedTask;
         }
     }
 }

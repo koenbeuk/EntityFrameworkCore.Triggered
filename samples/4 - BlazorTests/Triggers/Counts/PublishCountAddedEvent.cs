@@ -13,14 +13,12 @@ namespace BlazorTests.Triggers.Counts
             _eventAggregator = eventAggregator;
         }
 
-        public Task AfterSave(ITriggerContext<Count> context, CancellationToken cancellationToken)
+        public void AfterSave(ITriggerContext<Count> context)
         {
             if (context.ChangeType == ChangeType.Added)
             {
                 _eventAggregator.PublishCountAdded(context.Entity);
             }
-
-            return Task.CompletedTask;
         }
     }
 }

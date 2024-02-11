@@ -15,15 +15,13 @@ namespace StudentManager.Triggers.Traits.SoftDelete
             _applicationContext = applicationContext;
         }
 
-        public Task BeforeSave(ITriggerContext<ISoftDelete> context, CancellationToken cancellationToken)
+        public void BeforeSave(ITriggerContext<ISoftDelete> context)
         {
             if (context.ChangeType == ChangeType.Deleted)
             {
                 context.Entity.DeletedOn = DateTimeOffset.Now;
                 _applicationContext.Entry(context.Entity).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
             }
-
-            return Task.CompletedTask;
         }
     }
 }

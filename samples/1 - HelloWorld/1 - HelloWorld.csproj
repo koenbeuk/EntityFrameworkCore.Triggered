@@ -8,8 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="EntityFrameworkCore.Triggered" Version="$(EFCoreTriggeredPackageVersion)" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="$(EFCorePackageVersion)" />
+	<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\EntityFrameworkCore.Triggered\EntityFrameworkCore.Triggered.csproj" />
+  </ItemGroup>
 </Project>

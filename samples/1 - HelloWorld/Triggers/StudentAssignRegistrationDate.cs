@@ -7,14 +7,12 @@ namespace PrimarySchool.Triggers
 {
     public class StudentAssignRegistrationDate : IBeforeSaveTrigger<Student>
     {
-        public Task BeforeSave(ITriggerContext<Student> context, CancellationToken cancellationToken)
+        public void BeforeSave(ITriggerContext<Student> context)
         {
             if (context.ChangeType == ChangeType.Added)
             {
                 context.Entity.RegistrationDate = DateTime.Today;
             }
-
-            return Task.CompletedTask;
         }
     }
 }

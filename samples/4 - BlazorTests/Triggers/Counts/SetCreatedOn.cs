@@ -7,11 +7,9 @@ namespace BlazorTests.Triggers.Counts
 {
     public class SetCreatedOn : IBeforeSaveTrigger<Count>
     {
-        public Task BeforeSave(ITriggerContext<Count> context, CancellationToken cancellationToken)
+        public void BeforeSave(ITriggerContext<Count> context)
         {
             context.Entity.CreatedOn = DateTime.UtcNow;
-
-            return Task.CompletedTask;
         }
     }
 }

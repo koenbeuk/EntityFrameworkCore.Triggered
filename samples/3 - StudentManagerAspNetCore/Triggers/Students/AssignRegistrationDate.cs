@@ -7,11 +7,9 @@ namespace StudentManager.Triggers.Students
 {
     public class AssignRegistrationDate : IBeforeSaveTrigger<Student>
     {
-        public Task BeforeSave(ITriggerContext<Student> context, CancellationToken cancellationToken)
+        public void BeforeSave(ITriggerContext<Student> context)
         {
             context.Entity.RegistrationDate = DateTime.Today;
-
-            return Task.CompletedTask;
         }
     }
 }

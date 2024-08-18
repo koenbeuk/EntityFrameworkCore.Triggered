@@ -76,11 +76,11 @@ namespace Microsoft.Extensions.DependencyInjection
             return serviceCollection;
         }
 
-        public static IServiceCollection AddTriggeredDbContextFactory<TContext>(this IServiceCollection serviceCollection, Action<DbContextOptionsBuilder>? optionsAction = null, ServiceLifetime lifetime = ServiceLifetime.Singleton)
+        public static IServiceCollection AddTriggeredDbContextFactory<TContext>(this IServiceCollection serviceCollection, Action<IServiceProvider, DbContextOptionsBuilder>? optionsAction = null, ServiceLifetime lifetime = ServiceLifetime.Singleton)
             where TContext : DbContext
         {
-            serviceCollection.AddDbContextFactory<TContext>(options => {
-                optionsAction?.Invoke(options);
+            serviceCollection.AddDbContextFactory<TContext>((serviceProvider, options) => {
+                optionsAction?.Invoke(serviceProvider, options);
                 options.UseTriggers();
             }, lifetime);
 

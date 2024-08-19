@@ -51,7 +51,7 @@ namespace EntityFrameworkCore.Triggered.Tests
         public void DbContextFactory_RaisesTrigger_SharesDbContext()
         {
             using var serviceProvider = new ServiceCollection()
-                .AddTriggeredDbContextFactory<TestDbContext>(options => {
+                .AddTriggeredDbContextFactory<TestDbContext>((sp, options) => {
                     options.UseInMemoryDatabase(nameof(DbContextFactory_RaisesTrigger_SharesDbContext));
                     options.UseTriggers(triggerOptions => {
                         triggerOptions.AddTrigger<TestTrigger>();
